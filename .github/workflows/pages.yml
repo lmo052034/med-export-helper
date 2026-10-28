@@ -1,0 +1,36 @@
+name: Deploy tools to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ["tools/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+  # 공고 수집 봇의 커밋은 push 이벤트를 만들지 않으므로, 수집이 끝나면 다시 배포합니다
+  workflow_run:
+    workflows: ["Collect support notices"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: tools
+      - id: deployment
+        uses: actions/deploy-pages@v4

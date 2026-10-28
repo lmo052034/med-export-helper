@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 답 확인 기록</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .parts { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .pt { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .pt b { font-size: 22px; font-weight: 800; }
+  .pt .bar { height: 6px; background: var(--surface); border-radius: 9px; margin-top: 6px; overflow: hidden; }
+  .pt .bar i { display: block; height: 100%; background: var(--accent); }
+  .pt.low .bar i { background: var(--hot); }
+  #tbl td { min-width: 140px; font-size: 13px; }
+  #tbl td[contenteditable]:focus { outline: 2px solid var(--accent-2); background: #fff; }
+  #tbl td.part { min-width: 110px; font-weight: 700; }
+  #tbl tr.seed td { background: #fbfcfb; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div id="head"></div>
+
+  <div class="banner info"><span>ⓘ</span><div>AI 답은 틀릴 수 있어요. KOTRA도 AI가 답할 때 <b>근거 문서를 함께 보여 주도록</b> 만들고 있어요 (사례집 09). 여기에는 'AI에게 물은 것 → AI 답 → 공식자료로 확인 → 고친 내용'을 모아 둡니다. 처음 2건은 형식 예시예요.</div></div>
+
+  <div class="parts mb" id="parts"></div>
+
+  <section class="card">
+    <div class="tbl-wrap"><table id="tbl"></table></div>
+  </section>
+</main>
+<script src="assets/app.js"></script>
+<script>
+TAK.head("log.html",
+  "다른 페이지의 'AI에게 묻기'에서 기록을 남기면 여기로 모입니다. 칸을 눌러 바로 고칠 수 있어요. 분야마다 몇 건씩 쌓이면 사업계획서·지원사업 신청서의 근거로 쓸 수 있어요.",
+  [["이 페이지에서", "AI 답을 공식자료로 확인한 기록을 모읍니다."], ["확인할 곳", "수입국 세관 관세율표, 인허가 기관 고시, KOTRA 해외시장뉴스"], ["다 하면", "표를 복사하거나 CSV로 내려받아요."]],
+  `<button class="btn" id="b-add">행 추가</button><button class="btn" id="b-md">표 복사</button><button class="btn primary" id="b-csv">CSV 내보내기</button><button class="btn" id="b-seed">처음 상태로</button>`);
+const COLS = [["part", "분야"], ["prompt", "AI에게 물은 것"], ["ai", "AI 답 요약"], ["source", "확인한 공식자료"], ["fix", "고친 내용"]];
+
+function render() {
+  const rows = TAK.getLog();
+  document.getElementById("tbl").innerHTML =
+    `<thead><tr><th>#</th>${COLS.map((c) => `<th>${c[1]}</th>`).join("")}<th></th></tr></thead><tbody>` +
+    rows.map((r, k) => `<tr data-k="${k}" class="${r.seed ? "seed" : ""}"><td class="muted">${k + 1}</td>${COLS.map(([f]) =>
+      f === "part"
+        ? `<td class="part"><select data-f="part">${TAK.PARTS.map((p) => `<option ${p === r.part ? "selected" : ""}>${p}</option>`).join("")}</select></td>`
+        : `<td contenteditable="true" data-f="${f}">${TAK.esc(r[f] || "")}</td>`).join("")}<td><button class="btn sm" data-del="${k}">삭제</button></td></tr>`).join("") +
+    "</tbody>";
+  const count = (p) => rows.filter((r) => r.part === p).length;
+  const groups = TAK.PARTS.map((p) => [p, count(p)]);
+  document.getElementById("parts").innerHTML =
+    `<div class="pt"><span class="small muted">전체</span><br><b>${rows.length}</b>건</div>` +
+    groups.map(([n, c]) => `<div class="pt ${c < 3 ? "low" : ""}"><span class="small muted">${n}</span><br><b>${c}</b>건<div class="bar"><i style="width:${Math.min(100, c * 34)}%"></i></div></div>`).join("");
+}
+
+document.getElementById("tbl").addEventListener("input", (e) => {
+  const tr = e.target.closest("tr[data-k]"); if (!tr) return;
+  const rows = TAK.getLog();
+  const r = rows[+tr.dataset.k];
+  r[e.target.dataset.f] = e.target.tagName === "SELECT" ? e.target.value : e.target.innerText;
+  TAK.setLog(rows);
+  if (e.target.tagName === "SELECT") render();
+});
+document.getElementById("tbl").addEventListener("click", (e) => {
+  const k = e.target.dataset.del; if (k == null) return;
+  const rows = TAK.getLog(); rows.splice(+k, 1); TAK.setLog(rows); render();
+});
+document.getElementById("b-add").onclick = () => { const rows = TAK.getLog(); rows.push({ part: TAK.PARTS[0], prompt: "", ai: "", source: "", fix: "" }); TAK.setLog(rows); render(); };
+document.getElementById("b-seed").onclick = () => { if (confirm("직접 추가한 기록이 지워집니다. 처음 예시 2건으로 되돌릴까요?")) { TAK.setLog(TAK.SEED_LOG); render(); } };
+document.getElementById("b-md").onclick = () => {
+  const rows = TAK.getLog();
+  const t = [COLS.map((c) => c[1]).join("\t"), ...rows.map((r) => COLS.map(([f]) => String(r[f] || "").replace(/\s+/g, " ")).join("\t"))].join("\n");
+  TAK.copy(t, "표를 복사했어요. 엑셀·문서에 붙여 넣으세요");
+};
+document.getElementById("b-csv").onclick = () => {
+  const rows = TAK.getLog();
+  const q = (s) => '"' + String(s || "").replace(/"/g, '""') + '"';
+  const csv = "﻿" + [COLS.map((c) => q(c[1])).join(","), ...rows.map((r) => COLS.map(([f]) => q(r[f])).join(","))].join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = "AI_답확인기록.csv";
+  a.click();
+};
+render();
+</script>
+</body>
+</html>

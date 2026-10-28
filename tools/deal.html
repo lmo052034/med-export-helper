@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>견적서·인보이스</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .form h3 { font-size: 13px; color: var(--accent-ink); text-transform: uppercase; letter-spacing: .04em; margin: 18px 0 8px; }
+  .form h3:first-child { margin-top: 0; }
+  .items td { padding: 5px 4px; }
+  .items input { padding: 6px 7px; font-size: 13px; }
+  .comp td { padding: 4px; }
+  .comp input { padding: 5px 7px; font-size: 13px; }
+  .doc-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .doc-tabs button { font: inherit; font-size: 13.5px; font-weight: 700; padding: 8px 14px; border-radius: 9px; border: 1px solid var(--line-2); background: #fff; cursor: pointer; }
+  .doc-tabs button.on { background: var(--dark); color: #fff; border-color: var(--dark); }
+  .sheet {
+    background: #fff; border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 10px 30px rgba(20, 30, 30, .08);
+    padding: 40px 44px; font-size: 13px; color: #1b1f22; position: relative; margin-top: 14px;
+  }
+  .sheet .stamp { position: absolute; top: 18px; right: 20px; font-size: 10.5px; font-weight: 800; color: var(--hot-ink); border: 1.5px solid var(--hot); border-radius: 6px; padding: 3px 8px; letter-spacing: .03em; text-transform: uppercase; }
+  .sheet h2 { font-size: 24px; font-weight: 800; letter-spacing: .06em; margin: 6px 0 18px; }
+  .sh-top { display: flex; justify-content: space-between; gap: 20px; border-bottom: 2px solid var(--dark); padding-bottom: 12px; }
+  .sh-top .co { font-weight: 800; font-size: 15px; }
+  .sh-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 14px 0; }
+  .sh-box { border: 1px solid var(--line-2); border-radius: 6px; padding: 10px 12px; }
+  .sh-box .k { font-size: 10.5px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .sheet table th { background: var(--dark); color: #fff; font-size: 11px; }
+  .sheet table td, .sheet table th { padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  .sheet .tot td { font-weight: 800; border-top: 2px solid var(--dark); }
+  .sheet td.num, .sheet td.hs { white-space: nowrap; }
+  .terms { display: grid; grid-template-columns: 150px 1fr; gap: 4px 12px; margin-top: 14px; }
+  .terms div:nth-child(odd) { font-weight: 700; color: var(--ink-2); }
+  .hl { background: var(--accent-soft); border-radius: 3px; padding: 0 3px; }
+  .hl.bad { background: var(--hot-soft); outline: 1.5px solid var(--hot); }
+  .remarks { margin-top: 14px; background: var(--surface); border-radius: 6px; padding: 10px 12px; font-size: 12px; }
+  .sign { display: flex; justify-content: flex-end; margin-top: 26px; }
+  .sign div { border-top: 1px solid #1b1f22; padding-top: 4px; min-width: 220px; text-align: center; font-size: 12px; }
+  .mail { font-size: 14px; line-height: 1.65; white-space: pre-wrap; }
+  .mail-head { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 14px; font-size: 13px; }
+  .mail-head div { display: grid; grid-template-columns: 70px 1fr; }
+  .mail-head span { color: var(--muted); font-weight: 600; }
+  .wc { font-weight: 800; }
+  .match { display: grid; grid-template-columns: 1fr auto auto; gap: 0; font-size: 13px; }
+  .match > div { padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  .match .h { font-size: 11.5px; font-weight: 700; color: var(--muted); background: var(--surface); }
+  @media (max-width: 640px) { .sheet { padding: 48px 18px 24px; } .sh-grid { grid-template-columns: 1fr; } .terms { grid-template-columns: 1fr; } }
+  @media print {
+    .wrap { padding: 0; max-width: none; }
+    .g-side > aside, .doc-tabs { display: none !important; }
+    .g-side { display: block; }
+    .sheet { box-shadow: none; border: 0; padding: 0; margin: 0; }
+    .sheet:not(.print-on) { display: none; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div id="head" class="no-print"></div>
+
+
+  <div class="grid g-side">
+    <section>
+      <div class="doc-tabs no-print" id="doc-tabs">
+        <button data-d="mail" class="on">제안 이메일</button>
+        <button data-d="quote">Quotation</button>
+        <button data-d="inv">Commercial Invoice</button>
+        <button data-d="all">세 문서 비교</button>
+      </div>
+      <div id="docs"></div>
+    </section>
+
+    <aside class="no-print">
+      <section class="card">
+        <h2>정합성 검사</h2>
+        <p class="hint">견적서와 인보이스의 같은 항목을 비교합니다.</p>
+        <div class="match mt" id="match"></div>
+        <ul class="checks mt" id="checks"></ul>
+      </section>
+
+      <section class="card mt form" id="form">
+        <h3>우리 회사</h3>
+        <div class="field"><label>회사 (영문)</label><input data-k="seller.co"></div>
+        <div class="field"><label>주소 (영문)</label><input data-k="seller.addr"></div>
+        <div class="row"><div class="field"><label>전화</label><input data-k="seller.tel"></div><div class="field"><label>이메일</label><input data-k="seller.email"></div></div>
+        <h3>바이어</h3>
+        <div class="field"><label>회사</label><input data-k="buyer.co"></div>
+        <div class="row"><div class="field"><label>담당자</label><input data-k="buyer.name"></div><div class="field"><label>직함</label><input data-k="buyer.title"></div></div>
+        <div class="row"><div class="field"><label>호칭</label><input data-k="buyer.sal"></div><div class="field"><label>이메일</label><input data-k="buyer.email"></div></div>
+        <div class="field"><label>주소</label><input data-k="buyer.addr"></div>
+
+        <h3>품목</h3>
+        <table class="items"><thead><tr><th>모델</th><th class="num">수량</th><th class="num">단가 USD</th></tr></thead><tbody id="items"></tbody></table>
+
+        <h3>거래조건</h3>
+        <div class="row">
+          <div class="field"><label>Incoterms 2020</label><select data-k="inco"><option>EXW</option><option>FCA</option><option>FOB</option><option>CFR</option><option>CIF</option><option>CPT</option><option>CIP</option><option>DAP</option></select></div>
+          <div class="field"><label>지정 장소</label><input data-k="place"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>운송수단</label><select data-k="mode"><option value="air">항공</option><option value="sea">해상</option></select></div>
+          <div class="field"><label>결제조건</label><select data-k="pay"><option>T/T 100% in advance</option><option>T/T 30% deposit, 70% before shipment</option><option>L/C at sight</option></select></div>
+        </div>
+        <div class="row" id="cost-row">
+          <div class="field"><label>운임 USD</label><input type="number" data-k="freight"></div>
+          <div class="field"><label>보험료 USD</label><input type="number" data-k="ins"></div>
+        </div>
+        <label style="display:flex;gap:8px;align-items:center;font-weight:600" id="exw-clear"><input type="checkbox" data-k="sellerClear"> EXW지만 수출통관은 판매자가 대행</label>
+        <div class="row mt">
+          <div class="field"><label>납기</label><input data-k="lead"></div>
+          <div class="field"><label>견적 유효(일)</label><input type="number" data-k="valid"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>견적 번호 · 일자</label><input data-k="qno"><input type="date" data-k="qdate" style="margin-top:4px"></div>
+          <div class="field"><label>인보이스 번호 · 일자</label><input data-k="ino"><input type="date" data-k="idate" style="margin-top:4px"></div>
+        </div>
+        <div class="field"><label>포장</label><input data-k="pack"></div>
+        <div class="row"><div class="field"><label>N.W. (kg)</label><input data-k="nw"></div><div class="field"><label>G.W. (kg)</label><input data-k="gw" placeholder="미정"></div></div>
+
+        <h3>인보이스만 다르게 (불일치 확인용)</h3>
+        <div class="row">
+          <div class="field"><label>인보이스 Incoterms</label><select data-k="invInco"><option value="">견적서와 동일</option><option>EXW</option><option>FCA</option><option>FOB</option><option>CIF</option><option>CIP</option></select></div>
+          <div class="field"><label>인보이스 결제조건</label><select data-k="invPay"><option value="">견적서와 동일</option><option>T/T 100% in advance</option><option>L/C at sight</option></select></div>
+        </div>
+
+        <h3>경쟁 제품 가격 (단가 근거, 3개)</h3>
+        <table class="comp"><thead><tr><th>제품</th><th class="num">USD</th><th>출처</th></tr></thead><tbody id="comp"></tbody></table>
+
+        <div class="row"><div class="field"><label>도착지</label><input data-k="dest"></div><div class="field"><label>현지 등록 제도</label><input data-k="reg"></div></div>
+
+        <h3>이메일</h3>
+        <div class="field"><label>바이어 설명 (We understand [회사] …)</label><input data-k="market"></div>
+        <div class="field"><label>제품 소개 문장 (영문)</label><textarea data-k="pitch"></textarea></div>
+        <div class="row"><div class="field"><label>보내는 사람</label><input data-k="sender"></div><div class="field"><label>직함</label><input data-k="senderTitle"></div></div>
+        <div class="field">
+          <label>강조할 점</label>
+          <label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" data-k="pt.akl"> 현지 인허가 서류 지원</label>
+          <label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" data-k="pt.train"> 클리닉 교육</label>
+          <label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" data-k="pt.service"> 부품 공급·원격 기술지원</label>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+<script src="assets/product.js"></script>
+<script>
+TAK.head("deal.html",
+  "한 번 입력한 거래조건으로 제안 메일, 견적서, 상업송장(인보이스)을 함께 만듭니다. 문서끼리 조건이 다르거나 Incoterms가 운송수단과 맞지 않으면 바로 알려 줘요.",
+  [["이 페이지에서", "첫 주문용 서류 3가지를 만듭니다."], ["준비물", "단가, 경쟁 제품 가격 3개, 결제·운송 조건"], ["다 하면", "08 AI 답 확인에 확인한 내용을 기록해요."]],
+  `<button class="btn" id="b-break">조건 어긋남 보기</button><button class="btn" id="b-reset">처음으로</button><button class="btn" id="b-prompt">메일 다듬기 질문</button><button class="btn primary" id="b-print">이 문서 인쇄·PDF</button>`);
+const PR = PROD.get();
+// 가상 예시 (실제 기업·바이어 아님). 모든 값은 'Assumed for simulation'
+const DEFAULT = {
+  seller: { co: PR.company || "Hangyeol Medical Co., Ltd. (sample)", addr: "123 Sample-ro, Seongnam-si, Gyeonggi-do, Republic of Korea", tel: "+82-31-000-0000", email: PR.contact || "export@hangyeol-medical.example" },
+  buyer: { co: "Sample Medical Distribution Co. (sample)", name: "Alex Tan", title: "Purchasing Manager", sal: "Mr. Tan", email: "purchasing@buyer.example", addr: (PR.country || "Indonesia") + " (address)" },
+  items: [
+    { model: PR.product || "HG-200 TENS Electrotherapy Device", desc: (PR.build || "Main unit with accessories").slice(0, 90), qty: 10, unit: 450, hs: PR.hs || "9018.90" },
+    { model: "Spare electrode pads (pack of 10)", desc: "Consumable", qty: 20, unit: 12, hs: PR.hs || "9018.90" },
+  ],
+  inco: "FCA", place: "Incheon Airport, Korea", mode: "air", pay: "T/T 30% deposit, 70% before shipment", freight: "", ins: "", sellerClear: true,
+  lead: "3 weeks after receipt of deposit", valid: 30,
+  qno: "Q-2611-001", qdate: "2026-11-02", ino: "CI-2611-001", idate: "2026-11-30",
+  dest: PR.country || "Indonesia", reg: "medical device", market: "supplies " + (PR.buyer || "clinics and hospitals") + " in " + (PR.country || "your country"),
+  pitch: PR.oneliner ? PR.oneliner + "." : "",
+  pack: "2 CTNs on 1 pallet", nw: "12", gw: "",
+  invInco: "", invPay: "",
+  comp: [
+    { name: "", price: "", src: "" },
+    { name: "", price: "", src: "" },
+    { name: "", price: "", src: "" },
+  ],
+  sender: "", senderTitle: "Overseas Sales Team",
+  pt: { akl: true, train: true, service: true },
+};
+let S = Object.assign(JSON.parse(JSON.stringify(DEFAULT)), TAK.load("deal", {}));
+S.seller = Object.assign({}, DEFAULT.seller, S.seller);
+let view = "mail";
+
+/* ---------- form binding ---------- */
+function get(path) { return path.split(".").reduce((o, k) => (o == null ? o : o[k]), S); }
+function set(path, v) { const ks = path.split("."); const last = ks.pop(); ks.reduce((o, k) => o[k], S)[last] = v; }
+function fillForm() {
+  document.querySelectorAll("#form [data-k]").forEach((el) => {
+    const v = get(el.dataset.k);
+    if (el.type === "checkbox") el.checked = !!v; else el.value = v == null ? "" : v;
+  });
+  document.getElementById("items").innerHTML = S.items.map((it, k) =>
+    `<tr data-i="${k}"><td><input data-f="model" value="${TAK.esc(it.model)}"></td><td><input data-f="qty" type="number" min="0" value="${it.qty}" style="width:60px"></td><td><input data-f="unit" type="number" min="0" value="${it.unit}" style="width:92px"></td></tr>`).join("");
+  document.getElementById("comp").innerHTML = S.comp.map((c, k) =>
+    `<tr data-c="${k}"><td><input data-f="name" value="${TAK.esc(c.name)}" placeholder="경쟁 제품 ${k + 1}"></td><td><input data-f="price" type="number" value="${c.price}" style="width:84px"></td><td><input data-f="src" value="${TAK.esc(c.src)}" placeholder="출처 URL·일자"></td></tr>`).join("");
+}
+document.getElementById("form").addEventListener("input", (e) => {
+  const el = e.target;
+  if (el.dataset.k) set(el.dataset.k, el.type === "checkbox" ? el.checked : el.value);
+  else if (el.dataset.f) {
+    const tr = el.closest("tr");
+    const row = tr.dataset.i != null ? S.items[+tr.dataset.i] : S.comp[+tr.dataset.c];
+    row[el.dataset.f] = el.type === "number" ? (el.value === "" ? "" : +el.value) : el.value;
+  }
+  render();
+});
+
+/* ---------- helpers ---------- */
+const SEA_ONLY = ["FAS", "FOB", "CFR", "CIF"];
+const NEEDS_FREIGHT = ["CFR", "CIF", "CPT", "CIP", "DAP"];
+const NEEDS_INS = ["CIF", "CIP"];
+const usd = (n) => TAK.fmtUSD(n, 2);
+function sub() { return S.items.reduce((a, it) => a + (+it.qty || 0) * (+it.unit || 0), 0); }
+function extra(inco) {
+  let f = NEEDS_FREIGHT.includes(inco) ? +S.freight || 0 : 0;
+  let i = NEEDS_INS.includes(inco) ? +S.ins || 0 : 0;
+  return { f, i };
+}
+function total(inco) { const x = extra(inco); return sub() + x.f + x.i; }
+function invInco() { return S.invInco || S.inco; }
+function invPay() { return S.invPay || S.pay; }
+function fmtDate(d) {
+  if (!d) return "–";
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+function words(n) {
+  const a = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN", "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"];
+  const b = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"];
+  const h = (x) => (x >= 100 ? a[Math.floor(x / 100)] + " HUNDRED" + (x % 100 ? " " : "") : "") + (x % 100 < 20 ? a[x % 100] : b[Math.floor((x % 100) / 10)] + (x % 10 ? "-" + a[x % 10] : ""));
+  n = Math.round(n);
+  if (!n) return "ZERO";
+  const parts = [];
+  [[1e6, "MILLION"], [1e3, "THOUSAND"], [1, ""]].forEach(([u, w]) => {
+    const q = Math.floor(n / u) % 1000;
+    if (q) parts.push(h(q) + (w ? " " + w : ""));
+  });
+  return parts.join(" ").trim();
+}
+function compStats() {
+  const v = S.comp.filter((c) => c.name && +c.price > 0);
+  if (!v.length) return null;
+  const avg = v.reduce((a, c) => a + +c.price, 0) / v.length;
+  return { v, avg, n: v.length, sourced: v.filter((c) => c.src).length };
+}
+function remarks() {
+  const cs = compStats();
+  const main = S.items[0];
+  let r = "";
+  if (cs) {
+    const diff = ((+main.unit - cs.avg) / cs.avg) * 100;
+    r = `Price basis: competitor prices ${cs.v.map((c) => `${c.name} USD ${(+c.price).toLocaleString()}`).join(", ")} (average USD ${Math.round(cs.avg).toLocaleString()}). ${main.model} is offered at USD ${(+main.unit).toLocaleString()}, ${Math.abs(diff).toFixed(0)}% ${diff <= 0 ? "below" : "above"} the competitor average. `;
+  } else {
+    r = `Price basis: our export price list. Competitor price comparison to be added. `;
+  }
+  return r + "Price, quantity, lead time and payment terms are assumed for simulation.";
+}
+function termsLine(inco) {
+  let t = `${inco} ${S.place} (Incoterms 2020)`;
+  if (inco === "EXW" && S.sellerClear) t += ", export customs clearance arranged by seller at buyer's cost";
+  return t;
+}
+
+/* ---------- documents ---------- */
+function emailText() {
+  const m = S.items[0], tr = S.items[1];
+  const p = S.pt;
+  const pts = [];
+  if (p.akl) pts.push(`- Registration support: we supply the documents your team needs for local ${S.reg} registration${PR.certs ? ", including " + PR.certs : ""}.`);
+  if (p.train) pts.push("- Clinical training: our specialists can train your clinic staff on-site or online after delivery.");
+  if (p.service) pts.push("- After-sales: spare-parts supply and remote technical support from our team in Korea.");
+  const subject = `Proposal: ${m.model} for ${S.buyer.co}`;
+  const body =
+`Dear ${S.buyer.sal},
+
+I am writing from ${S.seller.co}, a Korean medical device manufacturer${/13485/.test(PR.certs || "") ? " certified to ISO 13485:2016" : ""}.
+
+We understand ${S.buyer.co} ${S.market}, and we believe ${S.items[0].model} can strengthen your portfolio. ${S.pitch}
+
+For a first order, we propose ${m.qty} units of ${m.model}${tr && +tr.qty ? ` with ${tr.qty} × ${tr.model}` : ""} at USD ${(+m.unit).toLocaleString()} per unit, ${termsLine(S.inco).replace(", export customs clearance arranged by seller at buyer's cost", "")}, ${S.pay}, delivery ${S.lead}. Our quotation ${S.qno} is attached and valid for ${S.valid} days.
+${pts.length ? "\n" + pts.join("\n") + "\n" : ""}
+Could we schedule a 30-minute online meeting next week to discuss your clinic network and the registration plan?
+
+Best regards,
+${S.sender ? S.sender + "\n" : ""}${S.senderTitle}
+${S.seller.co} | ${S.seller.email} | ${S.seller.tel}`;
+  return { subject, body };
+}
+function wordCount(t) { return (t.match(/[A-Za-z0-9][A-Za-z0-9'’.,/%+-]*/g) || []).length; }
+
+function sheetHead(title, no, date) {
+  return `<span class="stamp">Assumed for simulation</span>
+  <div class="sh-top"><div><div class="co">${TAK.esc(S.seller.co)}</div><div class="small">${TAK.esc(S.seller.addr)}<br>Tel ${TAK.esc(S.seller.tel)} · ${TAK.esc(S.seller.email)}</div></div>
+  <div style="text-align:right" class="small"><b>No.</b> ${TAK.esc(no)}<br><b>Date</b> ${fmtDate(date)}</div></div>
+  <h2>${title}</h2>`;
+}
+function itemsTable(inco) {
+  const x = extra(inco);
+  let h = `<div class="tbl-wrap"><table><thead><tr><th>No.</th><th>Description</th><th>HS Code</th><th class="num">Q'ty</th><th class="num">Unit Price</th><th class="num">Amount</th></tr></thead><tbody>`;
+  S.items.forEach((it, k) => {
+    h += `<tr><td>${k + 1}</td><td><b>${TAK.esc(it.model)}</b><br><span class="muted">${TAK.esc(it.desc)}</span></td><td class="hs">${it.hs}</td><td class="num">${it.qty} set</td><td class="num">${usd(it.unit)}</td><td class="num">${usd((+it.qty || 0) * (+it.unit || 0))}</td></tr>`;
+  });
+  if (x.f) h += `<tr><td></td><td>Freight</td><td></td><td></td><td></td><td class="num">${usd(x.f)}</td></tr>`;
+  if (x.i) h += `<tr><td></td><td>Insurance</td><td></td><td></td><td></td><td class="num">${usd(x.i)}</td></tr>`;
+  h += `<tr class="tot"><td colspan="5">TOTAL · ${inco} ${TAK.esc(S.place)}</td><td class="num">${usd(total(inco))}</td></tr></tbody></table></div>`;
+  return h;
+}
+function mismatch(a, b) { return a !== b ? "bad" : ""; }
+
+function quoteDoc() {
+  return `<div class="sheet" data-doc="quote">${sheetHead("QUOTATION", S.qno, S.qdate)}
+  <div class="sh-grid"><div class="sh-box"><div class="k">Messrs.</div><b>${TAK.esc(S.buyer.co)}</b><br>Attn: ${TAK.esc(S.buyer.name)}, ${TAK.esc(S.buyer.title)}<br>${TAK.esc(S.buyer.addr)}</div>
+  <div class="sh-box"><div class="k">Validity</div>${S.valid} days from ${fmtDate(S.qdate)}<div class="k" style="margin-top:8px">Country of origin</div>Republic of Korea</div></div>
+  ${itemsTable(S.inco)}
+  <div class="terms">
+    <div>Delivery terms</div><div><span class="hl">${TAK.esc(termsLine(S.inco))}</span></div>
+    <div>Payment</div><div><span class="hl">${TAK.esc(S.pay)}</span></div>
+    <div>Lead time</div><div>${TAK.esc(S.lead)}</div>
+    <div>Packing</div><div>${TAK.esc(S.pack)}</div>
+    <div>Transport</div><div>${S.mode === "air" ? "By air" : "By sea"}</div>
+  </div>
+  <div class="remarks"><b>Remarks</b> · ${TAK.esc(remarks())}</div>
+  <div class="sign"><div>${TAK.esc(S.seller.co)}<br>Authorized signature</div></div></div>`;
+}
+function invDoc() {
+  const ii = invInco(), ip = invPay();
+  return `<div class="sheet" data-doc="inv">${sheetHead("COMMERCIAL INVOICE", S.ino, S.idate)}
+  <div class="sh-grid"><div class="sh-box"><div class="k">Shipper / Exporter</div><b>${TAK.esc(S.seller.co)}</b><br>${TAK.esc(S.seller.addr)}</div>
+  <div class="sh-box"><div class="k">Consignee</div><b>${TAK.esc(S.buyer.co)}</b><br>${TAK.esc(S.buyer.addr)}</div>
+  <div class="sh-box"><div class="k">Ref.</div>Quotation ${TAK.esc(S.qno)} · ${fmtDate(S.qdate)}</div>
+  <div class="sh-box"><div class="k">Shipment</div>From Korea to ${TAK.esc(S.dest)} · ${S.mode === "air" ? "By air" : "By sea"}</div></div>
+  ${itemsTable(ii)}
+  <p class="small" style="margin-top:8px"><b>SAY US DOLLARS ${words(total(ii))} ONLY.</b></p>
+  <div class="terms">
+    <div>Terms of delivery</div><div><span class="hl ${mismatch(ii, S.inco)}">${TAK.esc(termsLine(ii))}</span></div>
+    <div>Terms of payment</div><div><span class="hl ${mismatch(ip, S.pay)}">${TAK.esc(ip)}</span></div>
+    <div>Packing</div><div>${TAK.esc(S.pack)}</div>
+    <div>N.W. / G.W.</div><div>${TAK.esc(S.nw || "–")} kg / ${TAK.esc(S.gw || "TBD")} kg</div>
+    <div>Country of origin</div><div>Republic of Korea</div>
+  </div>
+  <div class="remarks">Assumed for simulation. Values and terms follow quotation ${TAK.esc(S.qno)}.</div>
+  <div class="sign"><div>${TAK.esc(S.seller.co)}<br>Signed by</div></div></div>`;
+}
+function mailDoc() {
+  const e = emailText();
+  const wc = wordCount(e.body);
+  return `<div class="sheet" data-doc="mail"><span class="stamp">Assumed for simulation</span>
+  <div class="mail-head"><div><span>To</span>${TAK.esc(S.buyer.name)} &lt;${TAK.esc(S.buyer.email)}&gt;</div><div><span>Subject</span><b>${TAK.esc(e.subject)}</b></div><div><span>Attach</span>${TAK.esc(S.qno)}.pdf · product brochure.pdf</div></div>
+  <div class="mail">${TAK.esc(e.body)}</div>
+  <div class="btns mt no-print"><span class="tag ${wc >= 150 && wc <= 250 ? "ok" : "warn"}"><span class="wc">${wc}</span>&nbsp;words · 목표 약 200</span><button class="btn sm" id="b-copy-mail">이메일 복사</button></div></div>`;
+}
+
+function render() {
+  TAK.save("deal", S);
+  const box = document.getElementById("docs");
+  box.innerHTML = view === "mail" ? mailDoc() : view === "quote" ? quoteDoc() : view === "inv" ? invDoc() : mailDoc() + quoteDoc() + invDoc();
+  const mb = document.getElementById("b-copy-mail");
+  if (mb) mb.onclick = () => { const e = emailText(); TAK.copy("Subject: " + e.subject + "\n\n" + e.body, "이메일을 복사했습니다"); };
+  document.getElementById("cost-row").classList.toggle("hide", !NEEDS_FREIGHT.includes(S.inco) && !NEEDS_FREIGHT.includes(invInco()));
+  document.getElementById("exw-clear").classList.toggle("hide", S.inco !== "EXW");
+  checks();
+}
+
+function checks() {
+  const rows = [
+    ["제품·수량", S.items.map((i) => i.model + "×" + i.qty).join(", "), S.items.map((i) => i.model + "×" + i.qty).join(", ")],
+    ["단가", S.items.map((i) => i.unit).join(" / "), S.items.map((i) => i.unit).join(" / ")],
+    ["Incoterms", S.inco, invInco()],
+    ["결제조건", S.pay, invPay()],
+    ["총액", usd(total(S.inco)), usd(total(invInco()))],
+  ];
+  document.getElementById("match").innerHTML = `<div class="h">항목</div><div class="h">Quotation ↔ Invoice</div><div class="h"></div>` +
+    rows.map(([k, a, b]) => `<div><b>${k}</b><br><span class="small muted">${TAK.esc(a)}</span></div><div class="small" style="text-align:right">${a === b ? "동일" : TAK.esc(b)}</div><div><span class="tag ${a === b ? "ok" : "warn"}">${a === b ? "✓" : "불일치"}</span></div>`).join("");
+
+  const ck = [];
+  const bad = rows.filter(([, a, b]) => a !== b);
+  ck.push(bad.length ? ["warn", `견적서와 인보이스가 다릅니다: ${bad.map((r) => r[0]).join(", ")}. 바이어가 가장 먼저 보는 실수예요.`] : ["pass", "견적서와 인보이스의 제품·수량·단가·Incoterms·결제조건이 같습니다."]);
+  [S.inco, invInco()].filter((v, k, a) => a.indexOf(v) === k).forEach((inc) => {
+    if (S.mode === "air" && SEA_ONLY.includes(inc)) ck.push(["warn", `${inc}는 해상 전용 조건입니다. 항공 출하면 ${inc === "FOB" ? "FCA Incheon" : inc === "CIF" ? "CIP" : inc === "CFR" ? "CPT" : "FCA"}가 맞습니다.`]);
+    if (NEEDS_FREIGHT.includes(inc) && !(+S.freight)) ck.push(["warn", `${inc}는 판매자가 운임을 부담합니다. 운임을 입력하세요.`]);
+    if (NEEDS_INS.includes(inc) && !(+S.ins)) ck.push(["warn", `${inc}는 판매자가 보험을 부보합니다. 보험료를 입력하세요.`]);
+  });
+  if (S.inco === "EXW") ck.push(["info", S.sellerClear ? "EXW + 판매자 수출통관 대행 문구가 들어 있어요." : "EXW는 수출통관도 바이어 몫이에요. 한국에서는 보통 판매자가 수출신고를 하니 '판매자 대행' 문구를 넣으세요."]);
+  if (S.inco === "FCA") ck.push(["info", "FCA는 정해진 장소(예: 인천공항 화물터미널)에서 바이어의 운송인에게 넘기면 끝나요. 첫 수출 항공 샘플 주문에 무난한 조건이에요."]);
+  const cs = compStats();
+  if (!cs || cs.n < 3) ck.push(["warn", `경쟁 제품 가격 ${cs ? cs.n : 0}/3개. 경쟁 가격 3개를 근거로 단가를 정하고 Remarks에 쓰면 바이어가 납득하기 쉬워요.`]);
+  else ck.push(cs.sourced < cs.n ? ["warn", "경쟁제품 가격 중 출처 없는 값이 있습니다."] : ["pass", `경쟁가 평균 USD ${Math.round(cs.avg).toLocaleString()} 기준으로 Remarks 작성됨`]);
+  const wc = wordCount(emailText().body);
+  ck.push(wc >= 150 && wc <= 250 ? ["pass", `이메일 ${wc}단어 (약 200단어 기준)`] : ["warn", `이메일 ${wc}단어. 약 200단어로 맞추세요.`]);
+  if (S.qdate && S.idate) {
+    const days = (new Date(S.idate) - new Date(S.qdate)) / 864e5;
+    if (days < 0) ck.push(["warn", "인보이스 날짜가 견적서보다 빠릅니다."]);
+    else if (days > +S.valid + 30) ck.push(["info", `견적일로부터 ${days}일 뒤 인보이스. 유효기간(${S.valid}일) 안에 주문됐다는 설정인지 확인하세요.`]);
+  }
+  if (new Set(S.items.map((i) => i.hs)).size === 1 && S.items.length > 1) ck.push(["info", "모든 품목을 같은 HS 코드로 적었어요. 부품·소모품·카트를 따로 신고하면 HS가 달라질 수 있으니 04 HS·인증에서 확인하세요."]);
+  if (!S.gw) ck.push(["info", "G.W.와 박스 치수가 미정입니다. 인보이스·패킹리스트에 채우세요."]);
+  ck.push(["pass", "세 문서 모두 'Assumed for simulation' 표시"]);
+  document.getElementById("checks").innerHTML = ck.map(([k, t]) => `<li class="${k}"><span class="ic">${k === "pass" ? "✓" : k === "warn" ? "!" : "i"}</span><span>${TAK.esc(t)}</span></li>`).join("");
+}
+
+document.getElementById("doc-tabs").onclick = (e) => {
+  if (!e.target.dataset.d) return;
+  view = e.target.dataset.d;
+  document.querySelectorAll("#doc-tabs button").forEach((b) => b.classList.toggle("on", b === e.target));
+  render();
+};
+document.getElementById("b-break").onclick = () => {
+  if (S.invInco) { S.invInco = ""; S.mode = "air"; TAK.toast("인보이스 조건을 견적서와 같게 되돌렸어요"); }
+  else { S.invInco = "FOB"; S.mode = "air"; TAK.toast("인보이스만 FOB로 바꿨어요. 오른쪽 검사를 보세요"); view = "all"; document.querySelectorAll("#doc-tabs button").forEach((b) => b.classList.toggle("on", b.dataset.d === "all")); }
+  fillForm(); render();
+};
+document.getElementById("b-reset").onclick = () => { if (confirm("입력값을 초기값으로 되돌릴까요?")) { S = JSON.parse(JSON.stringify(DEFAULT)); fillForm(); render(); } };
+document.getElementById("b-print").onclick = () => {
+  const target = view === "all" ? "quote" : view;
+  if (view === "all") { view = "quote"; render(); }
+  document.querySelectorAll(".sheet").forEach((s) => s.classList.toggle("print-on", s.dataset.doc === target));
+  window.print();
+};
+document.getElementById("b-prompt").onclick = () => {
+  const e = emailText();
+  const p = `아래는 ${S.dest} 의료기기 유통사에 보내는 첫 제안 이메일 초안이다. 영어 원어민 B2B 톤으로 다듬어 줘.
+규칙:
+- 200단어 안팎을 유지한다.
+- 제품명, 수량, 단가, Incoterms(${S.inco} ${S.place}), 결제조건(${S.pay}), 납기, 견적번호(${S.qno})는 한 글자도 바꾸지 마라. 견적서·인보이스와 일치해야 한다.
+- 인증은 우리가 실제로 가진 것(${PR.certs || "인증 목록"})만 언급한다. 없는 인증(FDA·CE 등)을 가진 것처럼 쓰지 마라.
+- 의학적 효과를 과장하지 마라.
+- 바꾼 문장과 이유를 표로 따로 보여줘.
+
+[초안]
+Subject: ${e.subject}
+
+${e.body}`;
+  TAK.promptModal("메일 다듬기 질문", p, "거래조건");
+};
+
+fillForm();
+render();
+</script>
+</body>
+</html>

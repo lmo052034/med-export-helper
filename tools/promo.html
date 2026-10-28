@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>홍보자료 만들기</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .out { border: 1px solid var(--line); border-radius: 12px; padding: 22px; font-size: 15px; line-height: 1.7; }
+  .out pre { white-space: pre-wrap; font-family: inherit; margin: 0; }
+  .out h3 { font-size: 13px; color: var(--accent-ink); margin: 14px 0 6px; }
+  .out h3:first-child { margin-top: 0; }
+  .scene { display: grid; grid-template-columns: 64px 1fr 1fr; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-size: 14px; }
+  .scene div { padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  .scene .h { background: var(--surface); font-weight: 700; font-size: 13px; color: var(--muted); }
+  .kw { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tools { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  @media (max-width: 720px) { .tools { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tools div { background: var(--surface); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+  .tools b { display: block; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div id="head"></div>
+
+  <div class="grid g-side">
+    <section>
+      <div class="tabs" id="otabs">
+        <button data-o="listing" class="on">바이코리아 상품 등록문</button>
+        <button data-o="sns">LinkedIn 게시물</button>
+        <button data-o="short">1분 영상 대본</button>
+      </div>
+      <div class="out" id="out"></div>
+      <section class="card mt"><h2>표현 점검</h2><ul class="checks mt" id="checks"></ul></section>
+      <section class="card soft mt">
+        <h2>AI무역지원센터에서 무료로 만들 수 있는 것</h2>
+        <p class="hint mb">사례집 03: 전국 20개 센터가 상용 AI로 홍보물을 무료 제작해요. 여기서 만든 글을 들고 가면 빨라요.</p>
+        <div class="tools"><div><b>상품 소개문</b>ChatGPT·Gemini (다국어)</div><div><b>홍보 이미지</b>Photoroom (모델·배경 합성)</div><div><b>e-카탈로그</b>Zeeditor</div><div><b>숏폼 영상</b>Runway</div></div>
+      </section>
+    </section>
+    <aside class="card sticky" id="form-wrap">
+      <div class="card-head"><div><h2>제품 정보</h2><p class="hint">영문으로 한 번만 쓰면 06 바이어·상담에서도 써요.</p></div></div>
+      <div id="form"></div>
+      <div class="btns"><button class="btn sm" id="b-sample">가상 예시</button><button class="btn sm" id="b-blank">비우기</button></div>
+    </aside>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+<script src="assets/product.js"></script>
+<script>
+TAK.head("promo.html",
+  "제품 정보를 한 번 쓰면 바이코리아 등록문, LinkedIn 게시물, 1분 영상 대본을 만들어 줍니다. 근거 없는 강점과 과장 표현은 바로 알려 줘요.",
+  [["이 페이지에서", "바이어에게 보여 줄 영문 홍보 글을 만듭니다."], ["준비물", "영문 카탈로그나 제품 설명서, 인증서"], ["다 하면", "바이코리아에 등록하고 06 바이어 찾기로 넘어가요."]],
+  `<button class="btn" id="b-prompt">현지어 번역 질문</button><button class="btn primary" id="b-copy">복사</button>`);
+
+let S = PROD.get(), tab = "listing";
+const certs = () => S.certs.split(",").map((s) => s.trim()).filter(Boolean);
+const usps = () => S.usps.filter((u) => u.t);
+const short2 = () => S.product.split(" ").slice(0, 2).join(" ");
+
+function listingText() {
+  return `${S.oneliner}.
+
+Key benefits
+${usps().map((u) => "- " + u.t).join("\n")}
+
+Certifications: ${certs().join(" · ")}
+Specifications: ${S.spec}
+HS code: ${S.hs}
+Trade terms: ${S.terms}
+Support: ${S.support}
+
+Contact: ${S.contact}`;
+}
+function listing() {
+  const kw = [...new Set((S.product + " " + S.oneliner).toLowerCase().match(/[a-z][a-z-]{3,}/g) || [])].filter((w) => !["with", "unit", "system", "and", "for", "device"].includes(w)).slice(0, 8);
+  return {
+    html: `<h3>상품명</h3><b>${TAK.esc(S.product.slice(0, 80))}</b><h3>검색 키워드</h3><div class="kw">${kw.map((k) => `<span class="tag">${k}</span>`).join("")}</div><h3>상품 설명</h3><pre>${TAK.esc(listingText())}</pre>
+    <p class="small muted mt">바이코리아는 제품 사진을 올리면 AI가 상품명·카테고리·설명을 자동으로 채워 줘요 (사례집 02-2). 자동 결과를 이 글로 고치면 됩니다.</p>`,
+    text: `Title: ${S.product}\nKeywords: ${kw.join(", ")}\n\n${listingText()}`,
+  };
+}
+function snsText() {
+  return `Looking for a reliable ${short2()} partner in ${S.country}?
+
+${S.oneliner}.
+
+${usps().map((u) => "✔ " + u.t).join("\n")}
+
+Certified: ${certs().join(", ")}.
+We are now meeting ${S.buyer} in ${S.country}. Message us for a product sheet and sample-order terms.
+
+${S.contact}
+#${S.country.replace(/\s/g, "")} #MedicalDevice #B2B #Export`;
+}
+function sns() { const t = snsText(); return { html: `<pre>${TAK.esc(t)}</pre>`, text: t }; }
+function short() {
+  const u = usps();
+  const rows = [
+    ["0–5초", `${short2()} 클로즈업`, `"${S.oneliner}."`],
+    ["5–20초", "제품 사용 장면", u[0] ? `"${u[0].t}."` : ""],
+    ["20–35초", "인증서·서류 화면", `"${certs().slice(0, 3).join(", ")}."`],
+    ["35–50초", "교육·A/S 장면", u[2] ? `"${u[2].t}."` : `"${S.support}."`],
+    ["50–60초", "로고 + 연락처", `"Sample orders for ${S.buyer} in ${S.country}. Contact ${S.contact}."`],
+  ];
+  return {
+    html: `<div class="scene"><div class="h">시간</div><div class="h">화면</div><div class="h">자막·내레이션</div>${rows.map((r) => r.map((c) => `<div>${TAK.esc(c)}</div>`).join("")).join("")}</div>
+    <p class="small muted mt">경상 AI무역지원센터는 '특장점 정리 → 1분 숏폼 → 바이어 발굴 → 화상상담'으로 73개사의 첫 수출을 도왔어요 (사례집 03). 효능을 약속하는 문구는 넣지 않았어요.</p>`,
+    text: rows.map((r) => r.join(" | ")).join("\n"),
+  };
+}
+
+let cur = { text: "" };
+function render() {
+  cur = { listing, sns, short }[tab]();
+  document.getElementById("out").innerHTML = cur.html;
+  TAK.checks(document.getElementById("checks"), PROD.risky(S, listingText() + "\n" + snsText()));
+}
+function fillForm() { PROD.form(document.getElementById("form"), S, render, ["company", "product", "oneliner", "country", "buyer", "certs", "usps", "spec", "terms", "support", "contact", "hs"]); }
+
+document.getElementById("otabs").onclick = (e) => { if (!e.target.dataset.o) return; tab = e.target.dataset.o; document.querySelectorAll("#otabs button").forEach((b) => b.classList.toggle("on", b === e.target)); render(); };
+document.getElementById("b-copy").onclick = () => TAK.copy(cur.text, "복사했어요");
+document.getElementById("b-sample").onclick = () => { S = JSON.parse(JSON.stringify(PROD.SAMPLE)); PROD.save(S); fillForm(); render(); };
+document.getElementById("b-blank").onclick = () => { S = JSON.parse(JSON.stringify(PROD.BLANK)); PROD.save(S); fillForm(); render(); };
+document.getElementById("b-prompt").onclick = () => TAK.promptModal("현지어 번역 질문", `아래 B2B 홍보 글을 ${S.country}에서 쓰는 언어로 번역해 줘.
+규칙:
+- 제품명, 모델명, 인증 이름, 숫자, 이메일은 바꾸지 마라.
+- 효능을 부풀리거나 새 주장을 넣지 마라.
+- 현지 병원·유통사 구매 담당자가 쓰는 자연스러운 존댓말로.
+- 번역 아래에 어색해서 바꾼 부분을 표로 보여 줘.
+
+[원문]
+${cur.text}`, "영문자료·홍보");
+
+fillForm();
+render();
+</script>
+</body>
+</html>

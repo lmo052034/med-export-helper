@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KOTRA AI 사례</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .pat { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .pat div { background: var(--surface); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+  .pat b { display: block; font-size: 14px; margin-bottom: 4px; }
+  .pat a { font-size: 12px; font-weight: 700; color: var(--accent-ink); }
+  .journey { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .stg { background: var(--dark-2); border-radius: 10px; padding: 12px; color: #dfe8e6; cursor: pointer; border: 2px solid transparent; }
+  .stg.on { border-color: var(--accent-2); }
+  .stg .g { font-size: 11px; color: #a9bab7; font-weight: 700; }
+  .stg .nm { font-weight: 800; font-size: 14px; margin: 2px 0 8px; color: #fff; }
+  .stg .tr { height: 7px; background: rgba(255,255,255,.12); border-radius: 99px; overflow: hidden; }
+  .stg .tr i { display: block; height: 100%; background: var(--accent-2); }
+  .stg .meta { display: flex; justify-content: space-between; font-size: 12px; margin-top: 6px; }
+  @media (max-width: 720px) { .journey { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0 12px; }
+  .filters button { font: inherit; font-size: 13px; font-weight: 700; padding: 7px 13px; border-radius: 99px; border: 1px solid var(--line-2); background: #fff; cursor: pointer; }
+  .filters button.on { background: var(--dark); color: #fff; border-color: var(--dark); }
+  .cases { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+  @media (max-width: 420px) { .cases { grid-template-columns: 1fr; } }
+  .case { display: flex; flex-direction: column; gap: 10px; scroll-margin-top: 80px; }
+  .case.hl { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(13,122,108,.15); }
+  .case .top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+  .case .no { font-size: 12px; font-weight: 800; color: var(--accent-ink); }
+  .case h2 { font-size: 17px; margin-top: 2px; }
+  .case .sub { font-size: 12.5px; color: var(--muted); }
+  .case .lbl { font-size: 11.5px; font-weight: 800; color: var(--muted); margin-bottom: 2px; }
+  .case p { font-size: 13px; margin: 0; }
+  .metrics { display: grid; gap: 6px; }
+  .metrics div { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: baseline; background: var(--surface); border-radius: 8px; padding: 7px 10px; }
+  .metrics b { font-size: 14.5px; color: var(--dark); white-space: nowrap; }
+  .metrics span { font-size: 12px; color: var(--ink-2); }
+  .todo-box { background: var(--accent-soft); border-radius: 8px; padding: 9px 11px; }
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; }
+  .chip { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line-2); text-decoration: none; color: var(--ink); }
+  .chip.y { background: var(--accent-soft); border-color: transparent; color: var(--accent-ink); }
+  .chip.p { background: var(--hot-soft); border-color: transparent; color: var(--hot-ink); }
+  .chip.n { background: var(--dark); border-color: var(--dark); color: #fff; }
+  .case .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="page-head">
+    <div>
+      <div class="step-badge"><b>+</b>KOTRA AI 활용 우수사례집 2025<span>· 사례 11개 (세부 14건)</span></div>
+      <h1>KOTRA 사례로 보는 수출 준비</h1>
+      <p class="sub">2025 KOTRA AI 활용 우수사례집의 사례를 문제 → AI 방식 → 성과로 정리하고, 각 사례를 우리 회사가 할 일과 이 도우미의 페이지에 연결했어요. 점검 상태는 <a href="readiness.html">01 수출 준비 진단</a>에 입력한 값을 그대로 보여 줍니다.</p>
+    </div>
+    <div class="btns no-print">
+      <button class="btn" id="b-copy">사례 요약 복사</button>
+      <a class="btn primary" href="readiness.html">01 진단으로</a>
+    </div>
+  </div>
+
+  <section class="card mb">
+    <div class="card-head"><div><h2>사례집에서 반복되는 원칙 5가지</h2><p class="hint">이 도우미도 같은 원칙으로 만들었어요.</p></div></div>
+    <div class="pat" id="pat"></div>
+  </section>
+
+  <section class="card soft">
+    <div class="card-head"><div><h2>AI 수출비서의 8단계 수출 여정 × 우리 준비 상태</h2><p class="hint" id="jhint"></p></div></div>
+    <div class="journey" id="journey"></div>
+  </section>
+
+  <div class="filters no-print" id="filters"></div>
+  <div class="cases" id="cases"></div>
+
+  <p class="small muted mt" id="src"></p>
+</main>
+
+<script src="assets/app.js"></script>
+<script src="assets/criteria.js"></script>
+<script src="assets/cases.js"></script>
+<script>
+const { CASES, PATTERNS, SRC } = KCASES;
+const { C, STAGES, STATUS, SAMPLE } = CRIT;
+const P = TAK.profile();
+const R = TAK.load("ready", null) || (P.sample ? SAMPLE : { s: {} });
+const st = (id) => (R.s[id] && R.s[id][0]) || "";
+let filter = "all", stage = 0;
+
+function pct(ids) {
+  let got = 0, max = 0;
+  ids.forEach((id) => { const c = C.find((x) => x.id === id), v = STATUS[st(id)].v; if (!c || v === null) return; max += c.w; got += c.w * v; });
+  return max ? Math.round((got / max) * 100) : 0;
+}
+
+document.getElementById("pat").innerHTML = PATTERNS.map(([t, d, k]) => `<div><b>${t}</b>${d}<br><a href="#${k}" data-jump="${k}">사례 ${CASES.find((c) => c.id === k).no} →</a></div>`).join("");
+document.getElementById("jhint").textContent = `${P.company || "우리 회사"} · ${P.product || ""} 기준. 단계를 누르면 그 단계 사례만 봅니다.`;
+document.getElementById("src").textContent = "출처: " + SRC + ". 수치는 사례집 표기 그대로이며, 서비스 신청 조건·운영 기간은 KOTRA 무역투자24에서 다시 확인하세요.";
+
+function renderJourney() {
+  document.getElementById("journey").innerHTML = STAGES.map((s) => {
+    const p = pct(s.ids), nk = CASES.filter((c) => c.stage.includes(s.n)).length;
+    return `<div class="stg ${stage === s.n ? "on" : ""}" data-st="${s.n}"><div class="g">${s.n} · ${s.g}</div><div class="nm">${s.name}</div><div class="tr"><i style="width:${p}%"></i></div><div class="meta"><span>기준 ${s.ids.length} · 사례 ${nk}</span><b>${p}%</b></div></div>`;
+  }).join("");
+}
+
+function renderFilters() {
+  const f = [["all", "전체"], ["direct", "기업이 직접 이용"], ["method", "방식만 따라 하기"]];
+  document.getElementById("filters").innerHTML = f.map(([k, l]) => `<button data-f="${k}" class="${filter === k ? "on" : ""}">${l}</button>`).join("") +
+    (stage ? `<button data-clr="1">단계 ${stage} 해제 ✕</button>` : "");
+}
+
+function chip(id) {
+  const c = C.find((x) => x.id === id), s = st(id);
+  return `<a class="chip ${s}" href="readiness.html#${id}" title="${TAK.esc(c.t)} · ${STATUS[s].label}">${id} ${STATUS[s].label}</a>`;
+}
+
+function renderCases() {
+  const list = CASES.filter((c) => (filter === "all" || c.use === filter) && (!stage || c.stage.includes(stage)));
+  document.getElementById("cases").innerHTML = list.map((c) => `<article class="card case" id="${c.id}">
+    <div class="top"><div><div class="no">사례 ${c.no} · p.${c.p}</div><h2>${c.title}</h2><div class="sub">${c.sub}</div></div>
+    <span class="tag ${c.use === "direct" ? "ok" : "info"}">${c.use === "direct" ? "직접 이용" : "방식 차용"}</span></div>
+    <div><div class="lbl">문제</div><p>${c.problem}</p></div>
+    <div><div class="lbl">AI 방식</div><p>${c.ai}</p></div>
+    <div><div class="lbl">성과 (사례집 수치)</div><div class="metrics">${c.result.map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join("")}</div></div>
+    <div class="todo-box"><div class="lbl" style="color:var(--accent-ink)">우리 기업이 할 일</div><p>${c.todo}</p></div>
+    <div class="foot"><div class="chips">${c.crit.map(chip).join("")}</div>${c.tool ? `<a class="btn sm" href="${c.tool[0]}">${c.tool[1]} →</a>` : ""}</div>
+  </article>`).join("") || `<p class="hint">조건에 맞는 사례가 없습니다.</p>`;
+}
+
+function render() { renderJourney(); renderFilters(); renderCases(); }
+
+document.getElementById("journey").onclick = (e) => { const t = e.target.closest("[data-st]"); if (!t) return; stage = stage === +t.dataset.st ? 0 : +t.dataset.st; render(); };
+document.getElementById("filters").onclick = (e) => { if (e.target.dataset.f) filter = e.target.dataset.f; if (e.target.dataset.clr) stage = 0; render(); };
+function jump(id) {
+  filter = "all"; stage = 0; render();
+  const el = document.getElementById(id); if (!el) return;
+  el.classList.add("hl"); el.scrollIntoView({ behavior: "smooth", block: "start" });
+  setTimeout(() => el.classList.remove("hl"), 2000);
+}
+document.getElementById("pat").onclick = (e) => { const k = e.target.dataset.jump; if (k) { e.preventDefault(); jump(k); } };
+document.getElementById("b-copy").onclick = () => TAK.copy(CASES.map((c) => `[사례 ${c.no}] ${c.title}\n문제: ${c.problem}\n성과: ${c.result.map((r) => r.join(" ")).join(" / ")}\n할 일: ${c.todo}\n관련 기준: ${c.crit.join(", ")}`).join("\n\n") + "\n\n출처: " + SRC, "사례 요약을 복사했습니다");
+
+render();
+if (location.hash) setTimeout(() => jump(location.hash.slice(1)), 50);
+</script>
+</body>
+</html>

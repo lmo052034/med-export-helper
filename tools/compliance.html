@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HS·관세·인증 확인</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .hs-steps { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .hs-steps li { position: relative; padding: 8px 0 12px 40px; border-left: 2px solid var(--line); margin-left: 13px; font-size: 14.5px; }
+  .hs-steps li::before { counter-increment: s; content: counter(s); position: absolute; left: -14px; top: 7px; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; display: grid; place-items: center; font-size: 13px; }
+  .hs-steps b { display: block; font-size: 15px; }
+  .code { font-weight: 800; font-size: 24px; }
+  .rate { width: 90px; }
+  .best td { background: var(--accent-soft); }
+  .g-row { display: grid; grid-template-columns: 230px 1fr; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .g-row .lbl b { display: block; font-size: 14.5px; }
+  .g-track { position: relative; height: 20px; background: var(--surface); border-radius: 6px; }
+  .g-bar { position: absolute; top: 3px; height: 14px; border-radius: 5px; background: var(--accent); }
+  .g-bar.rng { background: #9fd8cc; }
+  .g-ed { display: flex; gap: 4px; align-items: center; margin-top: 4px; }
+  .g-ed input { width: 56px; padding: 3px 6px; font-size: 13px; }
+  .g-axis { display: grid; grid-template-columns: 230px 1fr; gap: 12px; font-size: 12px; color: var(--muted); }
+  .g-axis div:last-child { display: flex; justify-content: space-between; }
+  @media (max-width: 640px) { .g-row, .g-axis { grid-template-columns: 1fr; } .g-axis div:first-child { display: none; } }
+  .links { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .links a { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; border-radius: 9px; background: var(--surface); text-decoration: none; font-size: 14.5px; font-weight: 600; color: var(--ink); }
+  .links a span { color: var(--muted); font-weight: 500; font-size: 13px; text-align: right; }
+  mark { background: #f6dfa9; color: var(--ink); border-radius: 3px; padding: 0 2px; }
+  .cmp td:first-child { white-space: nowrap; font-weight: 700; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div id="head"></div>
+
+  <div class="grid g2">
+    <section class="card">
+      <h2>① HS 코드 정하기</h2>
+      <p class="hint mb">세금과 서류가 모두 이 번호로 정해져요. AI 답은 '후보'로만 쓰세요.</p>
+      <div class="row">
+        <div class="field"><label>HS 6자리</label><input id="hs" placeholder="예: 9018.90"></div>
+        <div class="field"><label>어떻게 확인했나요?</label><select id="hs-how"><option value="">아직 확인 전</option><option>수출신고필증</option><option>관세평가분류원 품목분류 사전심사</option><option>UNI-PASS 세번 조회</option><option>관세사 확인</option></select></div>
+      </div>
+      <ol class="hs-steps">
+        <li><b>류(2자리) 고르기</b>의료기기는 대부분 제90류(광학·측정·의료용 기기)예요.</li>
+        <li><b>호(4자리) 비교하기</b>아래 '헷갈리는 호' 표에서 우리 제품의 원리·용도와 맞는 호를 고르고, 맞지 않는 호는 왜 아닌지 한 줄씩 적어요.</li>
+        <li><b>6자리 확정하기</b>수출신고필증이 있으면 그 번호가 가장 확실해요. 처음이면 관세평가분류원 사전심사나 관세사에게 확인받아요.</li>
+      </ol>
+      <div class="tbl-wrap mt"><table class="cmp"><thead><tr><th>헷갈리는 호</th><th>무엇이 들어가나</th></tr></thead><tbody>
+        <tr><td>9018</td><td>내과·외과·치과·수의과용 기기 (전기 진단기기 포함)</td></tr>
+        <tr><td>9019</td><td>기계요법·마사지 기기, 호흡 치료기</td></tr>
+        <tr><td>9021</td><td>정형외과용 기기, 인공 신체 부분, 보청기</td></tr>
+        <tr><td>9022</td><td>X선·방사선을 쓰는 기기</td></tr>
+        <tr><td>9402</td><td>의료용 가구 (수술대, 진료 의자, 카트 등)</td></tr>
+      </tbody></table></div>
+      <p class="small muted mt">호의 범위는 관세법령정보포털·UNI-PASS의 호 해설 원문으로 확인하세요.</p>
+    </section>
+
+    <section class="card">
+      <h2>② 관세 비교</h2>
+      <p class="hint mb">일반 세율(MFN)과 FTA 세율을 따로 적고, 공식 사이트에서 확인한 줄에 체크하세요.</p>
+      <div class="tabs" id="tabs"></div>
+      <div class="row">
+        <div class="field"><label>수입국 세번 (8–10자리)</label><input id="tl" placeholder="수입국 관세율표에서 조회"></div>
+        <div class="field"><label>확인 자료</label><input id="tl-src" placeholder="관세율표 이름·조회일"></div>
+      </div>
+      <div class="tbl-wrap"><table id="fta"></table></div>
+      <p class="small mt"><span class="tag" id="best-tag"></span> <span class="muted" id="fta-note"></span></p>
+    </section>
+  </div>
+
+  <section class="card mt">
+    <div class="card-head">
+      <div><h2>③ 의료기기 인허가 일정</h2><p class="hint">단계별 기간은 추정값이에요. 규제기관 자료나 대행사 견적으로 고치면 전체 일정이 다시 계산돼요.</p></div>
+      <div style="text-align:right"><div class="code" id="total">–</div><span class="small muted">첫 판매까지 예상</span></div>
+    </div>
+    <div class="banner" id="ce-banner"></div>
+    <div class="g-axis"><div></div><div id="axis"></div></div>
+    <div id="gantt"></div>
+  </section>
+
+  <div class="grid g2 mt">
+    <section class="card">
+      <h2>④ AI 답 검사</h2>
+      <p class="hint mb">ChatGPT 답을 붙여 넣으면 꼭 확인해야 할 부분(숫자·세율·HS·인증·법)에 표시하고, 어디서 확인하는지 알려 줘요.</p>
+      <div class="field"><label>AI에게 한 질문</label><textarea id="v-prompt" placeholder="ChatGPT에 보낸 질문"></textarea></div>
+      <div class="field"><label>AI 답</label><textarea id="v-ai" style="min-height:110px" placeholder="예: 인도네시아는 HS 9018.90에 5% 관세를 부과하며, CE 인증이 있어야 AKL 등록이 가능합니다."></textarea></div>
+      <button class="btn primary" id="v-run">검사하기</button>
+      <div id="v-out" class="mt"></div>
+    </section>
+    <section class="card">
+      <h2>공식 확인처</h2>
+      <p class="hint mb">AI 답은 여기서 확인해요. 확인한 화면은 캡처해 두세요.</p>
+      <ul class="links" id="links"></ul>
+      <h2 class="mt">점검</h2>
+      <ul class="checks mt" id="checks"></ul>
+    </section>
+  </div>
+</main>
+
+<script src="assets/app.js"></script>
+<script>
+TAK.head("compliance.html",
+  "고른 나라에 팔려면 무엇이 필요한지 확인합니다. HS 코드 → 관세 → 의료기기 인허가 순서로, AI 답을 공식자료와 맞춰 보는 검사기도 함께 있어요.",
+  [["이 페이지에서", "HS 코드, 관세, 인허가 기간을 정리합니다."], ["준비물", "제품 설명서, 식약처 허가증, (있으면) 수출신고필증"], ["다 하면", "'요약 복사'로 정리하고 05 홍보자료로 넘어가요."]],
+  `<button class="btn" id="b-prompt">이 나라 조사 질문</button><button class="btn primary" id="b-copy">요약 복사</button>`);
+
+const P = TAK.profile();
+// 나라별 기본 정보 (공개 제도 기준). 목록에 없는 나라는 '다른 나라' 틀을 씁니다
+const KNOWN_C = {
+  인도네시아: {
+    fta: [["mfn", "일반 세율 (MFN)", "불필요"], ["cepa", "한-인니 CEPA", "IK-CEPA 원산지증명서"], ["akfta", "한-아세안 FTA", "Form AK"], ["rcep", "RCEP", "RCEP 원산지증명서"]],
+    note: "협정마다 세율이 다를 수 있어요. 가장 낮은 세율과 그 협정의 원산지 기준을 FTA 포털에서 함께 확인하세요.",
+    ce: [false, "<b>CE는 필수가 아니에요.</b> AKL(보건부 의료기기 판매허가)은 현지 유통사가 식약처 허가·ISO 13485 등으로 신청해요. 해외 인증이 있으면 심사·병원 구매에 도움이 됩니다."],
+    steps: [["현지 유통사 정하기 · 위임장(LoA)", "의료기기 유통 허가를 가진 회사", 0.5, 1], ["서류 준비", "식약처 허가증·자유판매증명, ISO 13485, 기술문서, 인니어 라벨", 1, 2], ["AKL 신청·심사", "등급에 따라 기간이 달라요", 2, 6], ["할랄 규정 대상인지 확인", "의료기기 단계적 의무화", 0, 1, true], ["첫 선적 · 수입통관", "거래조건에 따라 책임이 나뉘어요", 0.5, 1]],
+    links: [["INSW · 인도네시아 관세율", "https://www.insw.go.id/", "세번·세율"], ["Regalkes · 보건부 의료기기 등록", "https://regalkes.kemkes.go.id/", "AKL·등급"]],
+  },
+  일본: {
+    fta: [["mfn", "일반 세율 (MFN)", "불필요"], ["rcep", "RCEP", "RCEP 원산지증명서"]],
+    note: "일반 세율이 이미 낮으면 원산지증명서를 준비할 이유가 줄어요. 두 세율을 모두 확인하세요.",
+    ce: [false, "<b>CE는 필요 없지만 일정이 길어요.</b> 일본 내 제조판매업자(MAH)와 등급별 인증·승인이 필요해서 1년 넘게 걸릴 수 있어요."],
+    steps: [["일본 제조판매업자(MAH) 정하기", "현지 파트너가 허가 주체", 1, 3], ["외국제조업자 등록", "PMDA", 1, 3, true], ["인증(RCB) 또는 PMDA 승인", "등급·기준에 따라 경로가 달라요", 6, 18], ["QMS 적합성 조사", "심사와 함께 진행", 3, 6, true], ["판매 시작", "보험 적용은 따로 확인", 0.5, 1]],
+    links: [["Japan Customs · 실행관세율표", "https://www.customs.go.jp/english/tariff/", "세번·세율"], ["PMDA (영문)", "https://www.pmda.go.jp/english/", "인증·승인 절차"]],
+  },
+  홍콩: {
+    fta: [["free", "무관세 (자유항)", "불필요", 0]],
+    note: "홍콩은 일반 수입관세가 없어요. 대신 의료기기 등재(MDACS)가 핵심이에요.",
+    ce: [true, "<b>해외 승인 서류가 중요해요.</b> MDACS는 자율 등재이고 현지 책임자(LRP)가 필요해요. 한국 식약처 허가를 인정 자료로 쓸 수 있는지 홍콩 의료기기과(MDD) 안내로 확인하세요."],
+    steps: [["해외 승인 서류 정리", "식약처 허가, CE·FDA 등 보유한 것", 0.5, 1], ["현지 책임자(LRP) 정하기", "현지 유통사가 맡는 경우가 많아요", 0.5, 1, true], ["MDACS 등재 신청·심사", "등급별 요건 확인", 3, 6], ["판매 시작", "수입관세 없음", 0.5, 1]],
+    links: [["홍콩 위생서 의료기기과 (MDD)", "https://www.mdd.gov.hk/", "MDACS 요건"], ["Hong Kong Customs", "https://www.customs.gov.hk/", "관세 없음 확인"]],
+  },
+};
+const GENERIC = {
+  fta: [["mfn", "일반 세율 (MFN)", "불필요"], ["fta1", "FTA·협정 1", "협정별 원산지증명서"], ["fta2", "FTA·협정 2", "협정별 원산지증명서"]],
+  note: "FTA 포털에서 이 나라와 맺은 협정을 찾아 세율을 비교하세요.",
+  ce: [false, "<b>나라마다 달라요.</b> 01 수출 준비 진단의 인증·규제 문항(D1–D7)을 먼저 확인하고, 아래 기간을 규제기관 자료로 고치세요."],
+  steps: [["현지 파트너·등록 명의자 정하기", "유통사·수입자·현지 대리인", 1, 2], ["서류 준비", "식약처 허가, ISO 13485, 기술문서, 현지어 라벨", 1, 3], ["인허가 신청·심사", "제도·등급에 따라 달라요", 3, 12], ["특수 규정 확인", "전원·전파·할랄 등", 0.5, 2, true], ["첫 선적 · 수입통관", "거래조건에 따라 책임 구분", 0.5, 1]],
+  links: [["WTO Tariff & Trade Data", "https://ttd.wto.org/", "나라별 일반 세율"]],
+};
+const COMMON_LINKS = [
+  ["UNI-PASS · 관세청", "https://unipass.customs.go.kr/", "HS 세번·수출신고"],
+  ["FTA 포털 · 관세청", "https://www.customs.go.kr/ftaportalkor/main.do", "협정 세율·원산지 기준"],
+  ["식약처 의료기기 전자민원", "https://emedi.mfds.go.kr/", "국내 허가 확인"],
+  ["KOTRA 해외시장뉴스", "https://dream.kotra.or.kr/", "나라별 인증·규제 정보"],
+  ["FDA 510(k) DB", "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm", "미국 허가 여부"],
+];
+
+const mk = TAK.load("market", null);
+const names = (mk && mk.names && Object.keys(mk.names).length ? ["c1", "c2", "c3"].map((k) => mk.names[k]).filter(Boolean) : (P.countries || "").split(/[,·]/).map((s) => s.trim()).filter(Boolean));
+const COUNTRIES = [...new Set([...(names.length ? names : ["인도네시아", "일본", "홍콩"]), "다른 나라"])];
+const info = (c) => KNOWN_C[c] || GENERIC;
+
+let S = TAK.load("compliance", null) || { c: COUNTRIES[0], hs: P.hs || "", how: "", by: {} };
+if (!COUNTRIES.includes(S.c)) S.c = COUNTRIES[0];
+function cs() {
+  const k = S.c;
+  if (!S.by[k]) S.by[k] = { tl: "", tlSrc: "", fta: {}, steps: info(k).steps.map((s) => ({ a: s[2], b: s[3] })) };
+  return S.by[k];
+}
+
+document.getElementById("tabs").innerHTML = COUNTRIES.map((c) => `<button data-c="${TAK.esc(c)}">${TAK.esc(c)}</button>`).join("");
+document.getElementById("tabs").onclick = (e) => { if (e.target.dataset.c) { S.c = e.target.dataset.c; render(); } };
+document.getElementById("hs").value = S.hs;
+document.getElementById("hs-how").value = S.how;
+document.getElementById("hs").oninput = (e) => { S.hs = e.target.value; update(); };
+document.getElementById("hs-how").onchange = (e) => { S.how = e.target.value; update(); };
+
+function render() {
+  const I = info(S.c), st = cs();
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.c === S.c));
+  document.getElementById("tl").value = st.tl;
+  document.getElementById("tl-src").value = st.tlSrc;
+  document.getElementById("fta").innerHTML = "<thead><tr><th>세율 종류</th><th>세율 %</th><th>원산지 서류</th><th>확인</th></tr></thead><tbody>" +
+    I.fta.map(([id, name, co, fixed]) => {
+      const x = st.fta[id] || (st.fta[id] = { r: fixed != null ? fixed : "", ok: fixed != null });
+      return `<tr data-f="${id}"><td><b>${name}</b></td><td><input class="rate" type="number" step="any" placeholder="후보" value="${x.r}" ${fixed != null ? "disabled" : ""}></td><td class="small">${co}</td><td><input type="checkbox" ${x.ok ? "checked" : ""}></td></tr>`;
+    }).join("") + "</tbody>";
+  document.getElementById("fta-note").textContent = I.note;
+  const ce = document.getElementById("ce-banner");
+  ce.className = "banner " + (I.ce[0] ? "" : "ok");
+  ce.innerHTML = `<span>${I.ce[0] ? "!" : "✓"}</span><div>${I.ce[1]}</div>`;
+  document.getElementById("links").innerHTML = [...I.links, ...COMMON_LINKS].map(([n, u, d]) => `<li><a href="${u}" target="_blank" rel="noopener">${n}<span>${d}</span></a></li>`).join("");
+  update();
+}
+
+function timeline() {
+  const I = info(S.c), st = cs();
+  let curA = 0, curB = 0, pA = 0, pB = 0;
+  const rows = I.steps.map((s, k) => {
+    const v = st.steps[k], par = s[4];
+    const sa = par ? pA : curA, sb = par ? pB : curB, ea = sa + +v.a, eb = sb + +v.b;
+    if (!par) { pA = sa; pB = sb; }
+    curA = Math.max(curA, ea); curB = Math.max(curB, eb);
+    return { s, v, sa, ea, eb, par };
+  });
+  return { rows, a: curA, b: curB };
+}
+const fmtM = (n) => Math.round(n * 10) / 10;
+
+function update() {
+  TAK.save("compliance", S);
+  const I = info(S.c), st = cs();
+  const vals = I.fta.map(([id, name]) => ({ id, name, x: st.fta[id] })).filter(({ x }) => x && x.r !== "" && !isNaN(+x.r));
+  const best = vals.slice().sort((a, b) => +a.x.r - +b.x.r)[0];
+  document.querySelectorAll("#fta tr[data-f]").forEach((tr) => tr.classList.toggle("best", !!best && tr.dataset.f === best.id));
+  const bt = document.getElementById("best-tag");
+  bt.className = "tag " + (best ? (best.x.ok ? "ok" : "warn") : "");
+  bt.textContent = best ? `가장 낮은 세율 ${best.x.r}% · ${best.name}${best.x.ok ? "" : " (확인 전)"}` : "세율을 넣어 주세요";
+
+  const t = timeline(), max = Math.max(6, Math.ceil(t.b / 3) * 3);
+  document.getElementById("total").textContent = `${fmtM(t.a)}–${fmtM(t.b)}개월`;
+  document.getElementById("axis").innerHTML = Array.from({ length: max / 3 + 1 }, (_, k) => `<span>${k * 3}</span>`).join("");
+  document.getElementById("gantt").innerHTML = t.rows.map((r, k) => `<div class="g-row"><div class="lbl"><b>${r.s[0]}${r.par ? ' <span class="tag info">동시에</span>' : ""}</b><span class="muted small">${r.s[1]}</span>
+    <div class="g-ed" data-k="${k}"><input type="number" min="0" step="0.5" value="${r.v.a}" data-e="a">–<input type="number" min="0" step="0.5" value="${r.v.b}" data-e="b"><span class="small muted">개월 (추정)</span></div></div>
+    <div class="g-track"><div class="g-bar" style="left:${(r.sa / max) * 100}%;width:${Math.max(0.6, ((r.ea - r.sa) / max) * 100)}%"></div><div class="g-bar rng" style="left:${(r.ea / max) * 100}%;width:${Math.max(0, ((r.eb - r.ea) / max) * 100)}%"></div></div></div>`).join("");
+
+  const allOk = I.fta.every(([id]) => st.fta[id] && st.fta[id].ok && st.fta[id].r !== "");
+  TAK.checks(document.getElementById("checks"), [
+    [S.hs && S.how ? "pass" : "warn", S.hs ? `HS ${S.hs} · ${S.how || "공식 확인 전"}` : "HS 6자리를 아직 정하지 않았어요"],
+    [st.tl ? "pass" : "warn", st.tl ? `${S.c} 세번 ${st.tl}` : `${S.c} 관세율표에서 8–10자리 세번을 찾아 적으세요`],
+    [allOk ? "pass" : "warn", allOk ? "일반 세율과 FTA 세율 모두 확인했어요" : "확인하지 않은 세율이 있어요"],
+    ["info", `인허가까지 약 ${fmtM(t.a)}–${fmtM(t.b)}개월 (추정). 규제기관 안내나 대행사 견적으로 바꾸세요.`],
+    ["info", "한국 관세율표(한국으로 들여올 때 세율)와 수입국 세율을 섞지 않았는지 확인하세요."],
+  ]);
+}
+
+document.getElementById("tl").oninput = (e) => { cs().tl = e.target.value; update(); };
+document.getElementById("tl-src").oninput = (e) => { cs().tlSrc = e.target.value; update(); };
+document.getElementById("fta").addEventListener("input", (e) => {
+  const tr = e.target.closest("tr"); if (!tr) return;
+  const x = cs().fta[tr.dataset.f];
+  if (e.target.type === "checkbox") x.ok = e.target.checked; else x.r = e.target.value;
+  update();
+});
+document.getElementById("gantt").addEventListener("change", (e) => {
+  const ed = e.target.closest(".g-ed"); if (!ed) return;
+  const v = cs().steps[+ed.dataset.k];
+  v[e.target.dataset.e] = Math.max(0, +e.target.value || 0);
+  if (v.b < v.a) v.b = v.a;
+  update();
+});
+
+/* AI 답 검사 */
+const RULES = [
+  { k: "HS 코드", re: /\b\d{4}\.\d{2}(?:[.\-]?\d{2,4})*\b|HS ?코드|세번/gi, where: "UNI-PASS 세번 조회, 수출신고필증, 수입국 관세율표" },
+  { k: "세율·관세", re: /\d+(?:\.\d+)?\s?%|관세|세율|duty|tariff/gi, where: "수입국 관세청 관세율표, FTA 포털" },
+  { k: "FTA·원산지", re: /FTA|CEPA|RCEP|원산지|Form ?AK|PSR/gi, where: "FTA 포털 (협정 세율·원산지 기준)" },
+  { k: "인증·허가", re: /\bCE\b|FDA|510\(k\)|PMDA|AKL|MDACS|인증|허가|등록|등급|\bClass\b/gi, where: "수입국 규제기관, 식약처, 회사 인증서" },
+  { k: "시장 숫자", re: /USD|\$\s?\d|억|백만|million|billion|점유율|증가율|시장 ?규모/gi, where: "UN Comtrade, ITC Trade Map, K-stat, KOTRA" },
+  { k: "법·규정", re: /법률|법령|규정|의무화?|\bregulations?\b|\blaw\b|decree/gi, where: "수입국 정부 원문, KOTRA 해외시장뉴스" },
+];
+const KNOWN = [
+  { re: /AKL[^.。\n]{0,30}\bCE\b|\bCE\b[^.。\n]{0,30}(있어야|필수|required)[^.。\n]{0,20}AKL/i, msg: "인도네시아 AKL은 CE가 필수 조건이 아니에요. 원산국 허가(식약처)·ISO 13485 등으로 신청해요 (Regalkes에서 확인)." },
+  { re: /한국[^.。\n]{0,15}관세율|HSK[^.。\n]{0,20}\d+\s?%/, msg: "한국 관세율표 세율은 한국으로 들여올 때의 세율이에요. 수출할 때는 수입국 관세율표를 봐야 해요." },
+  { re: /\bFOB\b[^.。\n]{0,30}(항공|air)|(항공|air)[^.。\n]{0,30}\bFOB\b/i, msg: "FOB는 배(해상) 전용 조건이에요. 항공이면 FCA가 맞아요." },
+];
+document.getElementById("v-run").onclick = () => {
+  const txt = document.getElementById("v-ai").value.trim(), out = document.getElementById("v-out");
+  if (!txt) { out.innerHTML = "<p class='muted small'>AI 답을 붙여 넣어 주세요.</p>"; return; }
+  const hits = RULES.map((r) => ({ r, m: [...new Set((txt.match(r.re) || []).map((s) => s.trim()))] })).filter((x) => x.m.length);
+  const known = KNOWN.filter((k) => k.re.test(txt));
+  let marked = TAK.esc(txt);
+  RULES.forEach((r) => (marked = marked.replace(new RegExp(r.re.source, r.re.flags), (m) => `<mark>${m}</mark>`)));
+  out.innerHTML = (known.length ? `<div class="banner"><span>!</span><div><b>자주 나오는 오답과 비슷해요.</b><br>${known.map((k) => TAK.esc(k.msg)).join("<br>")}</div></div>` : "") +
+    `<div class="small mb" style="background:var(--surface);padding:10px 12px;border-radius:9px">${marked}</div>` +
+    (hits.length ? `<ul class="checks">${hits.map(({ r, m }) => `<li class="warn"><span class="ic">!</span><span><b>${r.k}</b> · ${TAK.esc(m.slice(0, 5).join(", "))}<br><span class="muted">확인할 곳: ${r.where}</span></span></li>`).join("")}</ul>`
+      : `<ul class="checks"><li class="pass"><span class="ic">✓</span><span>꼭 확인해야 할 내용은 찾지 못했어요. 요약·초안으로 써도 돼요.</span></li></ul>`) +
+    `<div class="row mt"><div class="field"><label>확인한 공식자료</label><input id="v-src"></div><div class="field"><label>고친 내용</label><input id="v-fix" value="${TAK.esc(known.map((k) => k.msg).join(" "))}"></div></div><button class="btn" id="v-save">기록에 저장</button>`;
+  document.getElementById("v-save").onclick = () => TAK.addLog({ part: hits.some((h) => h.r.k === "인증·허가") ? "인증·규제" : "HS·관세", prompt: document.getElementById("v-prompt").value, ai: txt.slice(0, 300), source: document.getElementById("v-src").value, fix: document.getElementById("v-fix").value });
+};
+
+document.getElementById("b-prompt").onclick = () => {
+  const I = info(S.c), nm = S.c === "다른 나라" ? "(나라 이름)" : S.c;
+  TAK.promptModal(nm + " 조사 질문", `너는 의료기기 수출 규제 조사를 돕는 담당자다. 한국 ${P.company || "(회사)"}의 ${P.product || "(제품)"} (HS ${S.hs || "?"}, 한국 ${P.grade ? P.grade + "등급" : "등급 미상"})을 ${nm}에 수출하려 한다.
+알려 줘:
+1. ${nm}의 HS ${S.hs || "?"} 아래 8–10자리 세번 중 이 제품이 들어갈 후보와 근거
+2. 그 세번의 일반 세율(MFN)과 ${I.fta.filter((f) => f[0] !== "mfn").map((f) => f[1]).join(", ") || "적용 가능한 협정"} 세율, 원산지 기준
+3. 의료기기 판매허가 제도 이름, 예상 등급, 신청 주체(현지 대리인 필요 여부), 필요 서류, 표준 처리 기간
+4. 한국 식약처 허가·ISO 13485만 있을 때 유리한 점과 부족한 점
+규칙: 항목마다 공식 출처(기관명·문서명·URL)와 기준일을 붙여라. 모르면 "확인 필요"라고 써라. 한국 관세율표와 ${nm} 세율을 섞지 마라.`, "인증·규제");
+};
+document.getElementById("b-copy").onclick = () => {
+  const I = info(S.c), st = cs(), t = timeline();
+  TAK.copy([`[${S.c}] HS·관세·인증 요약`, `HS ${S.hs || "미정"} (${S.how || "확인 전"}) / ${S.c} 세번 ${st.tl || "미정"}`,
+    ...I.fta.map(([id, name, co]) => { const x = st.fta[id] || {}; return `${name}: ${x.r === "" || x.r == null ? "미정" : x.r + "%"} · ${co}${x.ok ? " · 확인" : " · 확인 전"}`; }),
+    `인허가 (추정 ${fmtM(t.a)}–${fmtM(t.b)}개월):`, ...I.steps.map((s, k) => `- ${s[0]}: ${st.steps[k].a}–${st.steps[k].b}개월${s[4] ? " (동시에)" : ""}`)].join("\n"), "요약을 복사했어요");
+};
+
+render();
+</script>
+</body>
+</html>

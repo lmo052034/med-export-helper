@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수출 준비 진단</title>
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .sum { display: grid; grid-template-columns: 170px 1fr; gap: 20px; align-items: center; }
+  @media (max-width: 720px) { .sum { grid-template-columns: 1fr; } }
+  .big { font-size: 52px; font-weight: 800; line-height: 1; color: var(--accent-ink); }
+  .big small { font-size: 20px; color: var(--muted); }
+  .journey { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  @media (max-width: 720px) { .journey { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .stg { font: inherit; text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; cursor: pointer; }
+  .stg.on { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .stg .g { font-size: 12px; color: var(--muted); font-weight: 700; }
+  .stg .nm { font-weight: 700; font-size: 14.5px; margin: 1px 0 6px; }
+  .stg .tr { height: 6px; background: var(--surface); border-radius: 9px; overflow: hidden; }
+  .stg .tr i { display: block; height: 100%; background: var(--accent); }
+  .stg .pc { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; }
+  .q { border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; }
+  .q-top { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; }
+  @media (max-width: 640px) { .q-top { grid-template-columns: 1fr; } }
+  .q-top .t { font-weight: 700; font-size: 15.5px; }
+  .q-top .t .id { color: var(--muted); font-weight: 700; font-size: 12.5px; margin-right: 6px; }
+  .q-top .t .need { display: block; font-weight: 500; font-size: 14px; color: var(--ink-2); margin-top: 2px; }
+  .seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 9px; overflow: hidden; }
+  .seg button { font: inherit; font-size: 14px; font-weight: 700; padding: 7px 12px; border: 0; background: #fff; cursor: pointer; color: var(--ink-2); border-right: 1px solid var(--line); }
+  .seg button:last-child { border-right: 0; }
+  .seg button.on.y { background: var(--accent); color: #fff; }
+  .seg button.on.p { background: #f2c66d; color: #3d2a05; }
+  .seg button.on.n { background: var(--dark); color: #fff; }
+  .seg button.on.na { background: var(--surface); color: var(--muted); }
+  .q-more { font: inherit; font-size: 13.5px; font-weight: 700; color: var(--accent-ink); background: none; border: 0; padding: 0; cursor: pointer; margin-top: 4px; }
+  .q-body { display: none; border-top: 1px solid var(--line); padding: 12px 14px 14px; font-size: 14.5px; }
+  .q.open .q-body { display: block; }
+  .kv { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; }
+  .kv div:nth-child(odd) { color: var(--muted); font-weight: 700; font-size: 13.5px; }
+  @media (max-width: 560px) { .kv { grid-template-columns: 1fr; } }
+  .todo { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .todo .rk { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-ink); display: grid; place-items: center; font-weight: 800; }
+  .todo h3 { font-size: 16px; }
+  .todo p { font-size: 14.5px; color: var(--ink-2); margin-top: 2px; }
+  .qlib li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div id="head"></div>
+
+  <section class="card mb">
+    <div class="sum">
+      <div><div class="hint">지금 준비된 정도</div><div class="big" id="pct">0<small>%</small></div><div class="small muted mt" id="cnt"></div></div>
+      <div><div class="hint mb">KOTRA AI 수출비서의 8단계 수출 여정 · 누르면 그 단계 질문으로 갑니다</div><div class="journey" id="journey"></div></div>
+    </div>
+  </section>
+
+  <div class="tabs" id="tabs">
+    <button data-v="todo" class="on">먼저 할 일 5가지</button>
+    <button data-v="stage">단계별 점검</button>
+    <button data-v="ask">AI 수출비서 질문</button>
+  </div>
+  <div id="view"></div>
+</main>
+
+<script src="assets/app.js"></script>
+<script src="assets/criteria.js"></script>
+<script src="assets/cases.js"></script>
+<script>
+TAK.head("readiness.html",
+  "의료기기를 처음 수출할 때 갖춰야 할 52가지를 KOTRA AI 수출비서의 8단계 수출 여정 순서로 묻습니다. '예·일부·아니오'로 답하면 부족한 것부터 할 일을 뽑아 줍니다.",
+  [["이 페이지에서", "질문에 답하며 우리 회사의 준비 상태를 확인합니다."], ["준비물", "제품 카탈로그, 식약처 허가증, 가격표 (없으면 '아니오')"], ["다 하면", "'먼저 할 일 5가지'를 복사해 팀과 나누세요."]],
+  `<button class="btn" id="b-sample">가상 예시 보기</button><button class="btn" id="b-blank">처음부터</button><button class="btn primary" id="b-plan">할 일 복사</button>`);
+
+const { CATS, C, IND, STATUS, STAGES, KREF, SAMPLE } = CRIT;
+const P = TAK.profile();
+let S = TAK.load("ready", null) || (P.sample ? JSON.parse(JSON.stringify(SAMPLE)) : { s: {} });
+// G(AI 활용)는 모든 단계에 공통이라 9번째 묶음으로 둡니다
+const GROUPS = [...STAGES, { n: 9, g: "모든 단계", name: "AI 활용·확인", ids: C.filter((c) => c.cat === "G").map((c) => c.id) }];
+let view = "todo", stage = 1;
+const open = new Set();
+const ANS = { y: "예", p: "일부", n: "아니오", na: "해당 없음" };
+
+const st = (id) => (S.s[id] && S.s[id][0]) || "";
+const note = (id) => (S.s[id] && S.s[id][1]) || "";
+const crit = (id) => C.find((c) => c.id === id);
+function calc(list) {
+  let got = 0, max = 0;
+  list.forEach((c) => { const v = STATUS[st(c.id)].v; if (v === null) return; max += c.w; got += c.w * v; });
+  return max ? Math.round((got / max) * 100) : 0;
+}
+function save() { TAK.save("ready", S); }
+
+function dash() {
+  document.getElementById("pct").innerHTML = calc(C) + "<small>%</small>";
+  const n = { y: 0, p: 0, n: 0, "": 0 };
+  C.forEach((c) => { if (n[st(c.id)] != null) n[st(c.id)]++; });
+  document.getElementById("cnt").textContent = `예 ${n.y} · 일부 ${n.p} · 아니오 ${n.n} · 아직 ${n[""]}`;
+  document.getElementById("journey").innerHTML = STAGES.map((s) => {
+    const p = calc(s.ids.map(crit));
+    return `<button class="stg ${view === "stage" && stage === s.n ? "on" : ""}" data-st="${s.n}"><div class="g">${s.n} · ${s.g}</div><div class="nm">${s.name}</div><div class="tr"><i style="width:${p}%"></i></div><div class="pc">${p}% · ${s.ids.length}문항</div></button>`;
+  }).join("");
+}
+
+function gaps() {
+  return C.filter((c) => st(c.id) !== "na" && st(c.id) !== "y")
+    .map((c) => ({ c, score: c.w * (1 - STATUS[st(c.id)].v) + (st(c.id) === "" ? 0.1 : 0) + (9 - (GROUPS.find((g) => g.ids.includes(c.id)) || { n: 9 }).n) * 0.05 }))
+    .sort((a, b) => b.score - a.score);
+}
+
+function prompt(c) {
+  return `너는 의료기기 수출 실무를 돕는 조사 담당자다.
+회사: ${P.company || "(입력)"} / 제품: ${P.product || "(입력)"} (HS ${P.hs || "모름"}, ${P.grade ? P.grade + "등급" : "등급 모름"}) / 관심 국가: ${P.countries || "(입력)"}
+
+할 일: ${c.t}
+이렇게 되면 완료: ${c.ok}
+지금 상태: ${note(c.id) || (st(c.id) ? ANS[st(c.id)] : "모름")}
+${c.ind ? "참고 제도: " + IND.med[c.ind] + "\n" : ""}
+도와줄 것: ${c.ai}. 그리고 내가 직접 확인할 공식 화면(${c.src})을 어떻게 찾는지 단계별로 알려 줘.
+규칙:
+- 숫자·세율·인증·법 조항에는 기관명·문서명·URL·기준일을 붙여라.
+- 확실하지 않으면 "확인 필요"라고 쓰고 추측하지 마라.
+- 한국 기준과 수입국 기준을 섞지 마라.`;
+}
+
+function viewTodo() {
+  const g = gaps().slice(0, 5);
+  if (!g.length) return `<div class="banner ok"><span>✓</span><div>부족한 항목이 없어요.</div></div>`;
+  return `<p class="hint">중요한데 아직 안 된 것부터 골랐어요. '자세히'를 누르면 어디서 확인하는지 나옵니다.</p>` +
+    g.map(({ c }, k) => `<div class="todo"><div class="rk">${k + 1}</div><div>
+      <h3>${c.t}</h3><p>${c.need}</p>
+      <p class="small muted">지금: ${TAK.esc(note(c.id) || (st(c.id) ? ANS[st(c.id)] : "아직 답하지 않음"))} · 확인할 곳: ${c.src}</p>
+      <div class="btns mt"><button class="btn sm primary" data-pr="${c.id}">AI에게 묻기</button><button class="btn sm" data-goto="${c.id}">자세히</button></div></div></div>`).join("");
+}
+
+function qRow(c) {
+  const s = st(c.id);
+  const k = (KREF[c.id] || []).map((id) => KCASES.CASES.find((x) => x.id === id)).filter(Boolean);
+  return `<div class="q ${open.has(c.id) ? "open" : ""}" id="q-${c.id}">
+    <div class="q-top"><div class="t"><span class="id">${c.id}</span>${c.t}<span class="need">${c.need}</span><button class="q-more" data-tg="${c.id}">${open.has(c.id) ? "접기" : "자세히"}</button></div>
+    <div class="seg" data-id="${c.id}">${["y", "p", "n", "na"].map((x) => `<button class="${x} ${s === x ? "on" : ""}" data-s="${x}">${ANS[x]}</button>`).join("")}</div></div>
+    <div class="q-body"><div class="kv">
+      <div>'예'의 기준</div><div>${c.ok}</div>
+      <div>'일부'는</div><div>${c.part}</div>
+      <div>확인할 곳</div><div>${c.src}</div>
+      ${c.ind ? `<div>의료기기 참고</div><div>${IND.med[c.ind]}</div>` : ""}
+      <div>AI가 할 일</div><div>${c.ai}</div>
+      <div>사람이 할 일</div><div>${c.human}</div>
+      ${k.length ? `<div>KOTRA 사례</div><div>${k.map((x) => `<a href="cases.html#${x.id}">${x.no} ${x.title}</a>`).join(" · ")}</div>` : ""}
+    </div>
+    <div class="field mt"><input data-n="${c.id}" placeholder="메모: 지금 상태나 근거 (예: 식약처 인증서 사본 있음)" value="${TAK.esc(note(c.id))}"></div>
+    <button class="btn sm" data-pr="${c.id}">AI에게 묻기</button></div></div>`;
+}
+
+function viewStage() {
+  const g = GROUPS.find((x) => x.n === stage);
+  return `<div class="chips mb">${GROUPS.map((x) => `<button class="chip ${x.n === stage ? "on" : ""}" data-st="${x.n}">${x.n < 9 ? x.n + ". " : ""}${x.name}</button>`).join("")}</div>
+    <h2 style="font-size:20px;margin-bottom:4px">${g.n < 9 ? g.n + "단계 · " : ""}${g.name} <span class="tag ok">${calc(g.ids.map(crit))}%</span></h2>
+    <p class="hint mb">${g.g} · ${g.ids.length}문항</p>` + g.ids.map((id) => qRow(crit(id))).join("") +
+    (g.n < 9 ? `<div class="btns mt"><button class="btn primary" data-st="${g.n + 1}">다음 단계 →</button></div>` : "");
+}
+
+// AI 수출비서의 단계별 질문 라이브러리처럼, 우리 제품에 맞춘 시작 질문
+function viewAsk() {
+  const pr = P.product || "우리 의료기기", hs = P.hs || "(HS 코드)", cs = P.countries || "(관심 국가)";
+  const L = [
+    ["1. 글로벌 시장 탐색", [`HS ${hs} 의료기기 수입이 크고 빠르게 늘어나는 나라 5곳을 UN Comtrade·ITC Trade Map 기준으로 알려 줘. 연도와 출처를 붙여 줘.`, `${pr}를 주로 수출하는 나라와 한국의 점유율 순위는?`]],
+    ["2. 타깃 국가 시장 동향", [`${cs}의 ${pr} 수입 관세(MFN·FTA)와 의료기기 인허가 제도를 비교해 줘. 공식 사이트 링크를 붙여 줘.`, `${cs}에서 ${pr}를 쓰는 병원·클리닉 수나 시장 규모를 알 수 있는 공식 통계는?`]],
+    ["3. 마케팅·영업 준비", [`${pr}의 영문 카탈로그에 꼭 들어가야 할 항목(사양·인증·사용처)을 목록으로 줘.`, `바이코리아에 ${pr}를 등록할 때 쓸 영문 상품명과 키워드 10개를 제안해 줘.`]],
+    ["4. 바이어 탐색", [`${cs}에서 ${pr}를 수입·유통할 만한 회사 유형과 찾는 방법(KOTRA 바이어 매칭, 전시회 참가사 목록 등)을 알려 줘.`, `통관 데이터에서 바이어를 고를 때 볼 변수(선적 빈도, 물량, 공급선 수)를 설명해 줘.`]],
+    ["5. 마케팅·영업 실시", [`첫 화상상담에서 의료기기 바이어가 자주 묻는 질문 10개와 답변 준비 방법은?`]],
+    ["6. 계약 체결", [`처음 거래하는 해외 유통사와 맺는 계약서에 꼭 넣을 조항(독점, 기간, A/S, 인허가 명의)을 알려 줘.`, `무역사기에서 자주 나오는 수법(결제 계좌 변경 요청 등)과 확인 방법은?`]],
+    ["7. 수출 실행", [`항공으로 소량 샘플을 보낼 때 맞는 Incoterms와 필요한 서류(인보이스·패킹리스트)를 알려 줘.`]],
+    ["8. 리스크·사후관리", [`${cs}의 의료기기 규제가 바뀌는지 꾸준히 확인할 수 있는 공식 채널은?`, `해외 판매 후 불량·부작용이 생기면 수출 기업이 해야 할 일은?`]],
+  ];
+  const report = `너는 KOTRA 해외시장 조사원처럼 답하는 수출 전략 보고서 작성자다.
+제품: ${pr} (HS ${hs}, ${P.grade ? P.grade + "등급" : "등급 미상"}) / 회사 수출 경험: ${P.exp === "some" ? "있음" : "없음"} / 관심 국가: ${cs}
+아래 7개 항목으로 수출 시장 전략 보고서를 써 줘.
+1) 유망 시장 추천과 이유 2) 시장 규모·성장성 3) 경쟁 동향(주요 수입국·브랜드) 4) 유통 구조 5) 인증·규제 6) 바이어 유형과 찾는 방법 7) 진출 전략과 주의할 점(무역사기 포함)
+규칙: 숫자마다 출처·기준연도를 붙이고, 모르는 것은 "확인 필요"로 써라. 마지막에 내가 공식자료로 확인할 목록을 따로 정리해 줘.`;
+  return `<div class="banner info"><span>i</span><div>KOTRA <b>AI 수출비서</b>는 수출 여정 8단계마다 질문 예시를 준비해 두고, HS 코드·품목을 넣으면 7개 항목 보고서를 5분 만에 만들어 줍니다 (사례집 01). 아래는 같은 방식으로 우리 제품에 맞춘 질문입니다. 무역투자24의 AI 수출비서에 그대로 물어봐도 됩니다.</div></div>
+  <section class="card mb"><h2>수출 전략 보고서 (7개 항목)</h2><p class="hint mb">한 번에 큰 그림을 보고 싶을 때</p><button class="btn primary" data-rep="1">보고서 질문 만들기</button></section>
+  <div class="grid g2">${L.map(([t, qs]) => `<section class="card"><h3>${t}</h3><ul class="qlib mt" style="padding-left:18px;margin:10px 0 0">${qs.map((q, k) => `<li>${TAK.esc(q)} <button class="btn sm" data-q="${TAK.esc(q)}">묻기</button></li>`).join("")}</ul></section>`).join("")}</div>`
+    .replace('data-rep="1"', `data-rep="${encodeURIComponent(report)}"`);
+}
+
+function render() {
+  save(); dash();
+  document.getElementById("view").innerHTML = view === "todo" ? viewTodo() : view === "stage" ? viewStage() : viewAsk();
+}
+function setView(v) { view = v; document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.v === v)); render(); }
+function goto(id) {
+  stage = (GROUPS.find((g) => g.ids.includes(id)) || GROUPS[0]).n;
+  open.add(id); setView("stage");
+  setTimeout(() => document.getElementById("q-" + id).scrollIntoView({ behavior: "smooth", block: "center" }), 30);
+}
+
+document.getElementById("tabs").onclick = (e) => { if (e.target.dataset.v) setView(e.target.dataset.v); };
+document.body.addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.st) { stage = +t.dataset.st; setView("stage"); window.scrollTo({ top: document.getElementById("tabs").offsetTop - 70, behavior: "smooth" }); }
+  else if (t.dataset.s) { const id = t.parentElement.dataset.id; S.s[id] = [st(id) === t.dataset.s ? "" : t.dataset.s, note(id)]; render(); }
+  else if (t.dataset.tg) { const id = t.dataset.tg; open.has(id) ? open.delete(id) : open.add(id); render(); }
+  else if (t.dataset.pr) { const c = crit(t.dataset.pr); TAK.promptModal(c.t, prompt(c), "회사·제품"); }
+  else if (t.dataset.goto) goto(t.dataset.goto);
+  else if (t.dataset.q) TAK.promptModal("AI 수출비서 질문", t.dataset.q + "\n\n규칙: 숫자·세율·인증에는 출처와 기준일을 붙이고, 모르면 '확인 필요'라고 써라.", "회사·제품");
+  else if (t.dataset.rep) TAK.promptModal("수출 전략 보고서 질문", decodeURIComponent(t.dataset.rep), "나라 고르기");
+});
+document.getElementById("view").addEventListener("input", (e) => { const id = e.target.dataset.n; if (!id) return; S.s[id] = [st(id), e.target.value]; save(); });
+
+document.getElementById("b-sample").onclick = () => { if (!confirm("가상 예시 답으로 바꿀까요? 지금 답은 지워져요.")) return; S = JSON.parse(JSON.stringify(SAMPLE)); render(); };
+document.getElementById("b-blank").onclick = () => { if (!confirm("모든 답을 지우고 처음부터 할까요?")) return; S = { s: {} }; stage = 1; setView("stage"); };
+document.getElementById("b-plan").onclick = () => {
+  const lines = [`[먼저 할 일] ${P.company || ""} · ${P.product || ""} (준비 ${calc(C)}%)`, ""];
+  gaps().slice(0, 5).forEach(({ c }, k) => lines.push(`${k + 1}. ${c.t}`, `   할 일: ${c.need}`, `   확인할 곳: ${c.src}`));
+  TAK.copy(lines.join("\n"), "할 일 5가지를 복사했어요");
+};
+
+render();
+const hashId = location.hash.slice(1);
+if (C.some((c) => c.id === hashId)) goto(hashId);
+</script>
+</body>
+</html>
