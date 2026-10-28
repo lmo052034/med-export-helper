@@ -8,6 +8,22 @@ description: 웹 화면을 Apple(iOS 26·macOS) 느낌의 깔끔하고 세련된
 Apple Human Interface Guidelines(HIG)와 iOS 26 UI Kit의 원칙을 웹(React + Tailwind v4 + shadcn/ui)에 옮기는 규칙이다.
 목표는 "꾸밈을 더하는 것"이 아니라 **덜어내서 내용이 돋보이게** 하는 것이다.
 
+## When to Use This Skill
+
+- "애플처럼", "iOS 느낌", "깔끔하게/세련되게" 화면을 만들거나 고쳐 달라는 요청
+- 이 저장소 화면(페이지·shadcn 부품) 리디자인
+- 색상·글자·간격 토큰을 새로 정하거나 정리할 때
+
+## AI Assistant Instructions
+
+1. **먼저** `src/index.css`와 `src/components/ui/`를 읽고 현재 토큰·부품을 파악한다.
+2. **다음** 아래 2–4절 토큰을 `src/index.css` 변수에 반영한다 (7절 매핑).
+3. **그다음** 공통 부품 → 페이지 순서로 고친다. 페이지마다 주요 행동 1개만 남긴다.
+4. **마지막** `npm run build`로 확인하고 8절 점검표를 모두 체크한다.
+
+Always: 토큰 값만 사용, 쉬운 한국어, 모바일 390px 확인.
+Never: 특정 기업 실명·실데이터 넣기, 장식용 그라데이션·진한 그림자, 강조색 2개 이상.
+
 ## 1. 핵심 원칙
 
 1. **내용이 주인공(Deference)**: 장식, 그라데이션, 그림자, 테두리를 최소화한다. 색은 의미가 있을 때만 쓴다.
