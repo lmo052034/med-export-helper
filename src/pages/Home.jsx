@@ -30,7 +30,7 @@ export default function Home() {
       <section className="bg-white">
         <Wrap className="pt-16 pb-14 sm:pt-24 sm:pb-20 text-center">
           <p className="text-[17px] sm:text-[21px] font-semibold text-primary">의료기기 수출 도우미</p>
-          <h1 className="mt-3 text-[40px] leading-[1.1] sm:text-[64px] sm:leading-[1.0625] font-semibold tracking-[-0.015em] text-[#1d1d1f]">
+          <h1 className="mt-3 text-[40px] leading-[1.1] sm:text-[64px] sm:leading-[1.0625] font-semibold tracking-[-0.035em] text-[#1d1d1f]">
             처음 하는 수출,<br />8단계면 충분해요.
           </h1>
           <p className="mx-auto mt-5 max-w-[640px] text-[19px] sm:text-[24px] leading-[1.35] font-medium text-[#6e6e73]">
@@ -55,7 +55,7 @@ export default function Home() {
               ["0원", "가입·설치 없이 무료"],
             ].map(([v, d]) => (
               <div key={d}>
-                <dt className="text-[40px] sm:text-[48px] leading-none font-semibold tracking-[-0.015em] tabular-nums text-[#1d1d1f]">{v}</dt>
+                <dt className="text-[40px] sm:text-[48px] leading-none font-semibold tracking-[-0.03em] tabular-nums text-[#1d1d1f]">{v}</dt>
                 <dd className="mt-3 text-[14px] text-[#6e6e73]">{d}</dd>
               </div>
             ))}
@@ -66,14 +66,14 @@ export default function Home() {
       {/* 8단계 타일 */}
       <section className="bg-[#f5f5f7]">
         <Wrap className="py-16 sm:py-24">
-          <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.01em] text-[#1d1d1f]">이 순서대로 하세요.</h2>
+          <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.03em] text-[#1d1d1f]">이 순서대로 하세요.</h2>
           <p className="mt-3 text-[17px] sm:text-[21px] text-[#6e6e73]">한 단계씩, 해야 할 일과 만들 문서를 알려 드려요.</p>
           <ol className="mt-10 grid sm:grid-cols-2 gap-4 sm:gap-5">
             {STEPS.map((s) => (
               <li key={s.path}>
                 <Link to={s.path} className="group flex h-full flex-col rounded-[28px] bg-white p-7 sm:p-9 transition-transform duration-300 ease-out hover:scale-[1.012]">
                   <span className="text-[14px] font-semibold tabular-nums text-primary">STEP {s.n}</span>
-                  <h3 className="mt-2 text-[24px] sm:text-[28px] leading-tight font-semibold tracking-[-0.01em] text-[#1d1d1f]">{s.name}</h3>
+                  <h3 className="mt-2 text-[24px] sm:text-[28px] leading-tight font-semibold tracking-[-0.022em] text-[#1d1d1f]">{s.name}</h3>
                   <p className="mt-3 text-[17px] leading-[1.47] text-[#6e6e73] flex-1">{s.what}</p>
                   <span className="mt-6 inline-flex items-center gap-0.5 text-[17px] text-primary">
                     시작하기 <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.2} />
@@ -88,7 +88,7 @@ export default function Home() {
       {/* 회사 정보 + 맞는 공고 */}
       <section className="bg-white">
         <Wrap className="py-16 sm:py-24">
-          <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.01em] text-[#1d1d1f]">우리 회사부터 알려 주세요.</h2>
+          <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.03em] text-[#1d1d1f]">우리 회사부터 알려 주세요.</h2>
           <p className="mt-3 text-[17px] sm:text-[21px] text-[#6e6e73]">한 번 적으면 모든 단계에서 함께 써요. 내용은 이 브라우저에만 저장돼요.</p>
 
           <div className="mt-10 grid lg:grid-cols-[minmax(0,1fr)_340px] gap-5 items-start">
@@ -142,7 +142,7 @@ export default function Home() {
       {/* 약속 */}
       <section className="bg-[#f5f5f7]">
         <Wrap className="py-16 sm:py-24 text-center">
-          <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.01em] text-[#1d1d1f]">AI는 돕고, 확인은 사람이.</h2>
+          <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.03em] text-[#1d1d1f]">AI는 돕고, 확인은 사람이.</h2>
           <div className="mt-10 grid sm:grid-cols-3 gap-8 text-left sm:text-center">
             {[
               ["찾고 정리하는 건 AI", "AI가 찾고, 정리하고, 초안을 써요. 숫자·세율·인증은 사람이 공식자료로 확인해요."],
