@@ -53,14 +53,14 @@ function PromptDialog({ pq, onClose, toast, copy }) {
               <DialogTitle>{pq.title}</DialogTitle>
               <DialogDescription>질문을 복사해서 ChatGPT에 붙여 넣고, 답에 나온 숫자·세율·인증은 공식 사이트에서 확인한 뒤 아래에 기록하세요.</DialogDescription>
             </DialogHeader>
-            <pre className="whitespace-pre-wrap rounded-lg border bg-muted/40 p-4 text-sm leading-relaxed font-sans max-h-[36vh] overflow-auto">{pq.prompt}</pre>
+            <pre className="whitespace-pre-wrap rounded-2xl bg-[rgba(120,120,128,0.08)] p-4 text-[15px] leading-relaxed font-sans max-h-[36vh] overflow-auto">{pq.prompt}</pre>
             <div className="flex flex-wrap gap-2">
               <Button variant="primary" icon={Copy} onClick={() => copy(pq.prompt, "질문을 복사했어요")}>질문 복사</Button>
               <Button as="a" href="https://chatgpt.com/" target="_blank" rel="noopener" icon={ExternalLink}>ChatGPT 열기</Button>
             </div>
             <Separator />
             <div>
-              <p className="font-semibold mb-1">확인한 결과 기록하기</p>
+              <p className="text-[17px] font-semibold mb-1">확인한 결과 기록하기</p>
               <p className="text-sm text-muted-foreground mb-4">적은 내용은 08 AI 답 확인 기록에 모여요.</p>
               <div className="grid sm:grid-cols-2 gap-x-3">
                 <Field label="분야"><Select value={f.part} onChange={set("part")} options={PARTS} /></Field>
@@ -83,13 +83,13 @@ function PromptDialog({ pq, onClose, toast, copy }) {
 /* ---------- 왼쪽 메뉴 ---------- */
 function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-2.5 rounded-md p-1.5 hover:bg-sidebar-accent">
-      <span className="grid place-items-center size-8 rounded-lg bg-primary text-primary-foreground">
+    <Link to="/" className="flex items-center gap-3 rounded-xl p-1.5 hover:bg-sidebar-accent">
+      <span className="grid place-items-center size-9 rounded-[10px] bg-primary text-primary-foreground">
         <svg width="15" height="15" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M8 3v10" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" /></svg>
       </span>
       <span className="grid leading-tight">
-        <span className="text-sm font-semibold">의료기기 수출 도우미</span>
-        <span className="text-xs text-muted-foreground">처음 수출하는 기업용</span>
+        <span className="text-[15px] font-semibold">의료기기 수출 도우미</span>
+        <span className="text-[13px] text-muted-foreground">처음 수출하는 기업용</span>
       </span>
     </Link>
   );
@@ -119,7 +119,7 @@ function AppSidebar() {
                 <SidebarMenuItem key={s.path}>
                   <SidebarMenuButton asChild isActive={on(s.path)}>
                     <Link to={s.path} onClick={close}>
-                      <span className={"grid place-items-center size-5 rounded text-[11px] font-semibold tabular-nums " + (on(s.path) ? "bg-primary text-primary-foreground" : "bg-sidebar-accent text-muted-foreground")}>{s.n}</span>
+                      <span className={"grid place-items-center size-6 rounded-[7px] text-[11px] font-bold tabular-nums " + (on(s.path) ? "bg-white/25 text-primary-foreground" : "bg-primary/12 text-primary")}>{s.n}</span>
                       <span>{s.name}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -138,8 +138,8 @@ function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="rounded-lg border bg-background p-3 text-xs text-muted-foreground leading-relaxed shadow-xs">
-          <p className="flex items-center gap-1.5 font-medium text-foreground mb-1"><ShieldCheck className="size-3.5 text-primary" /> 이 브라우저에만 저장</p>
+        <div className="rounded-2xl bg-card/70 p-3.5 text-[13px] text-muted-foreground leading-relaxed">
+          <p className="flex items-center gap-1.5 font-semibold text-foreground mb-1"><ShieldCheck className="size-4 text-primary" /> 이 브라우저에만 저장</p>
           숫자·세율·인증·공고는 꼭 원문으로 확인하세요.
         </div>
       </SidebarFooter>
@@ -152,9 +152,8 @@ function SiteHeader() {
   const s = STEPS.find((x) => pathname === x.path || pathname.startsWith(x.path + "/"));
   const label = s ? `${s.n} ${s.name}` : pathname.startsWith("/cases") ? "KOTRA AI 사례" : null;
   return (
-    <header className="no-print sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 border-b bg-background/90 backdrop-blur px-4 md:rounded-t-xl">
+    <header className="no-print sticky top-0 z-20 flex h-[52px] shrink-0 items-center gap-2 border-b border-border bg-background/75 backdrop-blur-2xl backdrop-saturate-150 px-3 sm:px-4">
       <SidebarTrigger className="-ml-1" />
-      <Separator orientation="vertical" className="mx-1 data-[orientation=vertical]:h-4" />
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className={label ? "hidden sm:inline-flex" : ""}>
@@ -164,7 +163,7 @@ function SiteHeader() {
           {label && <BreadcrumbItem><BreadcrumbPage>{label}</BreadcrumbPage></BreadcrumbItem>}
         </BreadcrumbList>
       </Breadcrumb>
-      <Badge tone="outline" className="ml-auto hidden sm:inline-flex font-normal text-muted-foreground">화면의 회사·제품은 가상 예시</Badge>
+      <Badge tone="outline" className="ml-auto hidden sm:inline-flex font-medium">화면의 회사·제품은 가상 예시</Badge>
     </header>
   );
 }
@@ -177,8 +176,8 @@ export function Layout({ children }) {
       <AppSidebar />
       <SidebarInset>
         <SiteHeader />
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">{children}</div>
-        <footer className="no-print mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 pb-8 pt-2 text-xs text-muted-foreground">에프킬라 · 의료기기 수출 도우미 · 화면의 회사·제품은 가상 예시입니다</footer>
+        <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10 pt-6 pb-8 sm:pt-10">{children}</div>
+        <footer className="no-print mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-10 pb-10 pt-2 text-[13px] text-muted-foreground">에프킬라 · 의료기기 수출 도우미 · 화면의 회사·제품은 가상 예시입니다</footer>
       </SidebarInset>
     </SidebarProvider>
   );
@@ -193,24 +192,24 @@ export function PageHeader({ path, desc, guide, actions }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="teal" className="tabular-nums">STEP {s.n}</Badge>
-            <span className="text-xs text-muted-foreground">{s.kc} 방식</span>
+            <span className="text-[13px] font-semibold text-primary tabular-nums">STEP {s.n}</span>
+            <span className="text-[13px] text-muted-foreground">· {s.kc} 방식</span>
           </div>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">{s.name}</h1>
+          <h1 className="mt-1 text-[28px] leading-[34px] sm:text-[34px] sm:leading-[41px] font-bold">{s.name}</h1>
         </div>
         {actions && <div className="no-print flex flex-wrap gap-2">{actions}</div>}
       </div>
-      <p className="mt-2 max-w-3xl text-muted-foreground leading-relaxed">{desc || s.what}</p>
+      <p className="mt-2 max-w-3xl text-[17px] text-ink-2 leading-relaxed">{desc || s.what}</p>
       {guide && (
-        <div className="no-print mt-5 grid sm:grid-cols-3 rounded-xl border bg-card shadow-xs divide-y sm:divide-y-0 sm:divide-x">
+        <div className="no-print mt-6 grid sm:grid-cols-3 rounded-2xl bg-card divide-y sm:divide-y-0 sm:divide-x divide-border">
           {guide.map(([k, v], i) => {
             const Icon = GUIDE_ICON[i] || ArrowRight;
             return (
-              <div key={k} className="flex gap-3 px-4 py-3.5">
-                <Icon className="size-4 text-primary shrink-0 mt-0.5" />
+              <div key={k} className="flex gap-3 px-4 py-4">
+                <span className="grid place-items-center size-7 rounded-[8px] bg-primary/12 text-primary shrink-0"><Icon className="size-4" /></span>
                 <div className="grid gap-0.5">
-                  <p className="text-xs font-medium text-muted-foreground">{k}</p>
-                  <p className="text-sm">{v}</p>
+                  <p className="text-[13px] font-medium text-muted-foreground">{k}</p>
+                  <p className="text-[15px] leading-snug">{v}</p>
                 </div>
               </div>
             );
@@ -225,17 +224,17 @@ export function PageHeader({ path, desc, guide, actions }) {
 export function StepPager({ path }) {
   const i = STEPS.findIndex((x) => x.path === path);
   const prev = STEPS[i - 1], next = STEPS[i + 1];
-  const box = "group flex items-center gap-3 rounded-xl border bg-card px-5 py-4 shadow-xs transition-colors hover:bg-accent";
+  const box = "press group flex items-center gap-3 rounded-2xl bg-card px-5 py-4 hover:bg-card/70";
   return (
     <div className="no-print mt-12 grid sm:grid-cols-2 gap-3">
       {prev ? (
         <Link to={prev.path} className={box}>
           <ArrowLeft className="size-4 text-muted-foreground" />
-          <div><p className="text-xs text-muted-foreground">이전 단계 {prev.n}</p><p className="text-sm font-medium">{prev.name}</p></div>
+          <div><p className="text-[13px] text-muted-foreground">이전 단계 {prev.n}</p><p className="text-[17px] font-semibold">{prev.name}</p></div>
         </Link>
       ) : <div className="hidden sm:block" />}
       <Link to={next ? next.path : "/cases"} className={box + " justify-end text-right"}>
-        <div><p className="text-xs text-muted-foreground">{next ? `다음 단계 ${next.n}` : "참고"}</p><p className="text-sm font-medium text-primary">{next ? next.name : "KOTRA AI 사례 보기"}</p></div>
+        <div><p className="text-[13px] text-muted-foreground">{next ? `다음 단계 ${next.n}` : "참고"}</p><p className="text-[17px] font-semibold text-primary">{next ? next.name : "KOTRA AI 사례 보기"}</p></div>
         <ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-0.5" />
       </Link>
     </div>

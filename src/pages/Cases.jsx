@@ -93,7 +93,7 @@ export default function Cases() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {list.map((c) => (
-          <article key={c.id} id={c.id} className={cx("scroll-mt-24 rounded-xl bg-white border p-5 sm:p-6 grid gap-4 content-start transition-shadow", hl === c.id ? "border-brand-500 ring-4 ring-brand-100" : "border-line")}>
+          <article key={c.id} id={c.id} className={cx("scroll-mt-24 rounded-2xl bg-card border border-transparent p-5 sm:p-6 grid gap-4 content-start transition-shadow", hl === c.id ? "border-brand-500 ring-4 ring-brand-100" : "border-line")}>
             <div className="flex justify-between gap-3 items-start">
               <div>
                 <p className="text-xs font-semibold text-brand-700">사례 {c.no} · p.{c.p}</p>

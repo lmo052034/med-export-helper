@@ -10,43 +10,45 @@
   font-display: swap;
 }
 
-/* shadcn/ui (new-york, neutral) 테마. 포인트 색만 청록으로 바꿈 */
+/* Apple(iOS 26) 스타일 토큰: .claude/skills/apple-design 참고. 포인트 색(청록)은 그대로 */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --radius: 0.875rem;
+  --background: #f2f2f7;               /* systemGroupedBackground */
+  --foreground: #000000;               /* label */
+  --card: #ffffff;                     /* secondarySystemGroupedBackground */
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
   --primary: oklch(0.52 0.088 180);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+  --primary-foreground: #ffffff;
+  --secondary: rgba(120, 120, 128, 0.12); /* fill */
+  --secondary-foreground: #000000;
+  --muted: rgba(120, 120, 128, 0.08);
+  --muted-foreground: rgba(60, 60, 67, 0.6); /* secondaryLabel */
+  --accent: rgba(120, 120, 128, 0.12);
+  --accent-foreground: #000000;
+  --destructive: #ff3b30;
+  --border: rgba(60, 60, 67, 0.14);    /* separator(연하게) */
+  --input: rgba(120, 120, 128, 0.12);  /* fill */
+  --ring: oklch(0.52 0.088 180);
+  --sidebar: rgba(246, 246, 248, 0.82);
+  --sidebar-foreground: #000000;
   --sidebar-primary: oklch(0.52 0.088 180);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.955 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(120, 120, 128, 0.12);
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: rgba(60, 60, 67, 0.14);
+  --sidebar-ring: oklch(0.52 0.088 180);
+  --label-2: rgba(60, 60, 67, 0.85);
 }
 
 @theme inline {
-  --font-sans: "Pretendard", ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Pretendard", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-2xl: calc(var(--radius) + 6px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -76,7 +78,7 @@
 
   /* 예전 화면 이름 → shadcn 색 */
   --color-ink: var(--foreground);
-  --color-ink-2: oklch(0.4 0 0);
+  --color-ink-2: var(--label-2);
   --color-line: var(--border);
   --color-line-2: var(--input);
   --color-surface: var(--muted);
@@ -98,9 +100,19 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground antialiased; letter-spacing: -0.006em; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-background text-foreground antialiased; font-size: 17px; line-height: 1.4; letter-spacing: -0.01em; word-break: keep-all; overflow-wrap: anywhere; }
+  h1, h2, h3 { letter-spacing: -0.022em; }
+  ::selection { background: color-mix(in oklab, var(--primary) 25%, transparent); }
   button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 }
+
+/* 누를 때 살짝 줄어드는 iOS 느낌 */
+@layer components {
+  .press { transition: transform 0.15s ease-out, opacity 0.15s ease-out, background-color 0.2s ease-out; }
+  .press:active { transform: scale(0.97); opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) { .press, .press:active { transition: none; transform: none; } }
 
 /* 문서 미리보기(견적서·인보이스)만 인쇄 */
 @media print {

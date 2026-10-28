@@ -43,11 +43,11 @@ export default function Log() {
       </Callout>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 mb-6">
-        <div className="rounded-xl bg-graphite text-white px-4 py-3"><p className="text-xs text-white/70">전체</p><p className="text-2xl font-semibold tabular-nums">{rows.length}<span className="text-sm font-medium ml-0.5">건</span></p></div>
+        <div className="rounded-2xl bg-graphite text-white px-4 py-3"><p className="text-xs text-white/70">전체</p><p className="text-2xl font-semibold tabular-nums">{rows.length}<span className="text-sm font-medium ml-0.5">건</span></p></div>
         {PARTS.map((p) => {
           const c = count(p);
           return (
-            <div key={p} className={cx("rounded-xl border px-4 py-3", c < 3 ? "bg-amber-50 border-amber-100" : "bg-white border-line")}>
+            <div key={p} className={cx("rounded-2xl px-4 py-3", c < 3 ? "bg-amber-50" : "bg-card")}>
               <p className="text-xs text-ink-2 truncate">{p}</p>
               <p className="text-2xl font-semibold tabular-nums">{c}<span className="text-sm font-medium ml-0.5">건</span></p>
               <div className="h-1.5 rounded-full bg-line mt-1.5 overflow-hidden"><i className={cx("block h-full rounded-full", c < 3 ? "bg-amber-500" : "bg-brand-600")} style={{ width: Math.min(100, c * 34) + "%" }} /></div>
@@ -56,7 +56,7 @@ export default function Log() {
         })}
       </div>
 
-      <section className="rounded-xl bg-white border border-line overflow-hidden">
+      <section className="rounded-2xl bg-card overflow-hidden">
         <div className="hidden md:grid grid-cols-[36px_140px_repeat(4,minmax(0,1fr))_44px] gap-2 px-4 py-3 bg-surface border-b border-line text-xs font-semibold text-ink-2">
           <span>#</span>{COLS.map(([, l]) => <span key={l}>{l}</span>)}<span />
         </div>

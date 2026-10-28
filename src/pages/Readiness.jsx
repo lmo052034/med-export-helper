@@ -131,7 +131,7 @@ ${c.ind ? "참고 제도: " + IND.med[c.ind] + "\n" : ""}
                 const c = crit(id), s = st(id), isOpen = open.has(id);
                 const k = (KREF[id] || []).map((x) => KCASES.CASES.find((y) => y.id === x)).filter(Boolean);
                 return (
-                  <div key={id} id={"q-" + id} className={cx("rounded-xl border bg-white transition", isOpen ? "border-brand-200 shadow-sm" : "border-line")}>
+                  <div key={id} id={"q-" + id} className={cx("rounded-2xl border-2 bg-card transition", isOpen ? "border-primary/40" : "border-transparent")}>
                     <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-center p-4">
                       <div>
                         <p className="font-semibold text-sm"><span className="text-xs text-muted-foreground mr-1.5">{id}</span>{c.t}</p>

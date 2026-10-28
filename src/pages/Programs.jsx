@@ -64,7 +64,7 @@ export default function Programs() {
         guide={[["이 페이지에서", "접수 중인 공고와 마감일을 한눈에 봅니다."], ["준비물", "하고 싶은 일(전시회·바이어·인증 등)과 관심 지역"], ["다 하면", "마음에 드는 공고를 내 캘린더에 넣고 원문으로 신청하세요."]]}
       />
 
-      <div className="mb-6 rounded-xl bg-white border border-line px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-2">
+      <div className="mb-6 rounded-2xl bg-card px-4 py-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-2">
         <span className="flex items-center gap-1.5"><RefreshCw size={15} className="text-brand-600" />마지막 수집 <b className="text-ink">{upd}</b></span>
         <span>공고 <b className="text-ink">{data.items.length}</b>건</span>
         <span>출처 {okN}/{data.sources.length}곳 정상</span>
@@ -150,7 +150,7 @@ export default function Programs() {
 
       {pick && (
         <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-graphite/50 sm:p-4" onClick={(e) => e.target === e.currentTarget && setPick(null)}>
-          <div className="relative w-full sm:max-w-xl max-h-[90vh] overflow-auto rounded-t-3xl sm:rounded-xl bg-white p-2">
+          <div className="relative w-full sm:max-w-xl max-h-[90vh] overflow-auto rounded-t-3xl sm:rounded-3xl bg-card p-2">
             <button type="button" onClick={() => setPick(null)} className="absolute right-4 top-4 grid place-items-center size-9 rounded-full hover:bg-surface cursor-pointer z-10" aria-label="닫기"><X size={20} /></button>
             <Notice n={pick} {...cardProps} bare />
           </div>
@@ -165,7 +165,7 @@ export default function Programs() {
 function Notice({ n, why, onIcs, onAi, bare }) {
   const st = NLIB.status(n);
   return (
-    <article className={cx("rounded-xl bg-white p-5", !bare && "border border-line hover:border-brand-200 transition", st.k === "closed" && "opacity-60")}>
+    <article className={cx("rounded-2xl bg-card p-5", !bare && "transition hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]", st.k === "closed" && "opacity-60")}>
       <div className="flex flex-wrap gap-1.5 pr-10">
         <Badge tone={toneOf(st.cls)}>{st.label}</Badge>
         {(n.types || []).map((t) => <Badge key={t} tone="outline">{t}</Badge>)}
@@ -256,7 +256,7 @@ function Timeline() {
               return (
                 <li key={n.id} className="relative pl-6">
                   <span className="absolute -left-[7px] top-4 size-3 rounded-full bg-brand-600 ring-4 ring-surface" />
-                  <div className="rounded-xl bg-white border border-line p-4 grid sm:grid-cols-[72px_minmax(0,1fr)] gap-3">
+                  <div className="rounded-2xl bg-card p-4 grid sm:grid-cols-[72px_minmax(0,1fr)] gap-3">
                     <div><p className="text-lg font-semibold tabular-nums">{d.slice(5).replace("-", ".")}</p><p className="text-xs text-muted-foreground font-semibold">{st.k === "soon" ? "접수 시작" : n.end ? "접수 마감" : "게시"}</p></div>
                     <div className="min-w-0">
                       <a href={n.url} target="_blank" rel="noopener" className="font-semibold hover:text-brand-700">{n.title}</a>
