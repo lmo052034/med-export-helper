@@ -10,7 +10,7 @@
   font-display: swap;
 }
 
-/* Apple(iOS 26) 스타일 토큰: .claude/skills/apple-design 참고. 포인트 색(청록)은 그대로 */
+/* Apple 스타일 토큰: .claude/skills/apple-tokens 참고. 포인트 색(청록)은 그대로 */
 :root {
   --radius: 0.875rem;
   --background: #f5f5f7;               /* apple.com 회색 바탕 */
@@ -43,7 +43,7 @@
 }
 
 @theme inline {
-  --font-sans: "SF Pro KR", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Helvetica Neue", Arial, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -100,17 +100,25 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
-  html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-background text-foreground antialiased; font-size: 17px; line-height: 1.47059; letter-spacing: -0.022em; font-feature-settings: "kern"; word-break: keep-all; overflow-wrap: anywhere; }
-  h1, h2, h3 { letter-spacing: -0.015em; font-weight: 600; }
+  /* mobile-native: 탭 깜빡임·글자 확대·당겨서 새로고침 막기 */
+  html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+  a, button, label, [role="button"], input, select, textarea { touch-action: manipulation; }
+  button, [role="button"], [role="tab"] { -webkit-user-select: none; user-select: none; }
+  /* apple-design 15: 자간은 크기별로 (큰 글자는 좁게, 작은 글자는 0) */
+  body { @apply bg-background text-foreground antialiased; font-size: 17px; line-height: 1.47059; letter-spacing: -0.012em; font-feature-settings: "kern", "ss05"; font-optical-sizing: auto; text-rendering: optimizeLegibility; word-break: keep-all; overflow-wrap: anywhere; }
+  h1 { letter-spacing: -0.032em; font-weight: 700; line-height: 1.08; }
+  h2 { letter-spacing: -0.026em; font-weight: 700; }
+  h3 { letter-spacing: -0.02em; font-weight: 600; }
+  .text-xs, .text-\[11px\], .text-\[12px\], .text-\[13px\] { letter-spacing: 0; }
   ::selection { background: color-mix(in oklab, var(--primary) 25%, transparent); }
   button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 }
 
 /* 누를 때 살짝 줄어드는 iOS 느낌 */
 @layer components {
-  .press { transition: transform 0.15s ease-out, opacity 0.15s ease-out, background-color 0.2s ease-out; }
-  .press:active { transform: scale(0.97); opacity: 0.85; }
+  /* emil-design-eng: 누르는 순간 반응, transform만 움직임 */
+  .press { transition: transform 100ms ease-out, background-color 200ms ease-out, filter 200ms ease-out; }
+  .press:active { transform: scale(0.97); }
 }
 @media (prefers-reduced-motion: reduce) { .press, .press:active { transition: none; transform: none; } }
 

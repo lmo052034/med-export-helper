@@ -165,7 +165,7 @@ export function PageHeader({ path, desc, guide, actions }) {
   return (
     <header className="mb-10 sm:mb-14">
       <p className="text-[17px] font-semibold text-primary tabular-nums">STEP {s.n}</p>
-      <h1 className="mt-2 text-[36px] leading-[1.11] sm:text-[56px] sm:leading-[1.07] font-semibold tracking-[-0.015em] text-[#1d1d1f]">{s.name}</h1>
+      <h1 className="mt-2 text-[36px] leading-[1.11] sm:text-[56px] sm:leading-[1.07] font-semibold tracking-[-0.035em] text-[#1d1d1f]">{s.name}</h1>
       <p className="mt-4 max-w-[720px] text-[19px] sm:text-[21px] leading-[1.38] text-[#6e6e73]">{desc || s.what}</p>
       <p className="mt-3 text-[13px] text-[#86868b]">{s.kc} 방식</p>
       {actions && <div className="no-print mt-7 flex flex-wrap items-center gap-3">{actions}</div>}
