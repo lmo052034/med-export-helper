@@ -7,7 +7,7 @@ const Sheet = (props) => <SheetPrimitive.Root data-slot="sheet" {...props} />;
 function SheetContent({ className, children, side = "right", ...props }) {
   return (
     <SheetPrimitive.Portal>
-      <SheetPrimitive.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50" />
+      <SheetPrimitive.Overlay className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/25" />
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
