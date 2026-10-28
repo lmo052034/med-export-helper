@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @font-face {
   font-family: "Pretendard";
@@ -7,43 +10,103 @@
   font-display: swap;
 }
 
-/* 색은 세 가지만: 청록(주색) · 호박(주의) · 그래파이트(글자) */
-@theme {
-  --font-sans: "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
-  --color-brand-50: #eef7f5;
-  --color-brand-100: #d5ede8;
-  --color-brand-200: #a9d9cf;
-  --color-brand-500: #14907f;
-  --color-brand-600: #0d7a6c;
-  --color-brand-700: #0a6155;
-  --color-brand-800: #084c43;
-  --color-amber-50: #fdf6e9;
-  --color-amber-100: #f9e6c2;
-  --color-amber-500: #c98a26;
-  --color-amber-600: #b7791f;
-  --color-amber-700: #845411;
-  --color-ink: #1b1f22;
-  --color-ink-2: #41484d;
-  --color-muted: #6b747a;
-  --color-line: #e6e9e8;
-  --color-line-2: #d4dad7;
-  --color-surface: #f6f8f7;
-  --color-graphite: #232b2a;
+/* shadcn/ui (new-york, neutral) 테마. 포인트 색만 청록으로 바꿈 */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.52 0.088 180);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.52 0.088 180);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.955 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
-html { color-scheme: light; }
-body {
-  @apply bg-surface text-ink antialiased;
-  font-family: var(--font-sans);
-  letter-spacing: -0.01em;
+@theme inline {
+  --font-sans: "Pretendard", ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* 예전 화면 이름 → shadcn 색 */
+  --color-ink: var(--foreground);
+  --color-ink-2: oklch(0.4 0 0);
+  --color-line: var(--border);
+  --color-line-2: var(--input);
+  --color-surface: var(--muted);
+  --color-graphite: oklch(0.205 0 0);
+  --color-brand-50: oklch(0.975 0.012 180);
+  --color-brand-100: oklch(0.94 0.03 180);
+  --color-brand-200: oklch(0.87 0.055 180);
+  --color-brand-500: oklch(0.6 0.095 180);
+  --color-brand-600: var(--primary);
+  --color-brand-700: oklch(0.45 0.08 180);
+  --color-brand-800: oklch(0.38 0.07 180);
+  --color-amber-50: oklch(0.985 0.018 85);
+  --color-amber-100: oklch(0.95 0.05 85);
+  --color-amber-200: oklch(0.9 0.08 85);
+  --color-amber-500: oklch(0.7 0.13 75);
+  --color-amber-600: oklch(0.62 0.12 70);
+  --color-amber-700: oklch(0.48 0.1 65);
 }
-h1, h2, h3 { letter-spacing: -0.02em; }
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground antialiased; letter-spacing: -0.006em; }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+}
 
 /* 문서 미리보기(견적서·인보이스)만 인쇄 */
 @media print {
   .no-print { display: none !important; }
   body { background: #fff; }
-  /* 07 견적서: 고른 문서 한 장만 인쇄 */
   body:has(.print-on) .sheet:not(.print-on) { display: none !important; }
   .sheet { box-shadow: none !important; border: 0 !important; }
+  [data-slot="sidebar-inset"] { margin: 0 !important; box-shadow: none !important; border: 0 !important; }
 }

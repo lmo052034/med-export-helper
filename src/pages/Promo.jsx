@@ -71,43 +71,43 @@ ${text}`, "영문자료·홍보")}>현지어 번역 질문</Button>
         </>}
       />
 
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
-        <div className="grid gap-6 min-w-0">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
+        <div className="grid grid-cols-1 gap-6 min-w-0">
           <div>
             <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[["listing", "바이코리아 등록문", Store], ["sns", "LinkedIn 게시물", Megaphone], ["short", "1분 영상 대본", Film]]} />
             <Card>
               {tab === "listing" && (
                 <>
                   <SectionTitle>상품명</SectionTitle>
-                  <p className="text-lg font-bold">{S.product.slice(0, 80)}</p>
+                  <p className="text-lg font-semibold">{S.product.slice(0, 80)}</p>
                   <SectionTitle>검색 키워드</SectionTitle>
                   <div className="flex flex-wrap gap-1.5">{kw.map((k) => <Badge key={k} tone="teal">{k}</Badge>)}</div>
                   <SectionTitle>상품 설명</SectionTitle>
                   <Doc>{listingText}</Doc>
-                  <p className="text-[13px] text-muted mt-3">바이코리아는 제품 사진을 올리면 AI가 상품명·카테고리·설명을 자동으로 채워 줘요 (사례집 02-2). 자동 결과를 이 글로 고치면 돼요.</p>
+                  <p className="text-[13px] text-muted-foreground mt-3">바이코리아는 제품 사진을 올리면 AI가 상품명·카테고리·설명을 자동으로 채워 줘요 (사례집 02-2). 자동 결과를 이 글로 고치면 돼요.</p>
                 </>
               )}
               {tab === "sns" && (
-                <div className="max-w-xl rounded-2xl border border-line p-4">
+                <div className="max-w-xl rounded-xl border border-line p-4">
                   <div className="flex items-center gap-2.5 mb-3">
-                    <span className="grid place-items-center size-10 rounded-full bg-brand-600 text-white font-bold">{(S.company || "?")[0]}</span>
-                    <div><p className="font-bold text-[14.5px]">{S.company}</p><p className="text-[12px] text-muted">LinkedIn 미리보기</p></div>
+                    <span className="grid place-items-center size-10 rounded-full bg-brand-600 text-white font-semibold">{(S.company || "?")[0]}</span>
+                    <div><p className="font-semibold text-sm">{S.company}</p><p className="text-xs text-muted-foreground">LinkedIn 미리보기</p></div>
                   </div>
-                  <div className="text-[14.5px] leading-relaxed whitespace-pre-wrap">{snsText}</div>
+                  <div className="text-sm leading-relaxed whitespace-pre-wrap">{snsText}</div>
                 </div>
               )}
               {tab === "short" && (
                 <>
                   <ol className="grid gap-2">
                     {scenes.map(([t, v, n]) => (
-                      <li key={t} className="grid sm:grid-cols-[80px_160px_minmax(0,1fr)] gap-x-4 gap-y-1 rounded-xl bg-surface px-4 py-3 text-[14.5px]">
-                        <span className="font-bold text-brand-700 tabular-nums">{t}</span>
+                      <li key={t} className="grid sm:grid-cols-[80px_160px_minmax(0,1fr)] gap-x-4 gap-y-1 rounded-lg bg-surface px-4 py-3 text-sm">
+                        <span className="font-semibold text-brand-700 tabular-nums">{t}</span>
                         <span className="text-ink-2">{v}</span>
                         <span>{n}</span>
                       </li>
                     ))}
                   </ol>
-                  <p className="text-[13px] text-muted mt-3">경상 AI무역지원센터는 '특장점 정리 → 1분 숏폼 → 바이어 발굴 → 화상상담'으로 73개사의 첫 수출을 도왔어요 (사례집 03). 효능을 약속하는 문구는 넣지 않았어요.</p>
+                  <p className="text-[13px] text-muted-foreground mt-3">경상 AI무역지원센터는 '특장점 정리 → 1분 숏폼 → 바이어 발굴 → 화상상담'으로 73개사의 첫 수출을 도왔어요 (사례집 03). 효능을 약속하는 문구는 넣지 않았어요.</p>
                 </>
               )}
             </Card>
@@ -119,7 +119,7 @@ ${text}`, "영문자료·홍보")}>현지어 번역 질문</Button>
           <Card tone="soft">
             <CardHeader icon={Sparkles} title="AI무역지원센터에서 무료로 만들 수 있는 것" desc="사례집 03: 전국 20개 센터가 상용 AI로 홍보물을 무료 제작해요. 여기서 만든 글을 들고 가면 빨라요." />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              {TOOLS.map(([a, b]) => <div key={a} className="rounded-xl bg-white px-3.5 py-3 text-[14px]"><b className="block">{a}</b><span className="text-ink-2">{b}</span></div>)}
+              {TOOLS.map(([a, b]) => <div key={a} className="rounded-lg bg-white px-3.5 py-3 text-sm"><b className="block">{a}</b><span className="text-ink-2">{b}</span></div>)}
             </div>
           </Card>
         </div>

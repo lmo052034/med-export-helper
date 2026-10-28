@@ -1,25 +1,26 @@
-/* 화면 부품: 버튼·카드·배지·탭·입력·안내 상자. 모든 페이지가 같은 부품을 씁니다 */
+/* 페이지에서 쓰는 부품. 모양은 모두 shadcn/ui(components/ui/)를 따릅니다 */
 import { Check, Info, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "./ui/button.jsx";
+import { badgeVariants } from "./ui/badge.jsx";
+import { Input as SInput } from "./ui/input.jsx";
+import { Textarea as STextarea } from "./ui/textarea.jsx";
+import { NativeSelect } from "./ui/native-select.jsx";
+import { Progress as SProgress } from "./ui/progress.jsx";
 
-export const cx = (...a) => a.filter(Boolean).join(" ");
+export const cx = cn;
 
-const BTN = {
-  primary: "bg-brand-600 text-white hover:bg-brand-700 shadow-sm",
-  outline: "bg-white text-ink border border-line-2 hover:border-brand-500 hover:text-brand-700",
-  soft: "bg-brand-50 text-brand-700 hover:bg-brand-100",
-  ghost: "text-ink-2 hover:bg-surface",
-  amber: "bg-amber-50 text-amber-700 hover:bg-amber-100",
-};
-const BTN_SIZE = { sm: "h-8 px-3 text-[13.5px] gap-1.5 rounded-lg", md: "h-10 px-4 text-[15px] gap-2 rounded-xl", lg: "h-12 px-5 text-base gap-2 rounded-xl" };
+const VARIANT = { primary: "default", outline: "outline", soft: "secondary", ghost: "ghost", amber: "outline", link: "link" };
+const SIZE = { sm: "sm", md: "default", lg: "lg" };
 
 export function Button({ variant = "outline", size = "md", icon: Icon, className, as: As = "button", children, ...p }) {
   return (
     <As
-      className={cx("inline-flex items-center justify-center font-semibold whitespace-nowrap transition-colors cursor-pointer disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-brand-500", BTN[variant], BTN_SIZE[size], className)}
+      className={cn(buttonVariants({ variant: VARIANT[variant], size: SIZE[size] }), variant === "amber" && "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-700", className)}
       {...(As === "button" ? { type: "button" } : {})}
       {...p}
     >
-      {Icon && <Icon size={size === "sm" ? 15 : 17} strokeWidth={2.2} />}
+      {Icon && <Icon />}
       {children}
     </As>
   );
@@ -27,7 +28,7 @@ export function Button({ variant = "outline", size = "md", icon: Icon, className
 
 export function Card({ className, children, tone, ...p }) {
   return (
-    <section className={cx("rounded-2xl p-5 sm:p-6", tone === "soft" ? "bg-brand-50/60 border border-brand-100" : "bg-white border border-line shadow-[0_1px_2px_rgba(20,30,30,.04)]", className)} {...p}>
+    <section data-slot="card" className={cn("rounded-xl border p-5 sm:p-6", tone === "soft" ? "bg-muted/40" : "bg-card text-card-foreground shadow-sm", className)} {...p}>
       {children}
     </section>
   );
@@ -35,16 +36,16 @@ export function Card({ className, children, tone, ...p }) {
 
 export function CardHeader({ title, desc, action, icon: Icon }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+    <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
       <div className="flex gap-3 items-start min-w-0">
         {Icon && (
-          <span className="grid place-items-center size-9 rounded-xl bg-brand-50 text-brand-700 shrink-0">
-            <Icon size={18} strokeWidth={2.2} />
+          <span className="grid place-items-center size-8 rounded-md border bg-background text-primary shadow-xs shrink-0">
+            <Icon size={16} />
           </span>
         )}
-        <div className="min-w-0">
-          <h2 className="text-[17px] font-bold">{title}</h2>
-          {desc && <p className="text-sm text-muted mt-0.5">{desc}</p>}
+        <div className="min-w-0 grid gap-1">
+          <h2 className="leading-none font-semibold pt-0.5">{title}</h2>
+          {desc && <p className="text-sm text-muted-foreground">{desc}</p>}
         </div>
       </div>
       {action}
@@ -53,57 +54,57 @@ export function CardHeader({ title, desc, action, icon: Icon }) {
 }
 
 const BADGE = {
-  teal: "bg-brand-50 text-brand-700",
-  amber: "bg-amber-50 text-amber-700",
-  gray: "bg-surface text-ink-2",
-  blue: "bg-[#eaf1f7] text-[#2f6690]",
-  dark: "bg-graphite text-white",
-  outline: "bg-white text-ink-2 ring-1 ring-inset ring-line-2",
+  teal: "border-transparent bg-primary/10 text-brand-700",
+  amber: "border-amber-200 bg-amber-50 text-amber-700",
+  gray: "border-transparent bg-secondary text-secondary-foreground",
+  blue: "border-transparent bg-sky-50 text-sky-800",
+  dark: "border-transparent bg-foreground text-background",
+  outline: "text-foreground",
 };
 export function Badge({ tone = "gray", className, children }) {
-  return <span className={cx("inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[12.5px] font-semibold whitespace-nowrap align-middle", BADGE[tone], className)}>{children}</span>;
+  return <span className={cn(badgeVariants({ variant: "outline" }), BADGE[tone], "align-middle", className)}>{children}</span>;
 }
 // 예전 화면의 상태 이름(ok·warn·info·line·dark)을 배지 색으로
 export const toneOf = (cls) => ({ ok: "teal", warn: "amber", info: "blue", line: "outline", dark: "dark", "": "gray" }[cls] || "gray");
 
+/* shadcn Tabs 모양. 내용은 각 페이지가 value로 직접 바꿔 보여 줌 */
 export function Tabs({ tabs, value, onChange, className }) {
   return (
-    <div role="tablist" className={cx("flex gap-1 overflow-x-auto rounded-xl bg-white border border-line p-1 no-print [scrollbar-width:none]", className)}>
-      {tabs.map(([k, label, Icon]) => (
-        <button
-          key={k}
-          role="tab"
-          type="button"
-          aria-selected={value === k}
-          onClick={() => onChange(k)}
-          className={cx(
-            "flex items-center gap-1.5 shrink-0 rounded-lg px-3.5 h-9 text-[14.5px] font-semibold transition-colors cursor-pointer",
-            value === k ? "bg-brand-600 text-white shadow-sm" : "text-ink-2 hover:bg-surface"
-          )}
-        >
-          {Icon && <Icon size={16} />}
-          {label}
-        </button>
-      ))}
+    <div className={cn("no-print max-w-full overflow-x-auto [scrollbar-width:none]", className)}>
+      <div role="tablist" className="bg-muted text-muted-foreground inline-flex h-9 w-fit items-center rounded-lg p-[3px]">
+        {tabs.map(([k, label, Icon]) => (
+          <button
+            key={k}
+            role="tab"
+            type="button"
+            aria-selected={value === k}
+            data-state={value === k ? "active" : "inactive"}
+            onClick={() => onChange(k)}
+            className="inline-flex h-[calc(100%-1px)] shrink-0 items-center justify-center gap-1.5 rounded-md border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap text-foreground/70 transition-[color,box-shadow] hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm [&_svg]:size-4"
+          >
+            {Icon && <Icon />}
+            {label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
 
-const CTRL = "w-full rounded-xl border border-line-2 bg-white px-3 text-[15px] text-ink placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition";
-export const Input = ({ className, ...p }) => <input className={cx(CTRL, "h-10", className)} {...p} />;
-export const Textarea = ({ className, ...p }) => <textarea className={cx(CTRL, "py-2.5 min-h-24 resize-y", className)} {...p} />;
+export const Input = ({ className, ...p }) => <SInput className={className} {...p} />;
+export const Textarea = ({ className, ...p }) => <STextarea className={cn("min-h-24", className)} {...p} />;
 export function Select({ className, options, children, ...p }) {
   return (
-    <select className={cx(CTRL, "h-10 pr-8", className)} {...p}>
+    <NativeSelect className={className} {...p}>
       {options ? options.map((o) => (Array.isArray(o) ? <option key={o[0]} value={o[0]}>{o[1]}</option> : <option key={o}>{o}</option>)) : children}
-    </select>
+    </NativeSelect>
   );
 }
 export function Field({ label, hint, className, children }) {
   return (
-    <label className={cx("block mb-3", className)}>
-      <span className="block text-[13.5px] font-semibold text-ink-2 mb-1.5">
-        {label} {hint && <span className="font-normal text-muted">{hint}</span>}
+    <label className={cn("grid gap-2 mb-4", className)}>
+      <span className="text-sm leading-none font-medium">
+        {label} {hint && <span className="font-normal text-muted-foreground">{hint}</span>}
       </span>
       {children}
     </label>
@@ -114,28 +115,28 @@ export function Chip({ on, onClick, children }) {
   return (
     <button
       type="button"
+      aria-pressed={on}
       onClick={onClick}
-      className={cx("h-9 px-3.5 rounded-full text-[14px] font-semibold border transition-colors cursor-pointer", on ? "bg-brand-600 border-brand-600 text-white" : "bg-white border-line-2 text-ink-2 hover:border-brand-500")}
+      className={cn("inline-flex h-8 items-center rounded-md border px-3 text-sm font-medium shadow-xs transition-colors", on ? "border-primary bg-primary text-primary-foreground" : "bg-background hover:bg-accent")}
     >
       {children}
     </button>
   );
 }
 
+/* shadcn Alert 모양 */
 const CALLOUT = {
-  info: ["bg-[#eef4f9] text-[#24577d]", Info],
-  warn: ["bg-amber-50 text-amber-700", AlertTriangle],
-  ok: ["bg-brand-50 text-brand-700", Check],
+  info: ["bg-card text-card-foreground", Info, "text-muted-foreground"],
+  warn: ["border-amber-200 bg-amber-50 text-amber-800", AlertTriangle, "text-amber-800/90"],
+  ok: ["border-brand-200 bg-brand-50 text-brand-800", Check, "text-brand-800/90"],
 };
 export function Callout({ tone = "info", title, children, className }) {
-  const [c, Icon] = CALLOUT[tone];
+  const [c, Icon, d] = CALLOUT[tone];
   return (
-    <div className={cx("flex gap-3 rounded-2xl px-4 py-3.5 text-[14.5px] leading-relaxed", c, className)}>
-      <Icon size={18} className="shrink-0 mt-0.5" />
-      <div>
-        {title && <b className="block font-bold mb-0.5">{title}</b>}
-        {children}
-      </div>
+    <div role="alert" className={cn("relative w-full rounded-lg border px-4 py-3 text-sm grid grid-cols-[16px_1fr] gap-x-3 gap-y-0.5 items-start", c, className)}>
+      <Icon className="size-4 translate-y-0.5" />
+      {title && <div className="col-start-2 font-medium tracking-tight">{title}</div>}
+      <div className={cn("col-start-2 text-sm leading-relaxed", d)}>{children}</div>
     </div>
   );
 }
@@ -145,11 +146,11 @@ export function CheckList({ items }) {
   return (
     <ul className="grid gap-2">
       {items.map(([k, t], i) => (
-        <li key={i} className={cx("flex gap-2.5 items-start rounded-xl px-3 py-2.5 text-[14.5px]", k === "warn" ? "bg-amber-50 text-amber-700" : "bg-surface text-ink-2")}>
-          <span className={cx("grid place-items-center size-5 rounded-full text-white shrink-0 mt-0.5", k === "pass" ? "bg-brand-600" : k === "warn" ? "bg-amber-600" : "bg-[#2f6690]")}>
-            {k === "pass" ? <Check size={12} strokeWidth={3} /> : k === "warn" ? <span className="text-[11px] font-black">!</span> : <span className="text-[11px] font-black">i</span>}
+        <li key={i} className={cn("flex gap-2.5 items-start rounded-lg border px-3 py-2.5 text-sm", k === "warn" ? "border-amber-200 bg-amber-50 text-amber-800" : "bg-card")}>
+          <span className={cn("grid place-items-center size-4.5 rounded-full shrink-0 mt-px", k === "pass" ? "bg-primary text-primary-foreground" : k === "warn" ? "bg-amber-600 text-white" : "bg-muted text-muted-foreground border")}>
+            {k === "pass" ? <Check size={11} strokeWidth={3} /> : k === "warn" ? <span className="text-[10px] font-bold">!</span> : <span className="text-[10px] font-bold">i</span>}
           </span>
-          <span>{t}</span>
+          <span className="leading-relaxed">{t}</span>
         </li>
       ))}
     </ul>
@@ -157,30 +158,26 @@ export function CheckList({ items }) {
 }
 
 export function Progress({ value, tone = "brand", className }) {
-  return (
-    <div className={cx("h-1.5 rounded-full bg-line overflow-hidden", className)}>
-      <div className={cx("h-full rounded-full transition-all", tone === "amber" ? "bg-amber-500" : "bg-brand-600")} style={{ width: Math.max(0, Math.min(100, value)) + "%" }} />
-    </div>
-  );
+  return <SProgress value={Math.max(0, Math.min(100, value))} className={cn("h-1.5", tone === "amber" && "bg-amber-100", className)} indicatorClassName={tone === "amber" ? "bg-amber-500" : undefined} />;
 }
 
-// 표: 가로로 넘치면 표 안에서만 스크롤
+// 표: shadcn Table 모양, 가로로 넘치면 표 안에서만 스크롤
 export function Table({ head, children, className }) {
   return (
-    <div className={cx("overflow-x-auto rounded-xl border border-line", className)}>
-      <table className="w-full border-collapse text-[14px]">
+    <div className={cn("overflow-x-auto rounded-lg border", className)}>
+      <table className="w-full caption-bottom text-sm">
         {head && (
-          <thead>
+          <thead className="bg-muted/50 [&_tr]:border-b">
             <tr>
               {head.map((h, i) => (
-                <th key={i} className={cx("bg-surface text-left text-[12.5px] font-semibold text-muted px-3 py-2.5 border-b border-line whitespace-nowrap", h && h.num && "text-right")}>
+                <th key={i} className={cn("text-muted-foreground h-10 px-3 text-left align-middle font-medium whitespace-nowrap", h && h.num && "text-right")}>
                   {h && h.label !== undefined ? h.label : h}
                 </th>
               ))}
             </tr>
           </thead>
         )}
-        <tbody className="[&_td]:px-3 [&_td]:py-2.5 [&_td]:border-b [&_td]:border-line [&_td]:align-top [&_tr:last-child_td]:border-b-0">{children}</tbody>
+        <tbody className="[&_tr]:border-b [&_tr:last-child]:border-0 [&_tr]:transition-colors [&_tr:hover]:bg-muted/40 [&_td]:px-3 [&_td]:py-2.5 [&_td]:align-top">{children}</tbody>
       </table>
     </div>
   );
@@ -188,6 +185,6 @@ export function Table({ head, children, className }) {
 
 // 긴 글(영문 초안 등)을 보여 주는 상자
 export function Doc({ children, className }) {
-  return <div className={cx("rounded-xl bg-surface px-4 py-3.5 text-[14.5px] leading-relaxed whitespace-pre-wrap", className)}>{children}</div>;
+  return <div className={cn("rounded-lg border bg-muted/40 px-4 py-3.5 text-sm leading-relaxed whitespace-pre-wrap", className)}>{children}</div>;
 }
-export const SectionTitle = ({ children, className }) => <h3 className={cx("text-[12.5px] font-bold text-brand-700 mt-5 mb-2 first:mt-0", className)}>{children}</h3>;
+export const SectionTitle = ({ children, className }) => <h3 className={cn("text-sm font-medium text-muted-foreground mt-6 mb-2.5 first:mt-0", className)}>{children}</h3>;

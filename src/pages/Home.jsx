@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Building2, CalendarDays, ShieldCheck, Sparkles, ExternalLink } from "lucide-react";
+import { ArrowRight, Building2, CalendarDays, ShieldCheck, Sparkles, ExternalLink, ListChecks } from "lucide-react";
 import { STEPS, REGIONS, SAMPLE_PROFILE, profile, setProfile, load } from "../lib/store.js";
 import { NLIB } from "../lib/notices.js";
 import { Badge, Button, Card, CardHeader, Field, Input, Select, toneOf } from "../components/ui.jsx";
@@ -17,29 +17,34 @@ export default function Home() {
 
   return (
     <>
-      <section className="relative overflow-hidden rounded-3xl bg-graphite text-white px-6 py-9 sm:px-10 sm:py-12">
-        <div className="absolute -right-16 -top-16 size-72 rounded-full bg-brand-600/30 blur-3xl" aria-hidden="true" />
-        <Badge className="bg-white/10 text-brand-100">2025 KOTRA AI 활용 우수사례집 구성을 따름</Badge>
-        <h1 className="relative mt-4 text-[28px] sm:text-[40px] font-bold leading-[1.2]">
-          처음 수출하는 의료기기 기업을 위한
-          <br />
-          <span className="text-brand-200">8단계 수출 도우미</span>
-        </h1>
-        <p className="relative mt-4 max-w-2xl text-[16px] sm:text-[17px] text-white/75 leading-relaxed">
+      <header className="mb-6 sm:mb-8">
+        <Badge tone="teal">2025 KOTRA AI 활용 우수사례집 구성을 따름</Badge>
+        <h1 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight">처음 수출하는 의료기기 기업을 위한 8단계 수출 도우미</h1>
+        <p className="mt-2 max-w-3xl text-muted-foreground leading-relaxed">
           무엇부터 할지, 어떤 지원사업을 신청할지, 바이어에게 무엇을 보낼지 순서대로 안내해요. 회원가입이나 설치 없이 바로 쓰고, 입력한 내용은 이 브라우저에만 저장돼요.
         </p>
-        <div className="relative mt-7 flex flex-wrap gap-2.5">
-          <Button as={Link} to="/readiness" variant="primary" size="lg" icon={Sparkles}>01 준비 진단부터 시작</Button>
-          <Button as={Link} to="/programs" size="lg" icon={CalendarDays} className="bg-white/10 border-white/15 text-white hover:bg-white/15 hover:text-white hover:border-white/30">지원사업 공고 보기</Button>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Button as={Link} to="/readiness" variant="primary" icon={Sparkles}>01 준비 진단부터 시작</Button>
+          <Button as={Link} to="/programs" icon={CalendarDays}>지원사업 공고 보기</Button>
         </div>
-        <dl className="relative mt-9 grid grid-cols-3 gap-4 max-w-lg">
-          {[["8단계", "수출 순서"], [NLIB.data.items.length + "건", "지원사업 공고"], ["0원", "가입 없이 무료"]].map(([a, b]) => (
-            <div key={b}><dt className="text-[22px] sm:text-[26px] font-bold">{a}</dt><dd className="text-[13px] text-white/60">{b}</dd></div>
-          ))}
-        </dl>
-      </section>
+      </header>
 
-      <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {[
+          ["수출 순서", "8단계", "KOTRA 사례집 순서 그대로", ListChecks],
+          ["지원사업 공고", NLIB.data.items.length + "건", "매일 아침 새로 모아요", CalendarDays],
+          ["진단 기준", "52개", "8단계 수출 여정별 점검", ShieldCheck],
+          ["이용료", "0원", "가입·설치 없이 무료", Sparkles],
+        ].map(([k, v, d, Icon]) => (
+          <div key={k} className="rounded-xl border bg-gradient-to-t from-primary/5 to-card shadow-xs p-4 sm:p-5">
+            <div className="flex items-center justify-between text-sm text-muted-foreground">{k}<Icon className="size-4" /></div>
+            <p className="mt-2 text-2xl sm:text-3xl font-semibold tabular-nums tracking-tight">{v}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{d}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
         <div className="grid gap-6">
           <Card>
             <CardHeader
@@ -70,18 +75,18 @@ export default function Home() {
 
           <div>
             <div className="flex items-end justify-between mb-3">
-              <h2 className="text-xl font-bold">이 순서대로 하세요</h2>
-              <span className="text-[13px] text-muted">KOTRA 사례집 순서</span>
+              <h2 className="text-lg font-semibold tracking-tight">이 순서대로 하세요</h2>
+              <span className="text-[13px] text-muted-foreground">KOTRA 사례집 순서</span>
             </div>
             <ol className="grid sm:grid-cols-2 gap-3">
               {STEPS.map((s) => (
                 <li key={s.path}>
-                  <Link to={s.path} className="group flex h-full gap-4 rounded-2xl border border-line bg-white p-4 hover:border-brand-500 hover:shadow-sm transition">
-                    <span className="grid place-items-center size-11 shrink-0 rounded-xl bg-brand-50 text-brand-700 font-bold tabular-nums group-hover:bg-brand-600 group-hover:text-white transition-colors">{s.n}</span>
+                  <Link to={s.path} className="group flex h-full gap-4 rounded-xl border bg-card p-4 shadow-xs hover:bg-accent/60 transition-colors">
+                    <span className="grid place-items-center size-9 shrink-0 rounded-md border bg-background text-sm font-semibold tabular-nums text-primary shadow-xs group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary transition-colors">{s.n}</span>
                     <div className="min-w-0">
-                      <h3 className="font-bold text-[16px]">{s.name}</h3>
-                      <p className="text-[14px] text-ink-2 mt-0.5 leading-relaxed">{s.what}</p>
-                      <p className="text-[12.5px] text-muted mt-1.5">{s.kc} 방식</p>
+                      <h3 className="font-medium">{s.name}</h3>
+                      <p className="text-sm text-ink-2 mt-0.5 leading-relaxed">{s.what}</p>
+                      <p className="text-xs text-muted-foreground mt-1.5">{s.kc} 방식</p>
                     </div>
                   </Link>
                 </li>
@@ -94,26 +99,26 @@ export default function Home() {
           <Card>
             <CardHeader icon={CalendarDays} title="우리 회사에 맞는 공고" desc={`${goal.region} 기업 · 관심 지역 ${goal.areas.join(", ") || "전체"} 기준`} />
             {recs.length ? (
-              <ul className="divide-y divide-line -my-1">
+              <ul className="divide-y -my-1">
                 {recs.map(({ n, st, why }) => (
                   <li key={n.id} className="py-3">
                     <Badge tone={toneOf(st.cls)}>{st.label}</Badge>
-                    <a href={n.url} target="_blank" rel="noopener" className="mt-1.5 flex gap-1 font-semibold text-[15px] leading-snug hover:text-brand-700">
+                    <a href={n.url} target="_blank" rel="noopener" className="mt-1.5 flex gap-1 font-medium text-sm leading-snug hover:text-primary">
                       {n.title}
-                      <ExternalLink size={13} className="shrink-0 mt-1 text-muted" />
+                      <ExternalLink size={13} className="shrink-0 mt-1 text-muted-foreground" />
                     </a>
-                    <p className="text-[13px] text-muted mt-1">{n.org} · {why.slice(0, 2).join(" · ")}</p>
+                    <p className="text-[13px] text-muted-foreground mt-1">{n.org} · {why.slice(0, 2).join(" · ")}</p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-[14px] text-muted">지금 맞는 공고가 없어요. 목표를 넓혀 보세요.</p>
+              <p className="text-sm text-muted-foreground">지금 맞는 공고가 없어요. 목표를 넓혀 보세요.</p>
             )}
             <Button as={Link} to="/programs" variant="soft" className="mt-4 w-full">지원사업 캘린더 전체 보기 <ArrowRight size={16} /></Button>
           </Card>
           <Card tone="soft">
             <CardHeader icon={ShieldCheck} title="이 도구의 약속" />
-            <ul className="grid gap-2.5 text-[14.5px] text-ink-2">
+            <ul className="grid gap-2.5 text-sm text-ink-2">
               <li>AI는 찾고, 정리하고, 초안을 써요. 숫자·세율·인증은 사람이 공식자료로 확인해요.</li>
               <li>답마다 출처를 붙이고, 확인한 내용은 기록으로 남겨요.</li>
               <li>공고는 원문 링크로 연결해요. 신청 전에 꼭 원문을 읽으세요.</li>

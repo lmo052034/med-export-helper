@@ -2,7 +2,7 @@
 
 사이트: https://lmo052034.github.io/med-export-helper/
 
-수출을 처음 준비하는 의료기기 기업을 위한 웹앱입니다 (React + Tailwind, GitHub Pages 배포). 화면 구성은 **2025 KOTRA AI 활용 우수사례집**의 순서를 그대로 따릅니다. 로그인 없이 브라우저에서 바로 열립니다.
+수출을 처음 준비하는 의료기기 기업을 위한 웹앱입니다 (React + Tailwind + shadcn/ui, GitHub Pages 배포). 화면 구성은 **2025 KOTRA AI 활용 우수사례집**의 순서를 그대로 따릅니다. 로그인 없이 브라우저에서 바로 열립니다.
 
 화면에 미리 들어 있는 회사·제품(한결메디칼 HG-200)은 **가상 예시**입니다. 홈 화면에서 우리 회사 정보로 바꾸면 모든 페이지가 함께 바뀝니다.
 
@@ -43,7 +43,7 @@
 
 - 로컬: `npm install` → `npm run dev`
 - 배포용 빌드: `npm run build` (main에 push하면 Actions가 자동으로 빌드·배포)
-- 화면 코드: `src/pages/` (페이지), `src/components/` (공통 부품), `src/lib/` (기준·사례·공고 데이터)
+- 화면 코드: `src/pages/` (페이지), `src/components/ui/` (shadcn/ui 부품), `src/components/` (공통 부품·화면 틀), `src/lib/` (기준·사례·공고 데이터)
 - 수집기 시험: `BIZINFO_KEY=… node scripts/collect-notices.mjs`
 
 ## 데이터 원칙

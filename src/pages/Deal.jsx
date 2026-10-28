@@ -167,8 +167,8 @@ ${email.body}`;
     <>
       <span className="absolute top-4 right-4 text-[10.5px] font-extrabold uppercase tracking-wide text-amber-700 border-[1.5px] border-amber-600 rounded-md px-2 py-0.5">Assumed for simulation</span>
       <div className="flex justify-between gap-5 border-b-2 border-graphite pb-3 mt-4">
-        <div><p className="font-extrabold text-[15px]">{D.seller.co}</p><p className="text-[12px] text-ink-2">{D.seller.addr}<br />Tel {D.seller.tel} · {D.seller.email}</p></div>
-        <p className="text-right text-[12px]"><b>No.</b> {no}<br /><b>Date</b> {fmtDate(date)}</p>
+        <div><p className="font-extrabold text-sm">{D.seller.co}</p><p className="text-xs text-ink-2">{D.seller.addr}<br />Tel {D.seller.tel} · {D.seller.email}</p></div>
+        <p className="text-right text-xs"><b>No.</b> {no}<br /><b>Date</b> {fmtDate(date)}</p>
       </div>
       <h2 className="text-2xl font-extrabold tracking-[.06em] my-5">{title}</h2>
     </>
@@ -177,11 +177,11 @@ ${email.body}`;
     const x = extra(inco);
     return (
       <div className="overflow-x-auto">
-        <table className="w-full text-[12.5px] border-collapse">
+        <table className="w-full text-xs border-collapse">
           <thead><tr className="bg-graphite text-white text-[11px]">{["No.", "Description", "HS Code", "Q'ty", "Unit Price", "Amount"].map((h, i) => <th key={h} className={cx("px-2 py-2 text-left font-semibold", i >= 3 && "text-right")}>{h}</th>)}</tr></thead>
           <tbody className="[&_td]:px-2 [&_td]:py-2 [&_td]:border-b [&_td]:border-line [&_td]:align-top">
             {D.items.map((it, k) => (
-              <tr key={k}><td>{k + 1}</td><td><b>{it.model}</b><br /><span className="text-muted">{it.desc}</span></td><td className="whitespace-nowrap">{it.hs}</td><td className="text-right whitespace-nowrap">{it.qty} set</td><td className="text-right whitespace-nowrap">{usd(it.unit)}</td><td className="text-right whitespace-nowrap">{usd((+it.qty || 0) * (+it.unit || 0))}</td></tr>
+              <tr key={k}><td>{k + 1}</td><td><b>{it.model}</b><br /><span className="text-muted-foreground">{it.desc}</span></td><td className="whitespace-nowrap">{it.hs}</td><td className="text-right whitespace-nowrap">{it.qty} set</td><td className="text-right whitespace-nowrap">{usd(it.unit)}</td><td className="text-right whitespace-nowrap">{usd((+it.qty || 0) * (+it.unit || 0))}</td></tr>
             ))}
             {x.f > 0 && <tr><td /><td>Freight</td><td /><td /><td /><td className="text-right">{usd(x.f)}</td></tr>}
             {x.i > 0 && <tr><td /><td>Insurance</td><td /><td /><td /><td className="text-right">{usd(x.i)}</td></tr>}
@@ -193,11 +193,11 @@ ${email.body}`;
   };
   const Hl = ({ bad, children }) => <span className={cx("rounded px-1", bad ? "bg-amber-50 outline-[1.5px] outline outline-amber-600" : "bg-brand-50")}>{children}</span>;
   const Terms = ({ rows }) => (
-    <dl className="grid grid-cols-[130px_minmax(0,1fr)] sm:grid-cols-[150px_minmax(0,1fr)] gap-x-3 gap-y-1 mt-4 text-[12.5px]">
-      {rows.map(([a, b]) => <div key={a} className="contents"><dt className="font-bold text-ink-2">{a}</dt><dd>{b}</dd></div>)}
+    <dl className="grid grid-cols-[130px_minmax(0,1fr)] sm:grid-cols-[150px_minmax(0,1fr)] gap-x-3 gap-y-1 mt-4 text-xs">
+      {rows.map(([a, b]) => <div key={a} className="contents"><dt className="font-semibold text-ink-2">{a}</dt><dd>{b}</dd></div>)}
     </dl>
   );
-  const Box = ({ k, children }) => <div className="border border-line-2 rounded-md px-3 py-2.5"><p className="text-[10.5px] font-extrabold text-muted uppercase tracking-wide mb-1">{k}</p>{children}</div>;
+  const Box = ({ k, children }) => <div className="border border-line-2 rounded-md px-3 py-2.5"><p className="text-[10.5px] font-extrabold text-muted-foreground uppercase tracking-wide mb-1">{k}</p>{children}</div>;
   const sheet = (id) => cx("sheet relative bg-white border border-line rounded-lg shadow-[0_10px_30px_rgba(20,30,30,.08)] px-5 pt-10 pb-8 sm:px-11 sm:pt-12 text-[13px]", printDoc === id && "print-on");
 
   const Quote = () => (
@@ -205,12 +205,12 @@ ${email.body}`;
       <SheetHead title="QUOTATION" no={D.qno} date={D.qdate} />
       <div className="grid sm:grid-cols-2 gap-3 my-4">
         <Box k="Messrs."><b>{D.buyer.co}</b><br />Attn: {D.buyer.name}, {D.buyer.title}<br />{D.buyer.addr}</Box>
-        <Box k="Validity">{D.valid} days from {fmtDate(D.qdate)}<p className="text-[10.5px] font-extrabold text-muted uppercase tracking-wide mt-2 mb-1">Country of origin</p>Republic of Korea</Box>
+        <Box k="Validity">{D.valid} days from {fmtDate(D.qdate)}<p className="text-[10.5px] font-extrabold text-muted-foreground uppercase tracking-wide mt-2 mb-1">Country of origin</p>Republic of Korea</Box>
       </div>
       <Items inco={D.inco} />
       <Terms rows={[["Delivery terms", <Hl key="t">{termsLine(D.inco)}</Hl>], ["Payment", <Hl key="p">{D.pay}</Hl>], ["Lead time", D.lead], ["Packing", D.pack], ["Transport", D.mode === "air" ? "By air" : "By sea"]]} />
-      <p className="mt-4 rounded-md bg-surface px-3 py-2.5 text-[12px]"><b>Remarks</b> · {remarks}</p>
-      <div className="flex justify-end mt-7"><p className="border-t border-ink pt-1 min-w-56 text-center text-[12px]">{D.seller.co}<br />Authorized signature</p></div>
+      <p className="mt-4 rounded-md bg-surface px-3 py-2.5 text-xs"><b>Remarks</b> · {remarks}</p>
+      <div className="flex justify-end mt-7"><p className="border-t border-ink pt-1 min-w-56 text-center text-xs">{D.seller.co}<br />Authorized signature</p></div>
     </div>
   );
   const Invoice = () => (
@@ -223,21 +223,21 @@ ${email.body}`;
         <Box k="Shipment">From Korea to {D.dest} · {D.mode === "air" ? "By air" : "By sea"}</Box>
       </div>
       <Items inco={invInco} />
-      <p className="text-[12px] mt-2"><b>SAY US DOLLARS {words(total(invInco))} ONLY.</b></p>
+      <p className="text-xs mt-2"><b>SAY US DOLLARS {words(total(invInco))} ONLY.</b></p>
       <Terms rows={[["Terms of delivery", <Hl key="t" bad={invInco !== D.inco}>{termsLine(invInco)}</Hl>], ["Terms of payment", <Hl key="p" bad={invPay !== D.pay}>{invPay}</Hl>], ["Packing", D.pack], ["N.W. / G.W.", `${D.nw || "–"} kg / ${D.gw || "TBD"} kg`], ["Country of origin", "Republic of Korea"]]} />
-      <p className="mt-4 rounded-md bg-surface px-3 py-2.5 text-[12px]">Assumed for simulation. Values and terms follow quotation {D.qno}.</p>
-      <div className="flex justify-end mt-7"><p className="border-t border-ink pt-1 min-w-56 text-center text-[12px]">{D.seller.co}<br />Signed by</p></div>
+      <p className="mt-4 rounded-md bg-surface px-3 py-2.5 text-xs">Assumed for simulation. Values and terms follow quotation {D.qno}.</p>
+      <div className="flex justify-end mt-7"><p className="border-t border-ink pt-1 min-w-56 text-center text-xs">{D.seller.co}<br />Signed by</p></div>
     </div>
   );
   const MailDoc = () => (
     <div className={sheet("mail")}>
       <span className="absolute top-4 right-4 text-[10.5px] font-extrabold uppercase tracking-wide text-amber-700 border-[1.5px] border-amber-600 rounded-md px-2 py-0.5">Assumed for simulation</span>
       <dl className="grid grid-cols-[64px_minmax(0,1fr)] gap-y-1 border-b border-line pb-3 mb-4 text-[13px]">
-        <dt className="text-muted font-semibold">To</dt><dd>{D.buyer.name} &lt;{D.buyer.email}&gt;</dd>
-        <dt className="text-muted font-semibold">Subject</dt><dd className="font-bold">{email.subject}</dd>
-        <dt className="text-muted font-semibold">Attach</dt><dd>{D.qno}.pdf · product brochure.pdf</dd>
+        <dt className="text-muted-foreground font-semibold">To</dt><dd>{D.buyer.name} &lt;{D.buyer.email}&gt;</dd>
+        <dt className="text-muted-foreground font-semibold">Subject</dt><dd className="font-semibold">{email.subject}</dd>
+        <dt className="text-muted-foreground font-semibold">Attach</dt><dd>{D.qno}.pdf · product brochure.pdf</dd>
       </dl>
-      <div className="text-[14px] leading-relaxed whitespace-pre-wrap">{email.body}</div>
+      <div className="text-sm leading-relaxed whitespace-pre-wrap">{email.body}</div>
       <div className="no-print flex flex-wrap items-center gap-2 mt-5">
         <Badge tone={wc >= 150 && wc <= 250 ? "teal" : "amber"}>{wc} words · 목표 약 200</Badge>
         <Button size="sm" icon={Copy} onClick={() => copy("Subject: " + email.subject + "\n\n" + email.body, "이메일을 복사했어요")}>이메일 복사</Button>
@@ -245,7 +245,7 @@ ${email.body}`;
     </div>
   );
 
-  const H = ({ children }) => <h3 className="text-[12.5px] font-bold text-brand-700 mt-6 mb-2.5 first:mt-0">{children}</h3>;
+  const H = ({ children }) => <h3 className="text-xs font-semibold text-brand-700 mt-6 mb-2.5 first:mt-0">{children}</h3>;
   return (
     <>
       <PageHeader
@@ -273,10 +273,10 @@ ${email.body}`;
         <aside className="no-print grid grid-cols-[minmax(0,1fr)] gap-6 min-w-0">
           <Card>
             <CardHeader icon={ShieldCheck} title="서류 검사" desc="견적서와 인보이스의 같은 항목을 비교해요." />
-            <div className="rounded-xl border border-line overflow-hidden mb-4">
+            <div className="rounded-lg border border-line overflow-hidden mb-4">
               {rows.map(([k, a, b]) => (
-                <div key={k} className="flex items-center justify-between gap-3 px-3 py-2.5 border-b border-line last:border-b-0 text-[13.5px]">
-                  <div className="min-w-0"><p className="font-semibold">{k}</p><p className="text-[12px] text-muted truncate">{a}{a !== b && <> → <b className="text-amber-700">{b}</b></>}</p></div>
+                <div key={k} className="flex items-center justify-between gap-3 px-3 py-2.5 border-b border-line last:border-b-0 text-sm">
+                  <div className="min-w-0"><p className="font-semibold">{k}</p><p className="text-xs text-muted-foreground truncate">{a}{a !== b && <> → <b className="text-amber-700">{b}</b></>}</p></div>
                   <Badge tone={a === b ? "teal" : "amber"}>{a === b ? "같음" : "다름"}</Badge>
                 </div>
               ))}
@@ -307,7 +307,7 @@ ${email.body}`;
                   <Input type="number" min="0" value={it.unit} onChange={(e) => setRow("items", k, "unit", e.target.value === "" ? "" : +e.target.value)} className="h-9 px-2 text-[13px]" aria-label="단가 USD" />
                 </div>
               ))}
-              <p className="text-[12px] text-muted">모델 · 수량 · 단가(USD)</p>
+              <p className="text-xs text-muted-foreground">모델 · 수량 · 단가(USD)</p>
             </div>
 
             <H>거래조건</H>
@@ -320,7 +320,7 @@ ${email.body}`;
             {(NEEDS_FREIGHT.includes(D.inco) || NEEDS_FREIGHT.includes(invInco)) && (
               <div className="grid grid-cols-2 gap-x-3"><Field label="운임 USD"><Input type="number" {...bind("freight")} /></Field><Field label="보험료 USD"><Input type="number" {...bind("ins")} /></Field></div>
             )}
-            {D.inco === "EXW" && <label className="flex gap-2 items-center text-[14px] font-semibold mb-3"><input type="checkbox" className="size-4 accent-brand-600" {...bind("sellerClear", "checkbox")} /> EXW지만 수출통관은 판매자가 대행</label>}
+            {D.inco === "EXW" && <label className="flex gap-2 items-center text-sm font-semibold mb-3"><input type="checkbox" className="size-4 accent-brand-600" {...bind("sellerClear", "checkbox")} /> EXW지만 수출통관은 판매자가 대행</label>}
             <div className="grid grid-cols-2 gap-x-3">
               <Field label="납기"><Input {...bind("lead")} /></Field>
               <Field label="견적 유효(일)"><Input type="number" {...bind("valid")} /></Field>
@@ -344,7 +344,7 @@ ${email.body}`;
                 <div key={k} className="grid grid-cols-[minmax(0,1fr)_80px] gap-1.5">
                   <Input value={c.name} placeholder={`경쟁 제품 ${k + 1}`} onChange={(e) => setRow("comp", k, "name", e.target.value)} className="h-9 px-2 text-[13px]" />
                   <Input type="number" value={c.price} placeholder="USD" onChange={(e) => setRow("comp", k, "price", e.target.value)} className="h-9 px-2 text-[13px]" />
-                  <Input value={c.src} placeholder="출처 URL·일자" onChange={(e) => setRow("comp", k, "src", e.target.value)} className="col-span-2 h-8 px-2 text-[12.5px] bg-surface border-transparent" />
+                  <Input value={c.src} placeholder="출처 URL·일자" onChange={(e) => setRow("comp", k, "src", e.target.value)} className="col-span-2 h-8 px-2 text-xs bg-surface border-transparent" />
                 </div>
               ))}
             </div>
@@ -354,9 +354,9 @@ ${email.body}`;
             <Field label="바이어 설명" hint="We understand [회사] …"><Input {...bind("market")} /></Field>
             <Field label="제품 소개 문장 (영문)"><Textarea {...bind("pitch")} /></Field>
             <div className="grid grid-cols-2 gap-x-3"><Field label="보내는 사람"><Input {...bind("sender")} /></Field><Field label="직함"><Input {...bind("senderTitle")} /></Field></div>
-            <p className="text-[13.5px] font-semibold text-ink-2 mb-1.5">강조할 점</p>
+            <p className="text-sm font-semibold text-ink-2 mb-1.5">강조할 점</p>
             {[["pt.akl", "현지 인허가 서류 지원"], ["pt.train", "클리닉 교육"], ["pt.service", "부품 공급·원격 기술지원"]].map(([k, l]) => (
-              <label key={k} className="flex gap-2 items-center text-[14px] mb-1.5"><input type="checkbox" className="size-4 accent-brand-600" {...bind(k, "checkbox")} /> {l}</label>
+              <label key={k} className="flex gap-2 items-center text-sm mb-1.5"><input type="checkbox" className="size-4 accent-brand-600" {...bind(k, "checkbox")} /> {l}</label>
             ))}
           </Card>
         </aside>

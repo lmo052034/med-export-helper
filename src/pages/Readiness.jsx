@@ -11,7 +11,7 @@ const { C, IND, STATUS, STAGES, KREF, SAMPLE } = CRIT;
 // G(AI 활용)는 모든 단계에 공통이라 9번째 묶음으로 둡니다
 const GROUPS = [...STAGES, { n: 9, g: "모든 단계", name: "AI 활용·확인", ids: C.filter((c) => c.cat === "G").map((c) => c.id) }];
 const ANS = { y: "예", p: "일부", n: "아니오", na: "해당 없음" };
-const ANS_ON = { y: "bg-brand-600 text-white", p: "bg-amber-100 text-amber-700", n: "bg-graphite text-white", na: "bg-surface text-muted" };
+const ANS_ON = { y: "bg-brand-600 text-white", p: "bg-amber-100 text-amber-700", n: "bg-graphite text-white", na: "bg-surface text-muted-foreground" };
 const crit = (id) => C.find((c) => c.id === id);
 
 export default function Readiness() {
@@ -82,26 +82,26 @@ ${c.ind ? "참고 제도: " + IND.med[c.ind] + "\n" : ""}
       />
 
       <Card className="mb-6">
-        <div className="grid md:grid-cols-[200px_minmax(0,1fr)] gap-6 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-[200px_minmax(0,1fr)] gap-6 items-center">
           <div>
-            <p className="text-[14px] text-muted font-semibold">지금 준비된 정도</p>
-            <p className="text-[56px] font-bold leading-none text-brand-700 mt-2 tabular-nums">{total}<span className="text-2xl text-muted">%</span></p>
+            <p className="text-sm text-muted-foreground font-semibold">지금 준비된 정도</p>
+            <p className="text-[56px] font-semibold leading-none text-brand-700 mt-2 tabular-nums">{total}<span className="text-2xl text-muted-foreground">%</span></p>
             <Progress value={total} className="mt-4" />
-            <p className="text-[13px] text-muted mt-2">예 {counts.y} · 일부 {counts.p} · 아니오 {counts.n} · 아직 {counts[""]}</p>
+            <p className="text-[13px] text-muted-foreground mt-2">예 {counts.y} · 일부 {counts.p} · 아니오 {counts.n} · 아직 {counts[""]}</p>
           </div>
           <div>
-            <p className="text-[13px] text-muted font-semibold mb-2.5">KOTRA AI 수출비서의 8단계 수출 여정 · 누르면 그 단계 질문으로 가요</p>
+            <p className="text-[13px] text-muted-foreground font-semibold mb-2.5">KOTRA AI 수출비서의 8단계 수출 여정 · 누르면 그 단계 질문으로 가요</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {STAGES.map((s) => {
                 const p = calc(s.ids.map(crit));
                 const on = view === "stage" && stage === s.n;
                 return (
                   <button key={s.n} type="button" onClick={() => { setStage(s.n); setView("stage"); }}
-                    className={cx("text-left rounded-xl border p-3 transition cursor-pointer", on ? "border-brand-500 ring-2 ring-brand-100 bg-brand-50/40" : "border-line bg-white hover:border-brand-200")}>
-                    <p className="text-[11.5px] text-muted font-bold">{s.n} · {s.g}</p>
-                    <p className="text-[14px] font-bold mt-0.5 mb-2 leading-snug">{s.name}</p>
+                    className={cx("text-left rounded-lg border p-3 transition cursor-pointer", on ? "border-brand-500 ring-2 ring-brand-100 bg-brand-50/40" : "border-line bg-white hover:border-brand-200")}>
+                    <p className="text-[11.5px] text-muted-foreground font-semibold">{s.n} · {s.g}</p>
+                    <p className="text-sm font-semibold mt-0.5 mb-2 leading-snug">{s.name}</p>
                     <Progress value={p} />
-                    <p className="text-[12px] text-ink-2 mt-1.5 tabular-nums">{p}% · {s.ids.length}문항</p>
+                    <p className="text-xs text-ink-2 mt-1.5 tabular-nums">{p}% · {s.ids.length}문항</p>
                   </button>
                 );
               })}
@@ -122,41 +122,41 @@ ${c.ind ? "참고 제도: " + IND.med[c.ind] + "\n" : ""}
               {GROUPS.map((x) => <Chip key={x.n} on={x.n === stage} onClick={() => setStage(x.n)}>{x.n < 9 ? x.n + ". " : ""}{x.name}</Chip>)}
             </div>
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h2 className="text-xl font-bold">{g.n < 9 ? g.n + "단계 · " : ""}{g.name}</h2>
+              <h2 className="text-xl font-semibold">{g.n < 9 ? g.n + "단계 · " : ""}{g.name}</h2>
               <Badge tone="teal">{calc(g.ids.map(crit))}%</Badge>
             </div>
-            <p className="text-[14px] text-muted mb-4">{g.g} · {g.ids.length}문항</p>
+            <p className="text-sm text-muted-foreground mb-4">{g.g} · {g.ids.length}문항</p>
             <div className="grid gap-2.5">
               {g.ids.map((id) => {
                 const c = crit(id), s = st(id), isOpen = open.has(id);
                 const k = (KREF[id] || []).map((x) => KCASES.CASES.find((y) => y.id === x)).filter(Boolean);
                 return (
-                  <div key={id} id={"q-" + id} className={cx("rounded-2xl border bg-white transition", isOpen ? "border-brand-200 shadow-sm" : "border-line")}>
-                    <div className="grid md:grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-center p-4">
+                  <div key={id} id={"q-" + id} className={cx("rounded-xl border bg-white transition", isOpen ? "border-brand-200 shadow-sm" : "border-line")}>
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto] gap-3 md:items-center p-4">
                       <div>
-                        <p className="font-bold text-[15.5px]"><span className="text-[12px] text-muted mr-1.5">{id}</span>{c.t}</p>
-                        <p className="text-[14px] text-ink-2 mt-0.5">{c.need}</p>
-                        <button type="button" onClick={() => toggle(id)} className="mt-1.5 inline-flex items-center gap-1 text-[13.5px] font-semibold text-brand-700 cursor-pointer">
+                        <p className="font-semibold text-sm"><span className="text-xs text-muted-foreground mr-1.5">{id}</span>{c.t}</p>
+                        <p className="text-sm text-ink-2 mt-0.5">{c.need}</p>
+                        <button type="button" onClick={() => toggle(id)} className="mt-1.5 inline-flex items-center gap-1 text-sm font-semibold text-brand-700 cursor-pointer">
                           {isOpen ? "접기" : "자세히"} <ChevronDown size={15} className={cx("transition", isOpen && "rotate-180")} />
                         </button>
                       </div>
-                      <div className="inline-flex rounded-xl border border-line-2 overflow-hidden self-start md:self-center">
+                      <div className="inline-flex rounded-lg border border-line-2 overflow-hidden self-start md:self-center">
                         {["y", "p", "n", "na"].map((x) => (
                           <button key={x} type="button" onClick={() => setAns(id, x)}
-                            className={cx("px-3 h-9 text-[13.5px] font-semibold border-r border-line last:border-r-0 cursor-pointer whitespace-nowrap", s === x ? ANS_ON[x] : "bg-white text-ink-2 hover:bg-surface")}>
+                            className={cx("px-3 h-9 text-sm font-semibold border-r border-line last:border-r-0 cursor-pointer whitespace-nowrap", s === x ? ANS_ON[x] : "bg-white text-ink-2 hover:bg-surface")}>
                             {ANS[x]}
                           </button>
                         ))}
                       </div>
                     </div>
                     {isOpen && (
-                      <div className="border-t border-line px-4 py-4 text-[14.5px]">
+                      <div className="border-t border-line px-4 py-4 text-sm">
                         <dl className="grid sm:grid-cols-[120px_minmax(0,1fr)] gap-x-4 gap-y-2">
                           {[["'예'의 기준", c.ok], ["'일부'는", c.part], ["확인할 곳", c.src], c.ind && ["의료기기 참고", IND.med[c.ind]], ["AI가 할 일", c.ai], ["사람이 할 일", c.human]].filter(Boolean).map(([a, b]) => (
-                            <div key={a} className="contents"><dt className="text-[13px] font-semibold text-muted">{a}</dt><dd>{b}</dd></div>
+                            <div key={a} className="contents"><dt className="text-[13px] font-semibold text-muted-foreground">{a}</dt><dd>{b}</dd></div>
                           ))}
                           {k.length > 0 && (
-                            <div className="contents"><dt className="text-[13px] font-semibold text-muted">KOTRA 사례</dt>
+                            <div className="contents"><dt className="text-[13px] font-semibold text-muted-foreground">KOTRA 사례</dt>
                               <dd className="flex flex-wrap gap-x-3">{k.map((x) => <Link key={x.id} to={"/cases/" + x.id} className="text-brand-700 font-semibold hover:underline">{x.no} {x.title}</Link>)}</dd></div>
                           )}
                         </dl>
@@ -184,15 +184,15 @@ function Todo({ gaps, st, note, onAsk, onGoto }) {
   if (!gaps.length) return <Callout tone="ok">부족한 항목이 없어요.</Callout>;
   return (
     <Card>
-      <p className="text-[14px] text-muted mb-2">중요한데 아직 안 된 것부터 골랐어요. '자세히'를 누르면 어디서 확인하는지 나와요.</p>
+      <p className="text-sm text-muted-foreground mb-2">중요한데 아직 안 된 것부터 골랐어요. '자세히'를 누르면 어디서 확인하는지 나와요.</p>
       <ol className="divide-y divide-line">
         {gaps.map(({ c }, k) => (
           <li key={c.id} className="flex gap-4 py-4">
-            <span className="grid place-items-center size-10 shrink-0 rounded-xl bg-brand-50 text-brand-700 font-bold">{k + 1}</span>
+            <span className="grid place-items-center size-10 shrink-0 rounded-lg bg-brand-50 text-brand-700 font-semibold">{k + 1}</span>
             <div className="min-w-0">
-              <h3 className="font-bold text-[16px]">{c.t}</h3>
-              <p className="text-[14.5px] text-ink-2 mt-0.5">{c.need}</p>
-              <p className="text-[13px] text-muted mt-1">지금: {note(c.id) || (st(c.id) ? ANS[st(c.id)] : "아직 답하지 않음")} · 확인할 곳: {c.src}</p>
+              <h3 className="font-semibold text-base">{c.t}</h3>
+              <p className="text-sm text-ink-2 mt-0.5">{c.need}</p>
+              <p className="text-[13px] text-muted-foreground mt-1">지금: {note(c.id) || (st(c.id) ? ANS[st(c.id)] : "아직 답하지 않음")} · 확인할 곳: {c.src}</p>
               <div className="flex gap-2 mt-3">
                 <Button size="sm" variant="primary" icon={MessageCircleQuestion} onClick={() => onAsk(c)}>AI에게 묻기</Button>
                 <Button size="sm" onClick={() => onGoto(c.id)}>자세히</Button>
@@ -232,21 +232,21 @@ function Ask({ P, ask }) {
       <Card className="bg-graphite! border-graphite! text-white">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold">수출 전략 보고서 (7개 항목)</h2>
-            <p className="text-[14px] text-white/65 mt-0.5">한 번에 큰 그림을 보고 싶을 때</p>
+            <h2 className="text-lg font-semibold">수출 전략 보고서 (7개 항목)</h2>
+            <p className="text-sm text-white/65 mt-0.5">한 번에 큰 그림을 보고 싶을 때</p>
           </div>
           <Button variant="primary" icon={FileText} onClick={() => ask("수출 전략 보고서 질문", report, "나라 고르기")}>보고서 질문 만들기</Button>
         </div>
       </Card>
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {L.map(([t, qs]) => (
           <Card key={t}>
-            <h3 className="font-bold">{t}</h3>
+            <h3 className="font-semibold">{t}</h3>
             <ul className="mt-3 grid gap-2">
               {qs.map((q) => (
                 <li key={q}>
                   <button type="button" onClick={() => ask("AI 수출비서 질문", q + rule, "회사·제품")}
-                    className="w-full text-left rounded-xl bg-surface hover:bg-brand-50 px-3.5 py-2.5 text-[14px] text-ink-2 hover:text-brand-800 transition cursor-pointer flex gap-2">
+                    className="w-full text-left rounded-lg bg-surface hover:bg-brand-50 px-3.5 py-2.5 text-sm text-ink-2 hover:text-brand-800 transition cursor-pointer flex gap-2">
                     <MessageCircleQuestion size={16} className="shrink-0 mt-0.5 text-brand-600" />
                     {q}
                   </button>

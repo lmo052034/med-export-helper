@@ -41,16 +41,16 @@ export default function Cases() {
       <header className="mb-6 sm:mb-8">
         <div className="flex flex-wrap items-center gap-2 text-[13px] font-semibold">
           <span className="rounded-lg bg-graphite text-white px-2 py-0.5">KOTRA AI 활용 우수사례집 2025</span>
-          <span className="text-muted">사례 11개 (세부 14건)</span>
+          <span className="text-muted-foreground">사례 11개 (세부 14건)</span>
         </div>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-          <h1 className="text-[26px] sm:text-[32px] font-bold leading-tight">KOTRA 사례로 보는 수출 준비</h1>
+          <h1 className="text-[26px] sm:text-[32px] font-semibold leading-tight">KOTRA 사례로 보는 수출 준비</h1>
           <div className="no-print flex flex-wrap gap-2">
             <Button icon={ClipboardCopy} onClick={() => copy(summary, "사례 요약을 복사했어요")}>사례 요약 복사</Button>
             <Button as={Link} to="/readiness" variant="primary" icon={ArrowRight}>01 진단으로</Button>
           </div>
         </div>
-        <p className="mt-2.5 max-w-3xl text-[16px] text-ink-2 leading-relaxed">
+        <p className="mt-2.5 max-w-3xl text-base text-ink-2 leading-relaxed">
           2025 KOTRA AI 활용 우수사례집의 사례를 문제 → AI 방식 → 성과로 정리하고, 각 사례를 우리 회사가 할 일과 이 도우미의 페이지에 연결했어요. 점검 상태는 <Link className="text-brand-700 font-semibold underline underline-offset-2" to="/readiness">01 수출 준비 진단</Link>에 입력한 값을 그대로 보여 줘요.
         </p>
       </header>
@@ -59,10 +59,10 @@ export default function Cases() {
         <CardHeader icon={Lightbulb} title="사례집에서 반복되는 원칙 5가지" desc="이 도우미도 같은 원칙으로 만들었어요." />
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
           {PATTERNS.map(([t, d, k]) => (
-            <div key={t} className="flex flex-col rounded-xl bg-surface px-4 py-3.5 text-[14px]">
-              <b className="text-[15px] mb-1">{t}</b>
+            <div key={t} className="flex flex-col rounded-lg bg-surface px-4 py-3.5 text-sm">
+              <b className="text-sm mb-1">{t}</b>
               <span className="text-ink-2 flex-1">{d}</span>
-              <button type="button" className="mt-2 self-start text-brand-700 font-semibold text-[13.5px] hover:underline cursor-pointer" onClick={() => jump(k)}>사례 {CASES.find((c) => c.id === k).no} →</button>
+              <button type="button" className="mt-2 self-start text-brand-700 font-semibold text-sm hover:underline cursor-pointer" onClick={() => jump(k)}>사례 {CASES.find((c) => c.id === k).no} →</button>
             </div>
           ))}
         </div>
@@ -75,11 +75,11 @@ export default function Cases() {
             const p = pct(s.ids), nk = CASES.filter((c) => c.stage.includes(s.n)).length;
             return (
               <button key={s.n} type="button" onClick={() => setStage(stage === s.n ? 0 : s.n)} aria-pressed={stage === s.n}
-                className={cx("text-left rounded-xl px-3.5 py-3 border transition-colors cursor-pointer", stage === s.n ? "bg-brand-600 border-brand-600 text-white" : "bg-white border-line hover:border-brand-500")}>
-                <p className={cx("text-[12px] font-semibold", stage === s.n ? "text-white/75" : "text-muted")}>{s.n} · {s.g}</p>
-                <p className="font-bold text-[14.5px] mt-0.5">{s.name}</p>
+                className={cx("text-left rounded-lg px-3.5 py-3 border transition-colors cursor-pointer", stage === s.n ? "bg-brand-600 border-brand-600 text-white" : "bg-white border-line hover:border-brand-500")}>
+                <p className={cx("text-xs font-semibold", stage === s.n ? "text-white/75" : "text-muted-foreground")}>{s.n} · {s.g}</p>
+                <p className="font-semibold text-sm mt-0.5">{s.name}</p>
                 <div className={cx("h-1.5 rounded-full mt-2 overflow-hidden", stage === s.n ? "bg-white/25" : "bg-line")}><i className={cx("block h-full rounded-full", stage === s.n ? "bg-white" : "bg-brand-600")} style={{ width: p + "%" }} /></div>
-                <p className={cx("flex justify-between text-[12px] mt-1.5", stage === s.n ? "text-white/80" : "text-muted")}><span>기준 {s.ids.length} · 사례 {nk}</span><b className={stage === s.n ? "text-white" : "text-ink"}>{p}%</b></p>
+                <p className={cx("flex justify-between text-xs mt-1.5", stage === s.n ? "text-white/80" : "text-muted-foreground")}><span>기준 {s.ids.length} · 사례 {nk}</span><b className={stage === s.n ? "text-white" : "text-ink"}>{p}%</b></p>
               </button>
             );
           })}
@@ -91,26 +91,26 @@ export default function Cases() {
         {stage > 0 && <Chip on={false} onClick={() => setStage(0)}><span className="inline-flex items-center gap-1">단계 {stage} 해제 <X size={13} /></span></Chip>}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {list.map((c) => (
-          <article key={c.id} id={c.id} className={cx("scroll-mt-24 rounded-2xl bg-white border p-5 sm:p-6 grid gap-4 content-start transition-shadow", hl === c.id ? "border-brand-500 ring-4 ring-brand-100" : "border-line")}>
+          <article key={c.id} id={c.id} className={cx("scroll-mt-24 rounded-xl bg-white border p-5 sm:p-6 grid gap-4 content-start transition-shadow", hl === c.id ? "border-brand-500 ring-4 ring-brand-100" : "border-line")}>
             <div className="flex justify-between gap-3 items-start">
               <div>
-                <p className="text-[12.5px] font-bold text-brand-700">사례 {c.no} · p.{c.p}</p>
-                <h2 className="text-[19px] font-bold leading-snug mt-0.5">{c.title}</h2>
-                <p className="text-[14px] text-muted">{c.sub}</p>
+                <p className="text-xs font-semibold text-brand-700">사례 {c.no} · p.{c.p}</p>
+                <h2 className="text-lg font-semibold leading-snug mt-0.5">{c.title}</h2>
+                <p className="text-sm text-muted-foreground">{c.sub}</p>
               </div>
               <Badge tone={c.use === "direct" ? "teal" : "blue"} className="shrink-0">{c.use === "direct" ? "직접 이용" : "방식 차용"}</Badge>
             </div>
-            <div><p className="text-[12px] font-bold text-muted mb-1">문제</p><p className="text-[14.5px] text-ink-2 leading-relaxed">{c.problem}</p></div>
-            <div><p className="text-[12px] font-bold text-muted mb-1">AI 방식</p><p className="text-[14.5px] text-ink-2 leading-relaxed">{c.ai}</p></div>
+            <div><p className="text-xs font-semibold text-muted-foreground mb-1">문제</p><p className="text-sm text-ink-2 leading-relaxed">{c.problem}</p></div>
+            <div><p className="text-xs font-semibold text-muted-foreground mb-1">AI 방식</p><p className="text-sm text-ink-2 leading-relaxed">{c.ai}</p></div>
             <div>
-              <p className="text-[12px] font-bold text-muted mb-1.5">성과 (사례집 수치)</p>
+              <p className="text-xs font-semibold text-muted-foreground mb-1.5">성과 (사례집 수치)</p>
               <div className="grid sm:grid-cols-2 gap-2">
-                {c.result.map(([a, b]) => <div key={a} className="rounded-xl bg-surface px-3.5 py-2.5"><b className="block text-[16px] text-brand-700">{a}</b><span className="text-[13px] text-ink-2">{b}</span></div>)}
+                {c.result.map(([a, b]) => <div key={a} className="rounded-lg bg-surface px-3.5 py-2.5"><b className="block text-base text-brand-700">{a}</b><span className="text-[13px] text-ink-2">{b}</span></div>)}
               </div>
             </div>
-            <div className="rounded-xl bg-amber-50 px-4 py-3"><p className="text-[12px] font-bold text-amber-700 mb-1">우리 기업이 할 일</p><p className="text-[14.5px] leading-relaxed">{c.todo}</p></div>
+            <div className="rounded-lg bg-amber-50 px-4 py-3"><p className="text-xs font-semibold text-amber-700 mb-1">우리 기업이 할 일</p><p className="text-sm leading-relaxed">{c.todo}</p></div>
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
               <div className="flex flex-wrap gap-1.5">
                 {c.crit.map((k) => {
@@ -122,10 +122,10 @@ export default function Cases() {
             </div>
           </article>
         ))}
-        {!list.length && <p className="text-muted">조건에 맞는 사례가 없어요.</p>}
+        {!list.length && <p className="text-muted-foreground">조건에 맞는 사례가 없어요.</p>}
       </div>
 
-      <p className="mt-6 text-[13px] text-muted">출처: {SRC}. 수치는 사례집 표기 그대로이며, 서비스 신청 조건·운영 기간은 KOTRA 무역투자24에서 다시 확인하세요.</p>
+      <p className="mt-6 text-[13px] text-muted-foreground">출처: {SRC}. 수치는 사례집 표기 그대로이며, 서비스 신청 조건·운영 기간은 KOTRA 무역투자24에서 다시 확인하세요.</p>
     </>
   );
 }

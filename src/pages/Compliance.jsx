@@ -136,11 +136,11 @@ export default function Compliance() {
       />
 
       <div className="flex flex-wrap items-center gap-2 mb-6 no-print">
-        <span className="text-[14px] font-semibold text-ink-2 mr-1">수출할 나라</span>
+        <span className="text-sm font-semibold text-ink-2 mr-1">수출할 나라</span>
         {COUNTRIES.map((x) => <Chip key={x} on={x === c} onClick={() => setS({ ...S, c: x })}>{x}</Chip>)}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         <Card>
           <CardHeader icon={Hash} title="① HS 코드 정하기" desc="세금과 서류가 모두 이 번호로 정해져요. AI 답은 '후보'로만 쓰세요." />
           <div className="grid sm:grid-cols-2 gap-x-3">
@@ -152,15 +152,15 @@ export default function Compliance() {
           <ol className="grid gap-2.5 my-2">
             {[["류(2자리) 고르기", "의료기기는 대부분 제90류(광학·측정·의료용 기기)예요."], ["호(4자리) 비교하기", "아래 표에서 우리 제품의 원리·용도와 맞는 호를 고르고, 맞지 않는 호는 왜 아닌지 한 줄씩 적어요."], ["6자리 확정하기", "수출신고필증이 있으면 그 번호가 가장 확실해요. 처음이면 관세평가분류원 사전심사나 관세사에게 확인받아요."]].map(([t, d], k) => (
               <li key={t} className="flex gap-3">
-                <span className="grid place-items-center size-7 shrink-0 rounded-lg bg-brand-50 text-brand-700 text-[13px] font-bold">{k + 1}</span>
-                <p className="text-[14.5px]"><b className="block">{t}</b><span className="text-ink-2">{d}</span></p>
+                <span className="grid place-items-center size-7 shrink-0 rounded-lg bg-brand-50 text-brand-700 text-[13px] font-semibold">{k + 1}</span>
+                <p className="text-sm"><b className="block">{t}</b><span className="text-ink-2">{d}</span></p>
               </li>
             ))}
           </ol>
           <Table className="mt-4" head={["헷갈리는 호", "무엇이 들어가나"]}>
-            {HEADINGS.map(([h, d]) => <tr key={h}><td className="font-bold tabular-nums">{h}</td><td>{d}</td></tr>)}
+            {HEADINGS.map(([h, d]) => <tr key={h}><td className="font-semibold tabular-nums">{h}</td><td>{d}</td></tr>)}
           </Table>
-          <p className="text-[13px] text-muted mt-2">호의 범위는 관세법령정보포털·UNI-PASS의 호 해설 원문으로 확인하세요.</p>
+          <p className="text-[13px] text-muted-foreground mt-2">호의 범위는 관세법령정보포털·UNI-PASS의 호 해설 원문으로 확인하세요.</p>
         </Card>
 
         <Card>
@@ -182,9 +182,9 @@ export default function Compliance() {
               );
             })}
           </Table>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-[13.5px]">
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
             <Badge tone={best ? (best.x.ok ? "teal" : "amber") : "gray"}>{best ? `가장 낮은 세율 ${best.x.r}% · ${best.name}${best.x.ok ? "" : " (확인 전)"}` : "세율을 넣어 주세요"}</Badge>
-            <span className="text-muted">{I.note}</span>
+            <span className="text-muted-foreground">{I.note}</span>
           </div>
         </Card>
       </div>
@@ -193,25 +193,25 @@ export default function Compliance() {
         <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
           <CardHeader icon={Timer} title={`③ ${c} 의료기기 인허가 일정`} desc="단계별 기간은 추정값이에요. 규제기관 자료나 대행사 견적으로 고치면 전체 일정이 다시 계산돼요." />
           <div className="text-right">
-            <p className="text-[28px] font-bold text-brand-700 tabular-nums leading-none">{fmtM(curA)}–{fmtM(curB)}개월</p>
-            <p className="text-[13px] text-muted mt-1">첫 판매까지 예상</p>
+            <p className="text-[28px] font-semibold text-brand-700 tabular-nums leading-none">{fmtM(curA)}–{fmtM(curB)}개월</p>
+            <p className="text-[13px] text-muted-foreground mt-1">첫 판매까지 예상</p>
           </div>
         </div>
         <Callout tone={I.ce[0] ? "warn" : "ok"} title={I.ce[1]} className="mb-5">{I.ce[2]}</Callout>
         <div className="hidden md:grid grid-cols-[minmax(0,320px)_minmax(0,1fr)] gap-4 mb-1">
           <div />
-          <div className="flex justify-between text-[11.5px] text-muted tabular-nums">{Array.from({ length: max / 3 + 1 }, (_, k) => <span key={k}>{k * 3}개월</span>)}</div>
+          <div className="flex justify-between text-[11.5px] text-muted-foreground tabular-nums">{Array.from({ length: max / 3 + 1 }, (_, k) => <span key={k}>{k * 3}개월</span>)}</div>
         </div>
         <div className="grid gap-1">
           {rows.map((r, k) => (
-            <div key={k} className="grid md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] gap-x-4 gap-y-2 items-center py-3 border-t border-line">
+            <div key={k} className="grid grid-cols-1 md:grid-cols-[minmax(0,320px)_minmax(0,1fr)] gap-x-4 gap-y-2 items-center py-3 border-t border-line">
               <div>
-                <p className="font-semibold text-[14.5px]">{r.s[0]} {r.par && <Badge tone="blue">동시에</Badge>}</p>
-                <p className="text-[12.5px] text-muted">{r.s[1]}</p>
+                <p className="font-semibold text-sm">{r.s[0]} {r.par && <Badge tone="blue">동시에</Badge>}</p>
+                <p className="text-xs text-muted-foreground">{r.s[1]}</p>
                 <div className="flex items-center gap-1.5 mt-1.5 text-[13px]">
                   <Input type="number" min="0" step="0.5" value={r.v.a} onChange={(e) => setStep(k, "a", e.target.value)} className="w-16 h-8 px-2" aria-label="최소 개월" />–
                   <Input type="number" min="0" step="0.5" value={r.v.b} onChange={(e) => setStep(k, "b", e.target.value)} className="w-16 h-8 px-2" aria-label="최대 개월" />
-                  <span className="text-muted">개월 (추정)</span>
+                  <span className="text-muted-foreground">개월 (추정)</span>
                 </div>
               </div>
               <div className="relative h-7 rounded-lg bg-surface overflow-hidden">
@@ -221,10 +221,10 @@ export default function Compliance() {
             </div>
           ))}
         </div>
-        <p className="text-[12.5px] text-muted mt-3 flex gap-3"><span className="flex items-center gap-1.5"><i className="inline-block size-3 rounded bg-brand-600" />최소 기간</span><span className="flex items-center gap-1.5"><i className="inline-block size-3 rounded bg-brand-200" />길어질 수 있는 기간</span></p>
+        <p className="text-xs text-muted-foreground mt-3 flex gap-3"><span className="flex items-center gap-1.5"><i className="inline-block size-3 rounded bg-brand-600" />최소 기간</span><span className="flex items-center gap-1.5"><i className="inline-block size-3 rounded bg-brand-200" />길어질 수 있는 기간</span></p>
       </Card>
 
-      <div className="grid lg:grid-cols-2 gap-6 mt-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6 items-start">
         <Card>
           <CardHeader icon={ScanSearch} title="④ AI 답 검사" desc="ChatGPT 답을 붙여 넣으면 꼭 확인해야 할 부분(숫자·세율·HS·인증·법)에 표시하고, 어디서 확인하는지 알려 줘요." />
           <Field label="AI에게 한 질문"><Textarea value={vq.prompt} onChange={(e) => setVq({ ...vq, prompt: e.target.value })} placeholder="ChatGPT에 보낸 질문" className="min-h-20" /></Field>
@@ -232,10 +232,10 @@ export default function Compliance() {
           <Button variant="primary" icon={ScanSearch} onClick={() => setVq({ ...vq, done: true, fix: vq.fix || known.map((k) => k.msg).join(" ") })}>검사하기</Button>
           {vq.done && (
             <div className="mt-5 grid gap-3">
-              {!vt ? <p className="text-[14px] text-muted">AI 답을 붙여 넣어 주세요.</p> : (
+              {!vt ? <p className="text-sm text-muted-foreground">AI 답을 붙여 넣어 주세요.</p> : (
                 <>
                   {known.length > 0 && <Callout tone="warn" title="자주 나오는 오답과 비슷해요.">{known.map((k) => <p key={k.msg}>{k.msg}</p>)}</Callout>}
-                  <div className="rounded-xl bg-surface px-4 py-3 text-[14px] leading-relaxed whitespace-pre-wrap">{highlight(vt)}</div>
+                  <div className="rounded-lg bg-surface px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap">{highlight(vt)}</div>
                   <CheckList items={hits.length ? hits.map(({ r, m }) => ["warn", `${r.k} · ${m.slice(0, 5).join(", ")} → 확인할 곳: ${r.where}`]) : [["pass", "꼭 확인해야 할 내용은 찾지 못했어요. 요약·초안으로 써도 돼요."]]} />
                   <div className="grid sm:grid-cols-2 gap-x-3 mt-1">
                     <Field label="확인한 공식자료"><Input value={vq.src} onChange={(e) => setVq({ ...vq, src: e.target.value })} /></Field>
@@ -252,7 +252,7 @@ export default function Compliance() {
             <CardHeader icon={ExternalLink} title="공식 확인처" desc="AI 답은 여기서 확인해요. 확인한 화면은 캡처해 두세요." />
             <ul className="grid gap-1.5">
               {[...I.links, ...COMMON_LINKS].map(([n, u, d]) => (
-                <li key={u}><a href={u} target="_blank" rel="noopener" className="flex items-center justify-between gap-3 rounded-xl bg-surface hover:bg-brand-50 px-3.5 py-2.5 text-[14.5px] font-semibold">{n}<span className="text-[12.5px] font-normal text-muted text-right">{d}</span></a></li>
+                <li key={u}><a href={u} target="_blank" rel="noopener" className="flex items-center justify-between gap-3 rounded-lg bg-surface hover:bg-brand-50 px-3.5 py-2.5 text-sm font-semibold">{n}<span className="text-xs font-normal text-muted-foreground text-right">{d}</span></a></li>
               ))}
             </ul>
           </Card>

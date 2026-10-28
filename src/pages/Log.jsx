@@ -43,42 +43,42 @@ export default function Log() {
       </Callout>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 mb-6">
-        <div className="rounded-2xl bg-graphite text-white px-4 py-3"><p className="text-[12.5px] text-white/70">전체</p><p className="text-2xl font-bold tabular-nums">{rows.length}<span className="text-sm font-medium ml-0.5">건</span></p></div>
+        <div className="rounded-xl bg-graphite text-white px-4 py-3"><p className="text-xs text-white/70">전체</p><p className="text-2xl font-semibold tabular-nums">{rows.length}<span className="text-sm font-medium ml-0.5">건</span></p></div>
         {PARTS.map((p) => {
           const c = count(p);
           return (
-            <div key={p} className={cx("rounded-2xl border px-4 py-3", c < 3 ? "bg-amber-50 border-amber-100" : "bg-white border-line")}>
-              <p className="text-[12.5px] text-ink-2 truncate">{p}</p>
-              <p className="text-2xl font-bold tabular-nums">{c}<span className="text-sm font-medium ml-0.5">건</span></p>
+            <div key={p} className={cx("rounded-xl border px-4 py-3", c < 3 ? "bg-amber-50 border-amber-100" : "bg-white border-line")}>
+              <p className="text-xs text-ink-2 truncate">{p}</p>
+              <p className="text-2xl font-semibold tabular-nums">{c}<span className="text-sm font-medium ml-0.5">건</span></p>
               <div className="h-1.5 rounded-full bg-line mt-1.5 overflow-hidden"><i className={cx("block h-full rounded-full", c < 3 ? "bg-amber-500" : "bg-brand-600")} style={{ width: Math.min(100, c * 34) + "%" }} /></div>
             </div>
           );
         })}
       </div>
 
-      <section className="rounded-2xl bg-white border border-line overflow-hidden">
-        <div className="hidden md:grid grid-cols-[36px_140px_repeat(4,minmax(0,1fr))_44px] gap-2 px-4 py-3 bg-surface border-b border-line text-[12.5px] font-bold text-ink-2">
+      <section className="rounded-xl bg-white border border-line overflow-hidden">
+        <div className="hidden md:grid grid-cols-[36px_140px_repeat(4,minmax(0,1fr))_44px] gap-2 px-4 py-3 bg-surface border-b border-line text-xs font-semibold text-ink-2">
           <span>#</span>{COLS.map(([, l]) => <span key={l}>{l}</span>)}<span />
         </div>
-        {rows.length === 0 && <p className="px-5 py-8 text-center text-muted">기록이 없어요. '행 추가'를 누르거나 다른 페이지의 'AI에게 묻기'에서 남겨 보세요.</p>}
+        {rows.length === 0 && <p className="px-5 py-8 text-center text-muted-foreground">기록이 없어요. '행 추가'를 누르거나 다른 페이지의 'AI에게 묻기'에서 남겨 보세요.</p>}
         {rows.map((r, k) => (
           <div key={k} className={cx("grid md:grid-cols-[36px_140px_repeat(4,minmax(0,1fr))_44px] gap-2 px-4 py-3 border-b border-line last:border-b-0 items-start", r.seed && "bg-brand-50/40")}>
-            <span className="hidden md:block pt-2.5 text-muted tabular-nums">{k + 1}</span>
+            <span className="hidden md:block pt-2.5 text-muted-foreground tabular-nums">{k + 1}</span>
             <div className="flex items-center gap-2 md:block">
-              <span className="md:hidden text-muted text-[13px] tabular-nums">#{k + 1}</span>
-              <Select value={r.part} options={PARTS} onChange={(e) => edit(k, "part", e.target.value)} className="h-9 text-[13.5px]" aria-label="분야" />
+              <span className="md:hidden text-muted-foreground text-[13px] tabular-nums">#{k + 1}</span>
+              <Select value={r.part} options={PARTS} onChange={(e) => edit(k, "part", e.target.value)} className="h-9 text-sm" aria-label="분야" />
             </div>
             {COLS.slice(1).map(([f, l]) => (
               <label key={f} className="block">
-                <span className="md:hidden block text-[12px] font-bold text-muted mb-1">{l}</span>
-                <Textarea value={r[f] || ""} onChange={(e) => edit(k, f, e.target.value)} className="min-h-20 text-[13.5px] px-2.5 py-2" aria-label={l} />
+                <span className="md:hidden block text-xs font-semibold text-muted-foreground mb-1">{l}</span>
+                <Textarea value={r[f] || ""} onChange={(e) => edit(k, f, e.target.value)} className="min-h-20 text-sm px-2.5 py-2" aria-label={l} />
               </label>
             ))}
             <Button size="sm" variant="ghost" icon={Trash2} className="justify-self-end md:mt-1" onClick={() => setRows(rows.filter((_, j) => j !== k))} aria-label="삭제"><span className="md:hidden">삭제</span></Button>
           </div>
         ))}
       </section>
-      <p className="mt-3 text-[13px] text-muted flex gap-1.5 items-center"><Info size={14} /> 기록은 이 브라우저에만 저장돼요. 다른 컴퓨터로 옮기려면 CSV로 내보내세요.</p>
+      <p className="mt-3 text-[13px] text-muted-foreground flex gap-1.5 items-center"><Info size={14} /> 기록은 이 브라우저에만 저장돼요. 다른 컴퓨터로 옮기려면 CSV로 내보내세요.</p>
 
       <StepPager path="/log" />
     </>

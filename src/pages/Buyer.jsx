@@ -128,9 +128,9 @@ ${S.contact}`;
           return (
             <li key={t}>
               <button type="button" onClick={() => setTab(["match", "screen", "call", "minute"][k])}
-                className={"w-full h-full text-left rounded-2xl border px-4 py-3 transition cursor-pointer " + (on ? "border-brand-500 bg-brand-50/50 ring-2 ring-brand-100" : "border-line bg-white hover:border-brand-200")}>
-                <span className="text-[12px] font-bold text-brand-700">STEP {k + 1}</span>
-                <p className="font-bold mt-0.5">{t}</p>
+                className={"w-full h-full text-left rounded-xl border px-4 py-3 transition cursor-pointer " + (on ? "border-brand-500 bg-brand-50/50 ring-2 ring-brand-100" : "border-line bg-white hover:border-brand-200")}>
+                <span className="text-xs font-semibold text-brand-700">STEP {k + 1}</span>
+                <p className="font-semibold mt-0.5">{t}</p>
                 <p className="text-[13px] text-ink-2 mt-0.5 leading-snug">{d}</p>
               </button>
             </li>
@@ -138,8 +138,8 @@ ${S.contact}`;
         })}
       </ol>
 
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
-        <div className="grid gap-6 min-w-0">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
+        <div className="grid grid-cols-1 gap-6 min-w-0">
           <div>
             <Tabs className="mb-4" value={tab} onChange={setTab} tabs={[["match", "① 매칭용 제품 설명", FileSearch], ["screen", "② 바이어 고르기", Users], ["call", "③ 상담 대본", Mic], ["minute", "④ 상담일지·후속 메일", NotebookPen]]} />
             <Card>
@@ -148,30 +148,30 @@ ${S.contact}`;
                   <SectionTitle>KOTRA 바이어 매칭 신청 필수 4가지</SectionTitle>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {[["사업자등록번호", "신청서에 직접 적어요", "info"], ["HS 코드 6자리", S.hs || "비어 있음", S.hs ? "ok" : "warn"], ["영문 수출제품 설명", wc + "단어", wc >= 40 && wc <= 120 ? "ok" : "warn"], ["진출 희망 국가", S.country || "비어 있음", S.country ? "ok" : "warn"]].map(([a, b, t]) => (
-                      <div key={a} className="flex items-center justify-between gap-2 rounded-xl bg-surface px-3.5 py-2.5">
-                        <div><p className="font-semibold text-[14px]">{a}</p><p className="text-[13px] text-muted">{b}</p></div>
+                      <div key={a} className="flex items-center justify-between gap-2 rounded-lg bg-surface px-3.5 py-2.5">
+                        <div><p className="font-semibold text-sm">{a}</p><p className="text-[13px] text-muted-foreground">{b}</p></div>
                         <Badge tone={t === "ok" ? "teal" : t === "warn" ? "amber" : "blue"}>{t === "ok" ? "준비됨" : t === "warn" ? "보완" : "직접"}</Badge>
                       </div>
                     ))}
                   </div>
                   <SectionTitle>매칭용 영문 제품 설명</SectionTitle>
                   <Doc>{matchText}</Doc>
-                  <p className="text-[13px] text-muted mt-3">AI가 이 문장과 실제 수입 바이어의 선하증권(B/L) 품목 설명을 비교해 비슷한 바이어 20곳을 추천해요. 2025년 129개사에 바이어 2,473곳을 연결해 6개국 15건 계약이 나왔어요 (사례집 08-1). 꾸밈말보다 용도·사용처·구성을 정확히 쓰세요.</p>
+                  <p className="text-[13px] text-muted-foreground mt-3">AI가 이 문장과 실제 수입 바이어의 선하증권(B/L) 품목 설명을 비교해 비슷한 바이어 20곳을 추천해요. 2025년 129개사에 바이어 2,473곳을 연결해 6개국 15건 계약이 나왔어요 (사례집 08-1). 꾸밈말보다 용도·사용처·구성을 정확히 쓰세요.</p>
                 </>
               )}
               {tab === "screen" && (
                 <>
-                  <p className="text-[14px] text-ink-2 mb-3">KOTRA 매칭이나 통관 데이터 서비스(Export Genius·Abrams 등)로 받은 바이어를 같은 기준으로 점수 매겨요. <b>현지 확인을 '안 함'이면 점수와 상관없이 연락하지 않아요.</b></p>
+                  <p className="text-sm text-ink-2 mb-3">KOTRA 매칭이나 통관 데이터 서비스(Export Genius·Abrams 등)로 받은 바이어를 같은 기준으로 점수 매겨요. <b>현지 확인을 '안 함'이면 점수와 상관없이 연락하지 않아요.</b></p>
                   <Table head={["바이어", ...SV.map((v) => v[1]), { label: "합계", num: true }, "판단"]}>
                     {S.buyers.map((b, i) => {
                       const tot = total(b), hold = (+b.v || 1) === 1;
                       return (
                         <tr key={i}>
-                          <td><Input value={b.n} onChange={(e) => setBuyer(i, "n", e.target.value)} className="min-w-28 h-9 px-2 text-[13.5px]" /></td>
+                          <td><Input value={b.n} onChange={(e) => setBuyer(i, "n", e.target.value)} className="min-w-28 h-9 px-2 text-sm" /></td>
                           {SV.map(([k, , opt]) => (
                             <td key={k}><Select value={b[k]} onChange={(e) => setBuyer(i, k, +e.target.value)} className="h-9 text-[13px] min-w-32 px-2" options={opt.map((o, j) => [j + 1, `${j + 1} · ${o}`])} /></td>
                           ))}
-                          <td className="text-right font-bold tabular-nums whitespace-nowrap">{tot}/15</td>
+                          <td className="text-right font-semibold tabular-nums whitespace-nowrap">{tot}/15</td>
                           <td>{hold ? <Badge tone="dark">연락 보류</Badge> : tot >= 12 ? <Badge tone="teal">먼저 연락</Badge> : <Badge tone="amber">검토</Badge>}</td>
                         </tr>
                       );
@@ -181,13 +181,13 @@ ${S.contact}`;
                     <Button size="sm" icon={Plus} onClick={() => setS({ ...S, buyers: [...S.buyers, { n: "Buyer " + String.fromCharCode(65 + S.buyers.length), f: 1, q: 1, s: 1, d: 2, v: 1 }] })}>바이어 추가</Button>
                     <Button size="sm" variant="soft" icon={Sparkles} onClick={() => ask("통관 데이터 바이어 분석 질문", screenPrompt, "바이어·상담")}>통관 데이터 분석 질문</Button>
                   </div>
-                  <p className="text-[13px] text-muted mt-3">기준 출처: KOTRA 'AI 수출 부스터'. 알제무역관은 바이어의 공급처 비중 변화를 포착해 끊긴 거래를 되살렸어요 (62만 달러, 사례집 08-2).</p>
+                  <p className="text-[13px] text-muted-foreground mt-3">기준 출처: KOTRA 'AI 수출 부스터'. 알제무역관은 바이어의 공급처 비중 변화를 포착해 끊긴 거래를 되살렸어요 (62만 달러, 사례집 08-2).</p>
                 </>
               )}
               {tab === "call" && (
                 <>
                   <Doc>{callText}</Doc>
-                  <p className="text-[13px] text-muted mt-3">KOTRA 상담회는 AI 통번역 자막을 휴대폰으로 보여 줘요 (사례집 07). 통역이 없을 때는 이 대본을 짧은 문장으로 유지하세요.</p>
+                  <p className="text-[13px] text-muted-foreground mt-3">KOTRA 상담회는 AI 통번역 자막을 휴대폰으로 보여 줘요 (사례집 07). 통역이 없을 때는 이 대본을 짧은 문장으로 유지하세요.</p>
                 </>
               )}
               {tab === "minute" && (
@@ -196,7 +196,7 @@ ${S.contact}`;
                   <Doc>{logText}</Doc>
                   <SectionTitle>후속 메일</SectionTitle>
                   <Doc>{mailText}</Doc>
-                  <p className="text-[13px] text-muted mt-3">KOTRA는 상담 음성을 바로 글로 바꿔 일지를 만들고, 상담 요약·진출 전략·다음 준비 사항을 담은 진단보고서를 기업에 줘요. 녹음을 AI로 요약할 때는 바이어 동의를 받으세요.</p>
+                  <p className="text-[13px] text-muted-foreground mt-3">KOTRA는 상담 음성을 바로 글로 바꿔 일지를 만들고, 상담 요약·진출 전략·다음 준비 사항을 담은 진단보고서를 기업에 줘요. 녹음을 AI로 요약할 때는 바이어 동의를 받으세요.</p>
                 </>
               )}
             </Card>

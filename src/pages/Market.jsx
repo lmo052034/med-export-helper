@@ -130,18 +130,18 @@ export default function Market() {
 
       <Callout className="mb-6">HS 6자리 코드는 범위가 넓어요. 예를 들어 9018.90은 '그 밖의 의료기기' 전체라서, 이 수입액을 우리 제품 시장 규모라고 말하면 안 돼요. 한계를 함께 적어 두세요.</Callout>
 
-      <div className="grid xl:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-6 items-start">
         <Card className="min-w-0">
           <CardHeader icon={BarChart3} title="비교표" desc="칸마다 숫자 · 출처 · 연도를 넣어요. 나라 이름은 맨 위에서 바꿀 수 있어요." />
           <div className="grid grid-cols-3 md:grid-cols-[200px_repeat(3,minmax(0,1fr))] gap-2 md:gap-3 pb-3 border-b border-line">
-            <span className="hidden md:block text-[12.5px] font-semibold text-muted self-end">기준 · 나라 이름</span>
-            {IDS.map((c) => <Input key={c} value={names[c]} onChange={(e) => setName(c, e.target.value)} className="font-bold px-2.5" aria-label="나라 이름" />)}
+            <span className="hidden md:block text-xs font-semibold text-muted-foreground self-end">기준 · 나라 이름</span>
+            {IDS.map((c) => <Input key={c} value={names[c]} onChange={(e) => setName(c, e.target.value)} className="font-semibold px-2.5" aria-label="나라 이름" />)}
           </div>
           {IND.map((i) => (
-            <div key={i.id} className="grid md:grid-cols-[200px_repeat(3,minmax(0,1fr))] gap-3 py-4 border-b border-line last:border-b-0">
+            <div key={i.id} className="grid grid-cols-1 md:grid-cols-[200px_repeat(3,minmax(0,1fr))] gap-3 py-4 border-b border-line last:border-b-0">
               <div>
-                <p className="font-bold">{i.label}</p>
-                <p className="text-[12.5px] text-muted mt-0.5 leading-snug">{i.desc} · {i.unit}</p>
+                <p className="font-semibold">{i.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{i.desc} · {i.unit}</p>
                 <Badge tone={i.dir > 0 ? "teal" : "amber"} className="mt-1.5">{i.dir > 0 ? "높을수록 좋음" : "낮을수록 좋음"}</Badge>
               </div>
               <div className="grid grid-cols-3 md:contents gap-2">
@@ -149,10 +149,10 @@ export default function Market() {
                   const x = cell(i.id, c);
                   return (
                     <div key={c} className="grid gap-1.5 content-start min-w-0">
-                      <span className="md:hidden text-[11.5px] font-semibold text-muted truncate">{names[c]}</span>
+                      <span className="md:hidden text-[11.5px] font-semibold text-muted-foreground truncate">{names[c]}</span>
                       <Input type="number" step="any" placeholder={i.unit} value={x.v} onChange={(e) => setCell(i.id, c, "v", e.target.value)} className="font-semibold tabular-nums px-2.5" />
-                      <Input placeholder="출처" value={x.src} onChange={(e) => setCell(i.id, c, "src", e.target.value)} className="h-8 text-[12.5px] px-2.5 bg-surface border-transparent" />
-                      <Input placeholder="연도" value={x.yr} onChange={(e) => setCell(i.id, c, "yr", e.target.value)} className="h-8 text-[12.5px] px-2.5 bg-surface border-transparent" />
+                      <Input placeholder="출처" value={x.src} onChange={(e) => setCell(i.id, c, "src", e.target.value)} className="h-8 text-xs px-2.5 bg-surface border-transparent" />
+                      <Input placeholder="연도" value={x.yr} onChange={(e) => setCell(i.id, c, "yr", e.target.value)} className="h-8 text-xs px-2.5 bg-surface border-transparent" />
                     </div>
                   );
                 })}
@@ -163,10 +163,10 @@ export default function Market() {
             <Button size="sm" variant="ghost" icon={SlidersHorizontal} onClick={() => setShowW(!showW)}>기준별 중요도 바꾸기 (선택)</Button>
             {showW && (
               <div className="mt-3">
-                <p className="text-[13.5px] text-muted mb-3">중요한 기준일수록 크게. 왜 그렇게 정했는지 한 줄로 설명할 수 있어야 해요.</p>
+                <p className="text-sm text-muted-foreground mb-3">중요한 기준일수록 크게. 왜 그렇게 정했는지 한 줄로 설명할 수 있어야 해요.</p>
                 <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
                   {IND.map((i) => (
-                    <label key={i.id} className="flex items-center gap-3 text-[14px]">
+                    <label key={i.id} className="flex items-center gap-3 text-sm">
                       <span className="w-24 shrink-0">{i.label}</span>
                       <input type="range" min="0" max="40" step="5" value={w(i.id)} onChange={(e) => setS({ ...S, w: { ...S.w, [i.id]: +e.target.value } })} className="flex-1 accent-brand-600" />
                       <output className="w-6 text-right tabular-nums font-semibold">{w(i.id)}</output>
@@ -184,22 +184,22 @@ export default function Market() {
             <div className="grid gap-3">
               {R.ranked.map((c, k) => (
                 <div key={c}>
-                  <div className="flex justify-between text-[14.5px] font-semibold mb-1"><span>{k + 1}. {names[c]}</span><span className="tabular-nums">{R.r[c].s.toFixed(0)}점</span></div>
+                  <div className="flex justify-between text-sm font-semibold mb-1"><span>{k + 1}. {names[c]}</span><span className="tabular-nums">{R.r[c].s.toFixed(0)}점</span></div>
                   <Progress value={R.r[c].s} className={cx("h-2", k > 0 && "opacity-40")} />
                 </div>
               ))}
             </div>
             <dl className="grid grid-cols-3 gap-2 mt-5">
               {[[`${R.keep}/${R.active.length}`, "기준 하나 빼도 1위"], [`${R.gap.toFixed(0)}점`, "1·2위 차이"], [`${R.sourced}/${R.all}`, "출처 있는 칸"]].map(([a, b]) => (
-                <div key={b} className="rounded-xl bg-surface px-2 py-2.5 text-center"><dt className="text-[17px] font-bold tabular-nums">{a}</dt><dd className="text-[11.5px] text-muted leading-tight mt-0.5">{b}</dd></div>
+                <div key={b} className="rounded-lg bg-surface px-2 py-2.5 text-center"><dt className="text-base font-semibold tabular-nums">{a}</dt><dd className="text-[11.5px] text-muted-foreground leading-tight mt-0.5">{b}</dd></div>
               ))}
             </dl>
           </Card>
           <Card>
             <CardHeader icon={ListOrdered} title="고른 이유 3가지 (초안)" desc="1위 나라가 크게 앞선 기준 순서예요." />
             {R.reasons.length ? (
-              <ol className="grid gap-2 text-[14px] text-ink-2 list-decimal pl-5">{R.reasons.map((l) => <li key={l}>{l}</li>)}</ol>
-            ) : <p className="text-[14px] text-muted">두 나라 이상 숫자를 넣으면 이유가 만들어져요.</p>}
+              <ol className="grid gap-2 text-sm text-ink-2 list-decimal pl-5">{R.reasons.map((l) => <li key={l}>{l}</li>)}</ol>
+            ) : <p className="text-sm text-muted-foreground">두 나라 이상 숫자를 넣으면 이유가 만들어져요.</p>}
             <Button size="sm" className="mt-4" icon={Copy} onClick={() => copy(R.reasons.map((l, k) => k + 1 + ". " + l).join("\n"), "이유를 복사했어요")}>이유 복사</Button>
           </Card>
           <Card>
