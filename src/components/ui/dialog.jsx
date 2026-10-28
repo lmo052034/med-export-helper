@@ -38,7 +38,7 @@ function DialogFooter({ className, ...props }) {
   return <div data-slot="dialog-footer" className={cn("flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", className)} {...props} />;
 }
 function DialogTitle({ className, ...props }) {
-  return <DialogPrimitive.Title data-slot="dialog-title" className={cn("text-[22px] leading-7 font-bold tracking-tight", className)} {...props} />;
+  return <DialogPrimitive.Title data-slot="dialog-title" className={cn("text-[22px] leading-7 font-semibold tracking-tight", className)} {...props} />;
 }
 function DialogDescription({ className, ...props }) {
   return <DialogPrimitive.Description data-slot="dialog-description" className={cn("text-muted-foreground text-sm", className)} {...props} />;

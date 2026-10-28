@@ -13,22 +13,22 @@
 /* Apple(iOS 26) 스타일 토큰: .claude/skills/apple-design 참고. 포인트 색(청록)은 그대로 */
 :root {
   --radius: 0.875rem;
-  --background: #f2f2f7;               /* systemGroupedBackground */
-  --foreground: #000000;               /* label */
+  --background: #f5f5f7;               /* apple.com 회색 바탕 */
+  --foreground: #1d1d1f;               /* apple.com 본문 글자 */
   --card: #ffffff;                     /* secondarySystemGroupedBackground */
-  --card-foreground: #000000;
+  --card-foreground: #1d1d1f;
   --popover: #ffffff;
-  --popover-foreground: #000000;
+  --popover-foreground: #1d1d1f;
   --primary: oklch(0.52 0.088 180);
   --primary-foreground: #ffffff;
   --secondary: rgba(120, 120, 128, 0.12); /* fill */
-  --secondary-foreground: #000000;
+  --secondary-foreground: #1d1d1f;
   --muted: rgba(120, 120, 128, 0.08);
-  --muted-foreground: rgba(60, 60, 67, 0.6); /* secondaryLabel */
+  --muted-foreground: #6e6e73;        /* apple.com 보조 글자 */
   --accent: rgba(120, 120, 128, 0.12);
-  --accent-foreground: #000000;
+  --accent-foreground: #1d1d1f;
   --destructive: #ff3b30;
-  --border: rgba(60, 60, 67, 0.14);    /* separator(연하게) */
+  --border: rgba(0, 0, 0, 0.08);       /* 구분선 */
   --input: rgba(120, 120, 128, 0.12);  /* fill */
   --ring: oklch(0.52 0.088 180);
   --sidebar: rgba(246, 246, 248, 0.82);
@@ -39,11 +39,11 @@
   --sidebar-accent-foreground: #000000;
   --sidebar-border: rgba(60, 60, 67, 0.14);
   --sidebar-ring: oklch(0.52 0.088 180);
-  --label-2: rgba(60, 60, 67, 0.85);
+  --label-2: #424245;
 }
 
 @theme inline {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Pretendard", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "SF Pro KR", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -101,8 +101,8 @@
 @layer base {
   * { @apply border-border outline-ring/50; }
   html { -webkit-text-size-adjust: 100%; }
-  body { @apply bg-background text-foreground antialiased; font-size: 17px; line-height: 1.4; letter-spacing: -0.01em; word-break: keep-all; overflow-wrap: anywhere; }
-  h1, h2, h3 { letter-spacing: -0.022em; }
+  body { @apply bg-background text-foreground antialiased; font-size: 17px; line-height: 1.47059; letter-spacing: -0.022em; font-feature-settings: "kern"; word-break: keep-all; overflow-wrap: anywhere; }
+  h1, h2, h3 { letter-spacing: -0.015em; font-weight: 600; }
   ::selection { background: color-mix(in oklab, var(--primary) 25%, transparent); }
   button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
 }

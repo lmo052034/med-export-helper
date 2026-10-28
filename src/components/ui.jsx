@@ -28,7 +28,7 @@ export function Button({ variant = "outline", size = "md", icon: Icon, className
 
 export function Card({ className, children, tone, ...p }) {
   return (
-    <section data-slot="card" className={cn("rounded-2xl p-5 sm:p-6", tone === "soft" ? "bg-[rgba(120,120,128,0.08)]" : "bg-card text-card-foreground", className)} {...p}>
+    <section data-slot="card" className={cn("rounded-[18px] p-6 sm:p-8", tone === "soft" ? "bg-white/60" : "bg-card text-card-foreground", className)} {...p}>
       {children}
     </section>
   );
@@ -36,16 +36,16 @@ export function Card({ className, children, tone, ...p }) {
 
 export function CardHeader({ title, desc, action, icon: Icon }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+    <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
       <div className="flex gap-3 items-start min-w-0">
         {Icon && (
-          <span className="grid place-items-center size-8 rounded-[9px] bg-primary text-primary-foreground shrink-0">
-            <Icon size={17} strokeWidth={2} />
+          <span className="text-primary shrink-0 pt-0.5">
+            <Icon size={22} strokeWidth={1.75} />
           </span>
         )}
         <div className="min-w-0 grid gap-1">
-          <h2 className="text-[17px] leading-[22px] font-semibold">{title}</h2>
-          {desc && <p className="text-[15px] leading-5 text-muted-foreground">{desc}</p>}
+          <h2 className="text-[21px] leading-[1.2] font-semibold tracking-[-0.01em]">{title}</h2>
+          {desc && <p className="text-[15px] leading-[1.4] text-muted-foreground">{desc}</p>}
         </div>
       </div>
       {action}
@@ -148,7 +148,7 @@ export function CheckList({ items }) {
       {items.map(([k, t], i) => (
         <li key={i} className={cn("relative flex gap-3 items-start px-4 py-3 text-[15px] [&+li]:before:absolute [&+li]:before:top-0 [&+li]:before:left-11 [&+li]:before:right-0 [&+li]:before:h-px [&+li]:before:bg-border", k === "warn" && "bg-amber-50 text-amber-800")}>
           <span className={cn("grid place-items-center size-5 rounded-full shrink-0 mt-px", k === "pass" ? "bg-primary text-primary-foreground" : k === "warn" ? "bg-amber-500 text-white" : "bg-secondary text-muted-foreground")}>
-            {k === "pass" ? <Check size={11} strokeWidth={3} /> : k === "warn" ? <span className="text-[10px] font-bold">!</span> : <span className="text-[10px] font-bold">i</span>}
+            {k === "pass" ? <Check size={11} strokeWidth={3} /> : k === "warn" ? <span className="text-[10px] font-semibold">!</span> : <span className="text-[10px] font-semibold">i</span>}
           </span>
           <span className="leading-relaxed">{t}</span>
         </li>
