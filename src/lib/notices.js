@@ -1,5 +1,4 @@
-/* 지원사업 공고: 상태 계산 · 목표 기반 추천 (programs.html, index.html에서 사용) */
-(function () {
+/* 지원사업 공고: 상태 계산 · 목표 기반 추천. 데이터는 public/data/notices.js가 window.NOTICES로 넣어 줌 */
   const SRC = {
     kotra: { name: "KOTRA", url: "https://www.kotra.or.kr/" },
     kmdica: { name: "한국의료기기협동조합", url: "https://www.kmdica.or.kr/" },
@@ -28,7 +27,7 @@
     return { goals: ["전시", "바이어", "인증"], areas: areasOf(p.countries), region: p.region || "서울", exp: p.exp || "none", months: 3 };
   }
 
-  const data = window.NOTICES || { items: [], sources: [] };
+  const data = (typeof window !== "undefined" && window.NOTICES) || { items: [], sources: [] };
   const today = new Date().toISOString().slice(0, 10);
   const days = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
 
@@ -94,5 +93,4 @@
     return "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//MedExportKit//KO\r\n" + body + "\r\nEND:VCALENDAR\r\n";
   }
 
-  window.NLIB = { data, areasOf, defaultGoal, SRC, GOALS, AREAS, status, recommend, events, ics, today, days };
-})();
+  export const NLIB = { data, areasOf, defaultGoal, SRC, GOALS, AREAS, status, recommend, events, ics, today, days };

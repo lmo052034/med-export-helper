@@ -1,6 +1,8 @@
 /* 영문 제품 정보: 05 홍보자료와 06 바이어·상담이 함께 씀 */
-(function () {
-  const P = TAK.profile();
+import { profile, load, save as saveKey, clone } from "./store.js";
+
+export function makeProduct() {
+  const P = profile();
   const first = (P.countries || "").split(/[,·]/)[0].trim();
   const EN = { 인도네시아: "Indonesia", 일본: "Japan", 홍콩: "Hong Kong", 베트남: "Vietnam", 태국: "Thailand", 미국: "United States", 독일: "Germany", 사우디: "Saudi Arabia", "UAE": "UAE", 튀르키예: "Türkiye", 말레이시아: "Malaysia", 필리핀: "Philippines", 인도: "India", 중국: "China", 멕시코: "Mexico", 브라질: "Brazil" };
 
@@ -30,8 +32,8 @@
   };
   const BLANK = { company: P.companyEn || "", product: P.productEn || "", oneliner: "", country: EN[first] || first || "", buyer: "", certs: "", usps: [{ t: "", ev: "" }, { t: "", ev: "" }, { t: "", ev: "" }], spec: "", terms: "", support: "", contact: "", hs: P.hs || "", use: "", build: "", buyers: [{ n: "Buyer A", f: 1, q: 1, s: 1, d: 2, v: 1 }] };
 
-  function get() { return TAK.load("product", null) || JSON.parse(JSON.stringify(P.sample ? SAMPLE : BLANK)); }
-  function save(S) { TAK.save("product", S); }
+  function get() { return load("product", null) || clone(P.sample ? SAMPLE : BLANK); }
+  function save(S) { saveKey("product", S); }
 
   const FIELDS = [
     ["company", "회사 이름 (영문)"], ["product", "제품 이름 (영문)"], ["oneliner", "한 줄 소개 (영문)"],
@@ -39,17 +41,6 @@
     ["spec", "주요 사양"], ["terms", "거래 조건"], ["support", "교육·A/S"], ["contact", "연락처"], ["hs", "HS 코드"],
     ["use", "어디에 쓰나요 (용도·사용처, 영문)"], ["build", "무엇으로 구성되나요 (영문)"],
   ];
-  function form(el, S, onChange, keys) {
-    el.innerHTML = FIELDS.filter(([k]) => !keys || keys.includes(k)).map(([k, l]) => `<div class="field"><label>${l}</label><input data-k="${k}" value="${TAK.esc(S[k] || "")}"></div>`).join("") +
-      (!keys || keys.includes("usps") ? `<label>강점 3개와 근거 자료</label>${S.usps.map((u, k) => `<div class="row" data-u="${k}" style="margin-bottom:6px"><input data-f="t" value="${TAK.esc(u.t)}" placeholder="강점 ${k + 1} (영문)"><input data-f="ev" value="${TAK.esc(u.ev)}" placeholder="근거 자료"></div>`).join("")}` : "");
-    el.oninput = (e) => {
-      const t = e.target;
-      if (t.dataset.k) S[t.dataset.k] = t.value;
-      else if (t.dataset.f) S.usps[+t.closest("[data-u]").dataset.u][t.dataset.f] = t.value;
-      save(S); onChange();
-    };
-  }
-
   // 과장 표현 점검 (의료기기 광고에서 문제 되기 쉬운 말)
   const RISKY = [
     [/\b(only|unique|best(?! regards)|no\.?\s?1|number one|world'?s first)\b/i, "'only·unique·best' 같은 최상급 표현은 경쟁 제품을 확인하기 전에는 쓰지 마세요."],
@@ -66,5 +57,5 @@
     return ck;
   }
 
-  window.PROD = { SAMPLE, BLANK, get, save, form, risky };
-})();
+  return { SAMPLE, BLANK, get, save, FIELDS, risky };
+}

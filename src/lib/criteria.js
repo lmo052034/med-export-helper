@@ -3,7 +3,7 @@
    실제 의료기기 수출 준비 과정에서 자주 막히는 지점과 AI 오답 유형,
    KOTRA AI무역지원센터 지원 단계(헤럴드경제 2026.7.14 · 2026.10.7 보도),
    2025 KOTRA AI 활용 우수사례집(KOTRA 자료 26-033, 2026.3) 사례 11개 */
-(function () {
+
   const CATS = [
     { id: "A", name: "제품·기업 기초", part: "공통", desc: "무엇을, 어떤 조건으로 팔 수 있는지" },
     { id: "B", name: "시장 선정", part: "03 나라 고르기", desc: "어느 나라에 먼저 팔지, 근거가 단단한지" },
@@ -352,6 +352,4 @@
     F7: ["K01"], G4: ["K01", "K09"], G5: ["K01"],
     H1: ["K03"], H2: ["K02b"], H3: ["K03"], H4: ["K01", "K08a", "K08b"], H5: ["K08a"], H6: ["K08b"], H7: ["K07"],
   };
-
-  window.CRIT = { CATS, C, IND, STATUS, STAGES, KREF, SAMPLE };
-})();
+export const CRIT = { CATS, C, IND, STATUS, STAGES, KREF, SAMPLE };

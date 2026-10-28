@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/fonts/PretendardVariable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* 색은 세 가지만: 청록(주색) · 호박(주의) · 그래파이트(글자) */
+@theme {
+  --font-sans: "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --color-brand-50: #eef7f5;
+  --color-brand-100: #d5ede8;
+  --color-brand-200: #a9d9cf;
+  --color-brand-500: #14907f;
+  --color-brand-600: #0d7a6c;
+  --color-brand-700: #0a6155;
+  --color-brand-800: #084c43;
+  --color-amber-50: #fdf6e9;
+  --color-amber-100: #f9e6c2;
+  --color-amber-500: #c98a26;
+  --color-amber-600: #b7791f;
+  --color-amber-700: #845411;
+  --color-ink: #1b1f22;
+  --color-ink-2: #41484d;
+  --color-muted: #6b747a;
+  --color-line: #e6e9e8;
+  --color-line-2: #d4dad7;
+  --color-surface: #f6f8f7;
+  --color-graphite: #232b2a;
+}
+
+html { color-scheme: light; }
+body {
+  @apply bg-surface text-ink antialiased;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+}
+h1, h2, h3 { letter-spacing: -0.02em; }
+
+/* 문서 미리보기(견적서·인보이스)만 인쇄 */
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  /* 07 견적서: 고른 문서 한 장만 인쇄 */
+  body:has(.print-on) .sheet:not(.print-on) { display: none !important; }
+  .sheet { box-shadow: none !important; border: 0 !important; }
+}

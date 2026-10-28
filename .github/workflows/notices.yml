@@ -1,6 +1,6 @@
 name: Collect support notices
 
-# 매일 06:00 KST(21:00 UTC)에 지원사업 공고를 모아 tools/data/notices.js를 갱신합니다.
+# 매일 06:00 KST(21:00 UTC)에 지원사업 공고를 모아 public/data/notices.js를 갱신합니다.
 # 기업마당 인증키는 Settings → Secrets and variables → Actions → BIZINFO_KEY 로 등록합니다.
 on:
   schedule:
@@ -30,5 +30,5 @@ jobs:
         run: |
           git config user.name "notice-bot"
           git config user.email "notice-bot@users.noreply.github.com"
-          git add tools/data/notices.js
+          git add public/data/notices.js
           git diff --cached --quiet || (git commit -m "Update support notices $(date -u +%F)" && git push)

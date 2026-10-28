@@ -1,6 +1,6 @@
 // 의료기기 수출 지원사업 공고 일간 수집기
 // 실행: node scripts/collect-notices.mjs   (GitHub Actions가 매일 06:00 KST에 실행)
-// 결과: tools/data/notices.js  (window.NOTICES = {...}; 브라우저에서 script 태그로 읽음)
+// 결과: public/data/notices.js  (window.NOTICES = {...}; 브라우저에서 script 태그로 읽음)
 //
 // 출처 원칙
 // - 공식 API가 있으면 API를 쓴다 (기업마당: 중기부·산업부·복지부·KOTRA 등 정부 지원사업 통합 공고).
@@ -11,7 +11,7 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
-const OUT = ROOT + "/tools/data/notices.js";
+const OUT = ROOT + "/public/data/notices.js";
 const UA = "MedExportKit-NoticeBot/1.0 (+https://github.com/lmo052034/global-ai-trade-lab)";
 const TODAY = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); // KST
 

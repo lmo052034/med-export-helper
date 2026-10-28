@@ -1,9 +1,9 @@
-name: Deploy tools to GitHub Pages
+name: Deploy site to GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths: ["tools/**", ".github/workflows/pages.yml"]
+    paths: ["src/**", "public/**", "index.html", "package.json", "package-lock.json", "vite.config.js", ".github/workflows/pages.yml"]
   workflow_dispatch:
   # 공고 수집 봇의 커밋은 push 이벤트를 만들지 않으므로, 수집이 끝나면 다시 배포합니다
   workflow_run:
@@ -28,9 +28,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: tools
+          path: dist
       - id: deployment
         uses: actions/deploy-pages@v4
