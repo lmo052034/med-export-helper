@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-10-28T19:30:00+09:00",
- "today": "2026-10-28",
+ "updated": "2026-10-29T00:30:13.857Z",
+ "today": "2026-10-29",
  "sources": [
   {
    "key": "bizinfo",
@@ -9,23 +9,15 @@ window.NOTICES = {
    "url": "https://www.bizinfo.go.kr/",
    "ok": false,
    "count": 0,
-   "note": "아직 자동 수집 전 (인증키 등록 후 매일 실행)"
+   "note": "인증키(BIZINFO_KEY)가 없어 건너뜀"
   },
   {
    "key": "khidi",
    "name": "한국보건산업진흥원 게시판 (보건복지부·의료기기협동조합 글)",
    "url": "https://www.khidi.or.kr/board?menuId=MENU01491",
-   "ok": false,
-   "count": 0,
-   "note": "아직 자동 수집 전"
-  },
-  {
-   "key": "manual",
-   "name": "직접 확인한 공고 (2026.10.28)",
-   "url": "",
    "ok": true,
-   "count": 10,
-   "note": "KOTRA 공고문·기사 원문 대조"
+   "count": 21,
+   "note": ""
   }
  ],
  "items": [
@@ -257,6 +249,367 @@ window.NOTICES = {
     "교육"
    ],
    "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "「2026년 글로벌 보건의료 R&D 소통·발전 간담회」",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4798&linkId=48951845&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-28",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n197ibjn",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "FDA 사이버보안 규제 대응: 위협 모델링, SBOM, 테스팅 중심 실무 워크숍 교육 안내",
+   "org": "한국의료기기협동조합",
+   "src": "kmdica",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4797&linkId=48951842&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-28",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1s7ldyn",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [
+    "북미"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "[G밸리의료기기개발지원센터] 글로벌역량강화 교육프로그램 모집",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4796&linkId=48951840&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-28",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nds1u40",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "[특화교육]‘26년 4차 의료기기 유럽인증 규제준수 책임자(PRRC) 교육신청 안내",
+   "org": "한국의료기기협동조합",
+   "src": "kmdica",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4795&linkId=48951309&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-23",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nihfpo3",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [
+    "유럽"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "대구경북첨단의료산업진흥재단(케이메디허브) 인프라투어 참가기업 모집",
+   "org": "성남산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4794&linkId=48951308&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-23",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1j1vktx",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "의료기기 판매·임대업자를 위한 유통품질관리기준(GSP)",
+   "org": "한국의료기기산업협회",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4793&linkId=48951288&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-22",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1xc8qsq",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "2026년 11월 의료기기 해외 인허가 교육정보 안내서",
+   "org": "한국의료기기협동조합",
+   "src": "kmdica",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4792&linkId=48951286&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-22",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n8jkjac",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "2026년 10월 품목갱신 비대면 설명회 개최 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4791&linkId=48951284&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-22",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1w91jqc",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "「찾아가는 디지털의료기기 규제설명회(원주)」 개최 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4790&linkId=48951283&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-22",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1c5ra8y",
+   "types": [
+    "인증",
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "2026년 11월 의료기기 해외 인허가 교육정보 안내서",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4789&linkId=48951232&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-22",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1xreenh",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "[한국보건산업진흥원] 2026년 디지털 헬스케어 부트캠프 참가 안내(11.3~4)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=9999999998&linkId=48951211&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-10-22",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nirmsiw",
+   "types": [
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "[공고] 「HLTH USA 2026」 디지털헬스케어 한국관 참가기관 모집 공고(~10.13.(화)) 18시까지",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=173&linkId=48950670&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-10-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n11v1cy8",
+   "types": [
+    "전시",
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "2026 한-카자흐스탄 보건의료 해외진출 홍보 및 공공조달 협력 세미나 참가기관 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=172&linkId=48950030&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-09-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1yv6fh",
+   "types": [
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "[공고] 「HLTH USA 2026」 디지털헬스케어 한국관 참가기관 모집 공고(~9.30.(수)) 15시까지",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=171&linkId=48949613&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-09-08",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n5h2yjx",
+   "types": [
+    "전시",
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "2026년 GHKOL 국제의료사업 실무특화 컨설팅 사업 공고(~9.16.(수) 까지)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=170&linkId=48949465&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-09-03",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nbk97yf",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고(참여기업 참여취소에 따른 추가모집)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=169&linkId=48948540&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-08-11",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1k8c9ow",
+   "types": [
+    "기타"
+   ],
+   "areas": [
+    "동남아"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=168&linkId=48947601&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-07-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nwsxwqe",
+   "types": [
+    "기타"
+   ],
+   "areas": [
+    "동남아"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "[긴급공지] 한국보건산업진흥원 임직원 사칭 사기(피싱) 피해 주의 안내",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=167&linkId=48947245&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-07-09",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "ng70dtd",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-29",
+   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=166&linkId=48946863&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-07-01",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n9fqgr7",
+   "types": [
+    "기타"
+   ],
+   "areas": [
+    "동남아"
+   ],
    "regions": [],
    "med": true
   }
