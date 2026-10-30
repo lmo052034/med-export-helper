@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-10-29T00:30:13.857Z",
- "today": "2026-10-29",
+ "updated": "2026-10-30T00:29:32.078Z",
+ "today": "2026-10-30",
  "sources": [
   {
    "key": "bizinfo",
@@ -594,22 +594,74 @@ window.NOTICES = {
    "med": true
   },
   {
-   "first": "2026-10-29",
-   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고",
+   "first": "2026-10-30",
+   "title": "AI 의료기술 정책 세미나 개최 안내",
    "org": "한국보건산업진흥원",
    "src": "mohw",
-   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=166&linkId=48946863&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
-   "posted": "2026-07-01",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4802&linkId=48951954&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-30",
    "start": "",
    "end": "",
    "via": "보건산업진흥원 게시판",
-   "id": "n9fqgr7",
+   "id": "n1ax53g6",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-30",
+   "title": "[대한디지털헬스학회] 2026년 대한디지털헬스학회 추계학술대회",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4801&linkId=48951942&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-29",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1xphr88",
+   "types": [
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-30",
+   "title": "2026 혁신의료기기 정책 포럼 사전접수",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4800&linkId=48951941&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-29",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nhozy39",
    "types": [
     "기타"
    ],
-   "areas": [
-    "동남아"
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-30",
+   "title": "「2026 KMDIA IVD위원회 정기워크숍」 개최 및 사전등록 알림",
+   "org": "한국의료기기산업협회",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4799&linkId=48951940&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-29",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1wg28fn",
+   "types": [
+    "교육"
    ],
+   "areas": [],
    "regions": [],
    "med": true
   }
