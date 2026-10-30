@@ -1,12 +1,13 @@
 /* 화면 틀: apple.com 방식 위쪽 메뉴, 페이지 머리말, 이전·다음 단계, 알림, AI 질문 창 */
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { toast as sonner } from "sonner";
-import { ChevronLeft, ChevronRight, Copy, ExternalLink, Save, Menu, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Copy, ExternalLink, Save, Menu, Activity } from "lucide-react";
 import { STEPS, PARTS, addLog, copyText } from "../lib/store.js";
 import { Button, Field, Input, Select, Textarea } from "./ui.jsx";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog.jsx";
 import { Toaster } from "./ui/sonner.jsx";
+import { Sheet, SheetContent, SheetTitle, SheetDescription, SheetTrigger } from "./ui/sheet.jsx";
 import { Separator } from "./ui/separator.jsx";
 
 /* ---------- 알림 + AI 질문 창 ---------- */
@@ -20,19 +21,20 @@ export function AppProvider({ children }) {
     sonner.success(m || "복사했어요");
   }, []);
   const [pq, setPq] = useState(null);
-  const ask = useCallback((title, prompt, part) => setPq({ title, prompt, part }), []);
+  const promptTrigger = useRef(null);
+  const ask = useCallback((title, prompt, part) => { promptTrigger.current = document.activeElement; setPq({ title, prompt, part }); }, []);
 
   return (
     <Ctx.Provider value={{ toast, copy, ask }}>
       {children}
-      <PromptDialog pq={pq} onClose={() => setPq(null)} toast={toast} copy={copy} />
+      <PromptDialog triggerRef={promptTrigger} pq={pq} onClose={() => setPq(null)} toast={toast} copy={copy} />
       <Toaster position="bottom-center" />
     </Ctx.Provider>
   );
 }
 
 /* 프롬프트 보여 주기 → 복사 → 답을 받으면 확인 기록으로 저장 */
-function PromptDialog({ pq, onClose, toast, copy }) {
+function PromptDialog({ triggerRef, pq, onClose, toast, copy }) {
   const [f, setF] = useState({ part: PARTS[0], source: "", ai: "", fix: "" });
   useEffect(() => {
     if (pq) setF({ part: PARTS.includes(pq.part) ? pq.part : PARTS[PARTS.length - 1], source: "", ai: "", fix: "" });
@@ -40,7 +42,7 @@ function PromptDialog({ pq, onClose, toast, copy }) {
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   return (
     <Dialog open={!!pq} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[92vh] overflow-y-auto">
+      <DialogContent onCloseAutoFocus={(e) => { e.preventDefault(); if (triggerRef.current?.isConnected) triggerRef.current.focus(); }} className="sm:max-w-2xl max-h-[92vh] overflow-y-auto">
         {pq && (
           <>
             <DialogHeader>
@@ -83,38 +85,43 @@ function GlobalNav() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const close = () => { if (desktop.matches) setOpen(false); };
+    desktop.addEventListener("change", close);
+    return () => desktop.removeEventListener("change", close);
+  }, []);
   return (
-    <nav className="no-print sticky top-0 z-40 bg-[rgba(251,251,253,0.8)] backdrop-blur-2xl backdrop-saturate-150 border-b border-black/[0.08]">
-      <div className="mx-auto flex h-12 max-w-[1024px] items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 text-[14px] font-semibold text-[#1d1d1f]">
-          <svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true" className="text-primary"><rect width="16" height="16" rx="4.5" fill="currentColor" /><path d="M4.5 8h7M8 4.5v7" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
+    <nav aria-label="전체 메뉴" className="global-nav no-print sticky top-0 z-40 bg-[rgba(251,251,253,0.8)] backdrop-blur-2xl backdrop-saturate-150 border-b border-black/[0.08]">
+      <div className="mx-auto flex h-14 max-w-[1120px] items-center justify-between gap-5 px-4 sm:px-6">
+        <Link to="/" className="flex shrink-0 items-center gap-2 text-[14px] font-semibold">
+          <span className="grid size-7 place-items-center rounded-lg bg-primary text-white"><Activity size={18} aria-hidden="true" /></span>
           의료기기 수출 도우미
         </Link>
-        <ul className="hidden lg:flex items-center gap-6">
+        <ul className="hidden lg:flex items-center gap-4">
           {NAV.slice(1).map(([p, label]) => (
-            <li key={p}>
-              <Link to={p} className={"text-[12px] tracking-[-0.01em] transition-colors " + (isOn(pathname, p) ? "text-[#1d1d1f]" : "text-[#1d1d1f]/70 hover:text-[#1d1d1f]")}>{label}</Link>
-            </li>
+            <li key={p}><Link to={p} aria-current={isOn(pathname, p) ? "page" : undefined} className="global-nav-link">{label}</Link></li>
           ))}
         </ul>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label="메뉴" className="lg:hidden grid place-items-center size-9 -mr-2 text-[#1d1d1f]">
-          {open ? <X className="size-5" strokeWidth={1.5} /> : <Menu className="size-5" strokeWidth={1.5} />}
-        </button>
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <button type="button" aria-label="메뉴 열기" className="lg:hidden grid place-items-center size-11 rounded-xl hover:bg-secondary"><Menu size={22} /></button>
+          </SheetTrigger>
+          <SheetContent className="w-[min(90vw,380px)] overflow-y-auto px-5 pt-8 pb-6">
+            <SheetTitle>전체 메뉴</SheetTitle>
+            <SheetDescription>수출 준비부터 AI 답 확인까지</SheetDescription>
+            <ul className="grid gap-1 mt-2">
+              {NAV.map(([p, label], i) => (
+                <li key={p}><Link to={p} onClick={() => setOpen(false)} aria-current={isOn(pathname, p) ? "page" : undefined} className="mobile-nav-link flex items-center gap-3 rounded-xl px-4 py-3.5 text-[17px] font-medium">
+                  <span className="w-6 text-xs tabular-nums text-muted-foreground">{i > 0 && i <= STEPS.length ? STEPS[i - 1].n : "—"}</span>{label}
+                  <ChevronRight size={16} className="ml-auto text-muted-foreground" />
+                </Link></li>
+              ))}
+            </ul>
+            <p className="mt-auto pt-6 text-xs leading-relaxed text-muted-foreground">입력한 회사·제품 정보는 이 브라우저에만 저장됩니다.</p>
+          </SheetContent>
+        </Sheet>
       </div>
-      {open && (
-        <div className="lg:hidden border-t border-black/[0.06] bg-[rgba(251,251,253,0.97)] backdrop-blur-2xl">
-          <ul className="mx-auto max-w-[1024px] px-6 py-4">
-            {NAV.map(([p, label], i) => (
-              <li key={p}>
-                <Link to={p} className={"flex items-baseline gap-3 py-2.5 text-[24px] font-semibold tracking-tight " + (isOn(pathname, p) ? "text-[#1d1d1f]" : "text-[#1d1d1f]/60")}>
-                  {i > 0 && i <= STEPS.length && <span className="text-[13px] font-medium tabular-nums text-[#86868b]">{STEPS[i - 1].n}</span>}
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </nav>
   );
 }
@@ -126,12 +133,12 @@ function LocalNav() {
   if (i < 0) return null;
   const s = STEPS[i], next = STEPS[i + 1];
   return (
-    <div className="no-print sticky top-12 z-30 bg-[rgba(255,255,255,0.72)] backdrop-blur-2xl backdrop-saturate-150 border-b border-black/[0.08]">
+    <div className="no-print sticky top-14 z-30 bg-[rgba(255,255,255,0.72)] backdrop-blur-2xl backdrop-saturate-150 border-b border-black/[0.08]">
       <div className="mx-auto flex h-[52px] max-w-[1024px] items-center justify-between gap-4 px-4 sm:px-6">
         <p className="min-w-0 truncate text-[19px] sm:text-[21px] font-semibold tracking-tight text-[#1d1d1f]">{s.name}</p>
         <div className="flex shrink-0 items-center gap-4">
           <span className="hidden sm:inline text-[12px] tabular-nums text-[#86868b]">{s.n} / {String(STEPS.length).padStart(2, "0")}</span>
-          <Link to={next ? next.path : "/cases"} className="press inline-flex h-7 items-center rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground">
+          <Link to={next ? next.path : "/cases"} className="press inline-flex h-10 items-center rounded-full bg-primary px-3 text-[12px] font-medium text-primary-foreground">
             {next ? "다음 단계" : "사례 보기"}
           </Link>
         </div>
@@ -146,9 +153,10 @@ export function Layout({ children }) {
   const home = pathname === "/";
   return (
     <div className="min-h-svh bg-[#f5f5f7]">
+      <a href="#main-content" className="skip-link" onClick={(e) => { e.preventDefault(); document.getElementById("main-content")?.focus(); }}>본문으로 건너뛰기</a>
       <GlobalNav />
       <LocalNav />
-      <main className={home ? "" : "mx-auto w-full max-w-[1024px] px-4 sm:px-6 pt-10 pb-16 sm:pt-16"}>{children}</main>
+      <main id="main-content" tabIndex={-1} className={home ? "" : "mx-auto w-full max-w-[1024px] px-4 sm:px-6 pt-10 pb-16 sm:pt-16"}>{children}</main>
       <footer className="no-print border-t border-black/[0.08] bg-[#f5f5f7]">
         <div className="mx-auto max-w-[1024px] px-4 sm:px-6 py-6 text-[12px] leading-relaxed text-[#6e6e73]">
           <p>숫자·세율·인증·공고는 꼭 원문으로 확인하세요. 입력한 내용은 이 브라우저에만 저장돼요.</p>
@@ -163,12 +171,15 @@ export function Layout({ children }) {
 export function PageHeader({ path, desc, guide, actions }) {
   const s = STEPS.find((x) => x.path === path);
   return (
-    <header className="mb-10 sm:mb-14">
+    <header className="page-header mb-10 sm:mb-14">
       <p className="text-[17px] font-semibold text-primary tabular-nums">STEP {s.n}</p>
       <h1 className="mt-2 text-[36px] leading-[1.11] sm:text-[56px] sm:leading-[1.07] font-semibold tracking-[-0.035em] text-[#1d1d1f]">{s.name}</h1>
       <p className="mt-4 max-w-[720px] text-[19px] sm:text-[21px] leading-[1.38] text-[#6e6e73]">{desc || s.what}</p>
       <p className="mt-3 text-[13px] text-[#86868b]">{s.kc} 방식</p>
       {actions && <div className="no-print mt-7 flex flex-wrap items-center gap-3">{actions}</div>}
+      <nav aria-label="수출 준비 단계" className="step-rail no-print">
+        {STEPS.map((step) => <Link key={step.path} to={step.path} aria-current={step.path === path ? "step" : undefined} className="step-rail-item"><span>{step.n}</span><b>{step.short}</b></Link>)}
+      </nav>
       {guide && (
         <dl className="no-print mt-10 grid sm:grid-cols-3 gap-6 sm:gap-8 border-t border-black/[0.08] pt-8">
           {guide.map(([k, v]) => (

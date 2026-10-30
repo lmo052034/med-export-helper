@@ -28,7 +28,7 @@ export function Button({ variant = "outline", size = "md", icon: Icon, className
 
 export function Card({ className, children, tone, ...p }) {
   return (
-    <section data-slot="card" className={cn("rounded-[18px] p-6 sm:p-8", tone === "soft" ? "bg-white/60" : "bg-card text-card-foreground", className)} {...p}>
+    <section data-slot="card" className={cn("workspace-card rounded-[18px] p-6 sm:p-8", tone === "soft" ? "bg-white/60" : "bg-card text-card-foreground", className)} {...p}>
       {children}
     </section>
   );
@@ -71,13 +71,22 @@ export const toneOf = (cls) => ({ ok: "teal", warn: "amber", info: "blue", line:
 export function Tabs({ tabs, value, onChange, className }) {
   return (
     <div className={cn("no-print max-w-full overflow-x-auto [scrollbar-width:none]", className)}>
-      <div role="tablist" className="bg-secondary inline-flex h-9 w-fit items-center rounded-[10px] p-[2px]">
+      <div role="tablist" aria-label="보기 선택" className="bg-secondary inline-flex h-11 w-fit items-center rounded-[10px] p-[2px]">
         {tabs.map(([k, label, Icon]) => (
           <button
             key={k}
             role="tab"
             type="button"
             aria-selected={value === k}
+            tabIndex={value === k ? 0 : -1}
+            onKeyDown={(e) => {
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+              e.preventDefault();
+              const index = tabs.findIndex(([id]) => id === k);
+              const next = e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (index + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+              onChange(tabs[next][0]);
+              e.currentTarget.parentElement.querySelectorAll('[role="tab"]')[next].focus();
+            }}
             data-state={value === k ? "active" : "inactive"}
             onClick={() => onChange(k)}
             className="inline-flex h-full shrink-0 items-center justify-center gap-1.5 rounded-[8px] px-3.5 text-[13px] font-medium whitespace-nowrap text-foreground transition-all duration-200 data-[state=active]:bg-card data-[state=active]:font-semibold data-[state=active]:shadow-[0_3px_8px_rgba(0,0,0,0.12),0_3px_1px_rgba(0,0,0,0.04)] [&_svg]:size-4"
