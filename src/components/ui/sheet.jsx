@@ -2,6 +2,7 @@ import { Dialog as SheetPrimitive } from "radix-ui";
 import { XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+const SheetTrigger = SheetPrimitive.Trigger;
 const Sheet = (props) => <SheetPrimitive.Root data-slot="sheet" {...props} />;
 
 function SheetContent({ className, children, side = "right", ...props }) {
@@ -19,7 +20,7 @@ function SheetContent({ className, children, side = "right", ...props }) {
         {...props}
       >
         {children}
-        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden">
+        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring absolute top-4 right-4 grid size-11 place-items-center rounded-xl opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden">
           <XIcon className="size-4" />
           <span className="sr-only">닫기</span>
         </SheetPrimitive.Close>
@@ -30,4 +31,4 @@ function SheetContent({ className, children, side = "right", ...props }) {
 const SheetTitle = ({ className, ...props }) => <SheetPrimitive.Title data-slot="sheet-title" className={cn("text-foreground font-semibold", className)} {...props} />;
 const SheetDescription = ({ className, ...props }) => <SheetPrimitive.Description data-slot="sheet-description" className={cn("text-muted-foreground text-sm", className)} {...props} />;
 
-export { Sheet, SheetContent, SheetTitle, SheetDescription };
+export { SheetTrigger, Sheet, SheetContent, SheetTitle, SheetDescription };

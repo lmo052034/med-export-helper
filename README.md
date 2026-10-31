@@ -51,3 +51,11 @@
 - 공고는 공식 원문에서 확인한 것만 넣고, 날짜가 이상한 공고는 주의 문구를 붙였습니다.
 - 세율·인증 기간은 비워 두거나 "추정"으로 표시했습니다. 공식자료로 확인한 뒤 체크하세요.
 - 입력값은 각자 브라우저(localStorage)에만 저장됩니다.
+
+## UI 검증
+
+React · Tailwind CSS · shadcn/ui(Radix) · Lucide를 기반으로 공통 컴포넌트를 관리합니다.
+
+- `npm run build`: 배포용 빌드
+- `npx playwright install chromium` 후 `npm test`: 주요 10개 화면의 데스크톱·모바일 표시, 가로 넘침, 메뉴·대화상자의 키보드 동작, 회사정보 저장, 탭 이동 검증
+- PR의 UI checks가 브라우저 검증을 실행하고 화면 캡처를 Actions artifact로 보관합니다.

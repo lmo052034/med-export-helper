@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight, ExternalLink, ClipboardCheck, CalendarDays, Globe2, ShieldCheck, Megaphone, Handshake, FileText, ListChecks } from "lucide-react";
 import { STEPS, REGIONS, SAMPLE_PROFILE, profile, setProfile, load } from "../lib/store.js";
 import { NLIB } from "../lib/notices.js";
 import { Badge, Button, Field, Input, Select, toneOf } from "../components/ui.jsx";
 import { useApp } from "../components/shell.jsx";
 
 /* apple.com 제품 페이지 구성: 흰 히어로 → 숫자 하이라이트 → 회색 바탕 타일 → 흰 바탕 입력 */
+const STEP_ICONS = [ClipboardCheck, CalendarDays, Globe2, ShieldCheck, Megaphone, Handshake, FileText, ListChecks];
 const Wrap = ({ className = "", children }) => <div className={"mx-auto w-full max-w-[1024px] px-5 sm:px-6 " + className}>{children}</div>;
 const More = ({ to, children }) => (
   <Link to={to} className="group inline-flex items-center gap-0.5 text-[17px] text-primary hover:underline underline-offset-4">
@@ -27,14 +28,14 @@ export default function Home() {
   return (
     <>
       {/* 히어로 */}
-      <section className="bg-white">
+      <section className="home-hero bg-white">
         <Wrap className="pt-16 pb-14 sm:pt-24 sm:pb-20 text-center">
           <p className="text-[17px] sm:text-[21px] font-semibold text-primary">의료기기 수출 도우미</p>
           <h1 className="mt-3 text-[40px] leading-[1.1] sm:text-[64px] sm:leading-[1.0625] font-semibold tracking-[-0.035em] text-[#1d1d1f]">
-            처음 하는 수출,<br />8단계면 충분해요.
+            처음 하는 수출,<br />한 단계씩 명확하게.
           </h1>
           <p className="mx-auto mt-5 max-w-[640px] text-[19px] sm:text-[24px] leading-[1.35] font-medium text-[#6e6e73]">
-            무엇부터 할지, 어떤 지원사업을 신청할지, 바이어에게 무엇을 보낼지. 순서대로 따라오기만 하세요.
+            무엇부터 할지, 어떤 지원사업을 신청할지, 바이어에게 무엇을 보낼지. 8단계로 준비하고, 중요한 근거는 직접 확인하세요.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
             <Button as={Link} to="/readiness" variant="primary" size="lg">준비 진단 시작하기</Button>
@@ -47,7 +48,7 @@ export default function Home() {
       {/* 하이라이트 숫자 */}
       <section className="bg-white border-t border-black/[0.06]">
         <Wrap className="py-12 sm:py-16">
-          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-y-10 text-center">
+          <dl className="home-metrics grid grid-cols-2 sm:grid-cols-4 gap-y-10 text-center">
             {[
               ["8단계", "KOTRA 사례집 순서 그대로"],
               [NLIB.data.items.length + "건", "매일 아침 모으는 공고"],
@@ -69,10 +70,10 @@ export default function Home() {
           <h2 className="text-[32px] leading-[1.125] sm:text-[48px] sm:leading-[1.08] font-semibold tracking-[-0.03em] text-[#1d1d1f]">이 순서대로 하세요.</h2>
           <p className="mt-3 text-[17px] sm:text-[21px] text-[#6e6e73]">한 단계씩, 해야 할 일과 만들 문서를 알려 드려요.</p>
           <ol className="mt-10 grid sm:grid-cols-2 gap-4 sm:gap-5">
-            {STEPS.map((s) => (
+            {STEPS.map((s, index) => { const Icon = STEP_ICONS[index]; return (
               <li key={s.path}>
-                <Link to={s.path} className="group flex h-full flex-col rounded-[28px] bg-white p-7 sm:p-9 transition-transform duration-300 ease-out hover:scale-[1.012]">
-                  <span className="text-[14px] font-semibold tabular-nums text-primary">STEP {s.n}</span>
+                <Link to={s.path} className="journey-card group flex h-full flex-col rounded-[28px] bg-white p-7 sm:p-9 transition-transform duration-300 ease-out hover:scale-[1.012]">
+                  <div className="flex items-center justify-between"><span className="text-[13px] font-semibold tabular-nums text-primary">STEP {s.n}</span><span className="journey-icon"><Icon size={25} strokeWidth={1.5} aria-hidden="true" /></span></div>
                   <h3 className="mt-2 text-[24px] sm:text-[28px] leading-tight font-semibold tracking-[-0.022em] text-[#1d1d1f]">{s.name}</h3>
                   <p className="mt-3 text-[17px] leading-[1.47] text-[#6e6e73] flex-1">{s.what}</p>
                   <span className="mt-6 inline-flex items-center gap-0.5 text-[17px] text-primary">
@@ -80,7 +81,7 @@ export default function Home() {
                   </span>
                 </Link>
               </li>
-            ))}
+            ); })}
           </ol>
         </Wrap>
       </section>
