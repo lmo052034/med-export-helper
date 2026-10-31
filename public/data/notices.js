@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-10-30T00:29:32.078Z",
- "today": "2026-10-30",
+ "updated": "2026-10-31T00:13:38.836Z",
+ "today": "2026-10-31",
  "sources": [
   {
    "key": "bizinfo",
@@ -660,6 +660,62 @@ window.NOTICES = {
    "id": "n1wg28fn",
    "types": [
     "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-31",
+   "title": "KHIDI x TMC STAMPED : Inside the Ideas Lab 엠디 앤더슨 암센터 외과 혁신 프로그램",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4805&linkId=48951998&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-30",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n17dmkc9",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-31",
+   "title": "[한국디지털헬스산업협회] 2026년 디지털헬스 전문가 세미나",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4804&linkId=48951962&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-30",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n6o23a1",
+   "types": [
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-10-31",
+   "title": "[한국디지털헬스산업협회] 『2026 제11회 디지털헬스 수요-공급기업 매칭데이』 참관객 모집(~11/3)",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4803&linkId=48951961&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-10-30",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1llvvrr",
+   "types": [
+    "바이어",
+    "마케팅"
    ],
    "areas": [],
    "regions": [],
