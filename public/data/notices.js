@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-02T00:00:10.611Z",
- "today": "2026-11-02",
+ "updated": "2026-11-03T02:42:22.939Z",
+ "today": "2026-11-03",
  "sources": [
   {
    "key": "bizinfo",
@@ -716,6 +716,42 @@ window.NOTICES = {
    "types": [
     "바이어",
     "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-03",
+   "title": "인공지능 기반 다양한 소프트웨어 의료기기(SaMD) 모델 구축(2기) 교육 안내",
+   "org": "한국표준협회",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4807&linkId=48952072&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-02",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "ng0gno1",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-03",
+   "title": "[메디팁] 2026 하반기 메드텍스쿨(Medtech School for Startup 의료기기 교육 안내",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4806&linkId=48952011&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-02",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n91vc45",
+   "types": [
+    "교육"
    ],
    "areas": [],
    "regions": [],
