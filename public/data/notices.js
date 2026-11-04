@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-03T02:42:22.939Z",
- "today": "2026-11-03",
+ "updated": "2026-11-04T00:57:52.493Z",
+ "today": "2026-11-04",
  "sources": [
   {
    "key": "bizinfo",
@@ -16,7 +16,7 @@ window.NOTICES = {
    "name": "한국보건산업진흥원 게시판 (보건복지부·의료기기협동조합 글)",
    "url": "https://www.khidi.or.kr/board?menuId=MENU01491",
    "ok": true,
-   "count": 21,
+   "count": 20,
    "note": ""
   }
  ],
