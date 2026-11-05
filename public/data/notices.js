@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-04T00:57:52.493Z",
- "today": "2026-11-04",
+ "updated": "2026-11-05T01:09:21.870Z",
+ "today": "2026-11-05",
  "sources": [
   {
    "key": "bizinfo",
@@ -754,6 +754,64 @@ window.NOTICES = {
     "교육"
    ],
    "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-05",
+   "title": "‘2026 해외멘토단’ 웨비나 개최 안내",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4810&linkId=48952322&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-04",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1sfsknl",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": false
+  },
+  {
+   "first": "2026-11-05",
+   "title": "[디지털헬스보안협회] \"디지털 의료제품 사이버보안 위협모델링\" 교육 개최 안내",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4809&linkId=48952320&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-04",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "ncu22rd",
+   "types": [
+    "인증",
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-05",
+   "title": "2026 미국 헬스케어 시장 진출 해외멘토단 웨비나(11.13(금) 9시 생중계, 시카고 글로벌 비즈니스센터)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4808&linkId=48952262&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-04",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nspe33p",
+   "types": [
+    "기타"
+   ],
+   "areas": [
+    "북미"
+   ],
    "regions": [],
    "med": true
   }
