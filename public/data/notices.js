@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-05T01:09:21.870Z",
- "today": "2026-11-05",
+ "updated": "2026-11-06T01:14:43.675Z",
+ "today": "2026-11-06",
  "sources": [
   {
    "key": "bizinfo",
@@ -812,6 +812,79 @@ window.NOTICES = {
    "areas": [
     "북미"
    ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-06",
+   "title": "대구경북첨단의료산업진흥재단(케이메디허브) 인프라투어 참가기업 모집(기간연장)",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4814&linkId=48952360&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n148ktqn",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-06",
+   "title": "[KOTRA] 세계시장 진출전략 설명회 신청 안내",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4813&linkId=48952359&refMenuId=MENU01493&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nf81ncl",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-06",
+   "title": "제 6회 디지털·전자 치료기기 국제 심포지엄 개최",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4812&linkId=48952356&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1mynar8",
+   "types": [
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-06",
+   "title": "디지털의료기기 사용적합성 및 GMP 품질관리 실무 이해 교육 참가자 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4811&linkId=48952351&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1a0zn3i",
+   "types": [
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
    "regions": [],
    "med": true
   }
