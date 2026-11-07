@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-06T01:14:43.675Z",
- "today": "2026-11-06",
+ "updated": "2026-11-07T00:29:14.410Z",
+ "today": "2026-11-07",
  "sources": [
   {
    "key": "bizinfo",
@@ -576,24 +576,6 @@ window.NOTICES = {
    "med": true
   },
   {
-   "first": "2026-10-29",
-   "title": "[긴급공지] 한국보건산업진흥원 임직원 사칭 사기(피싱) 피해 주의 안내",
-   "org": "한국보건산업진흥원",
-   "src": "mohw",
-   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=167&linkId=48947245&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
-   "posted": "2026-07-09",
-   "start": "",
-   "end": "",
-   "via": "보건산업진흥원 게시판",
-   "id": "ng70dtd",
-   "types": [
-    "기타"
-   ],
-   "areas": [],
-   "regions": [],
-   "med": true
-  },
-  {
    "first": "2026-10-30",
    "title": "AI 의료기술 정책 세미나 개최 안내",
    "org": "한국보건산업진흥원",
@@ -883,6 +865,24 @@ window.NOTICES = {
    "types": [
     "마케팅",
     "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-07",
+   "title": "어려울 땐, 전문가에게! 의료기기 전문가 자문위원회(MDCC) 연계 분야별 상담회 신청 안내(해외진출, 사업화 분야) (11월 3~4주, 상시접수)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4815&linkId=48952449&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1vyfavs",
+   "types": [
+    "바이어"
    ],
    "areas": [],
    "regions": [],
