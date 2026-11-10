@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-09T00:14:01.498Z",
- "today": "2026-11-09",
+ "updated": "2026-11-10T03:02:19.820Z",
+ "today": "2026-11-10",
  "sources": [
   {
    "key": "bizinfo",
@@ -885,6 +885,121 @@ window.NOTICES = {
     "바이어"
    ],
    "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-10",
+   "title": "[공고] 「HLTH USA 2026」 디지털헬스케어 한국관 참가기관 모집 공고(~10.13.(화)) 18시까지",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=172&linkId=48950670&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-10-06",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nxi1f0v",
+   "types": [
+    "전시",
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-10",
+   "title": "2026 한-카자흐스탄 보건의료 해외진출 홍보 및 공공조달 협력 세미나 참가기관 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=171&linkId=48950030&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-09-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1wmzah8",
+   "types": [
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-10",
+   "title": "[공고] 「HLTH USA 2026」 디지털헬스케어 한국관 참가기관 모집 공고(~9.30.(수)) 15시까지",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=170&linkId=48949613&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-09-08",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1430mk",
+   "types": [
+    "전시",
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-10",
+   "title": "2026년 GHKOL 국제의료사업 실무특화 컨설팅 사업 공고(~9.16.(수) 까지)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=169&linkId=48949465&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-09-03",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1loilip",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-10",
+   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고(참여기업 참여취소에 따른 추가모집)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=168&linkId=48948540&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-08-11",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1fvcbrj",
+   "types": [
+    "기타"
+   ],
+   "areas": [
+    "동남아"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-10",
+   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=167&linkId=48947601&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-07-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nsfxyt1",
+   "types": [
+    "기타"
+   ],
+   "areas": [
+    "동남아"
+   ],
    "regions": [],
    "med": true
   }
