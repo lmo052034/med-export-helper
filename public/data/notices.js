@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-10T03:02:19.820Z",
- "today": "2026-11-10",
+ "updated": "2026-11-11T00:56:29.993Z",
+ "today": "2026-11-11",
  "sources": [
   {
    "key": "bizinfo",
@@ -1000,6 +1000,62 @@ window.NOTICES = {
    "areas": [
     "동남아"
    ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-11",
+   "title": "[한국경영인증원] 디지털 의료기기 GMP 기본 과정 교육 안내(12.7(월)~8(화), 온라인)",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4818&linkId=48952544&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-10",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1obwicb",
+   "types": [
+    "인증",
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-11",
+   "title": "2026 KMDIA 보험위원회 정책포럼 개최 안내(11.19(목), 소노펠리체컨벤션)",
+   "org": "한국의료기기산업협회",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4817&linkId=48952539&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-10",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nzaaz3z",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-11",
+   "title": "[특화교육]MDSAP 프로그램 심화이해 A to Z 교육신청 안내",
+   "org": "한국의료기기협동조합",
+   "src": "kmdica",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4816&linkId=48952512&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-10",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1532do6",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
    "regions": [],
    "med": true
   }
