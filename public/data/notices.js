@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-12T02:03:28.985Z",
- "today": "2026-11-12",
+ "updated": "2026-11-13T01:34:03.427Z",
+ "today": "2026-11-13",
  "sources": [
   {
    "key": "bizinfo",
@@ -1054,6 +1054,192 @@ window.NOTICES = {
    "id": "n1532do6",
    "types": [
     "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "[경기도경제과학진흥원] 2026년 경기도 의료기기 개발 지원 사업 성과공유회 안내",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4829&linkId=48952681&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-13",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1vr5rjp",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "[한국보건정보통계학회] 2026년도 추계학술대회 및 추계연수 교육 모집",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4828&linkId=48952678&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-13",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nzjeg2k",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "[디지털헬스보안협회] \"의료기기 사이버보안 거버넌스와 MITRE ATT&CK 실무\" 교육 안내",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4827&linkId=48952677&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-13",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nfg46l6",
+   "types": [
+    "인증",
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "[특화교육]의료기기 인공지능(AI) 인허가 실무 A to Z",
+   "org": "한국의료기기협동조합",
+   "src": "kmdica",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4826&linkId=48952658&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-13",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1a1ivtk",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "[한국경영인증원] 디지털 의료기기 GMP 기본과정",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4825&linkId=48952648&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-12",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "ntqi7p8",
+   "types": [
+    "인증",
+    "마케팅"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "2026년 한국보건의료연구원 제3차 원탁회의 개최 안내(11/30(월), 13:30)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4824&linkId=48952644&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-12",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1b53uer",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "2026 보건산업 성과교류회 개최 안내(11.25(수), JW메리어트 호텔 서울)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4823&linkId=48952643&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-12",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nr1tkxd",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "[의료기기 국제인증지원센터] 의료기기 인허가 최신 규제 대응을 위한 전략 세미나&apos;",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4822&linkId=48952642&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-12",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1rm9g37",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "디지털의료기기 사용적합성 및 GMP 품질관리 실무 이해 교육 참가자 모집 공고",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4821&linkId=48952639&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-12",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nvei4m2",
+   "types": [
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-13",
+   "title": "국내 업체 글로벌 진출 지원을 위한 MDSAP 규제대응 전략 포럼 사전 접수 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4820&linkId=48952637&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-12",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nyg90eu",
+   "types": [
+    "인증"
    ],
    "areas": [],
    "regions": [],
