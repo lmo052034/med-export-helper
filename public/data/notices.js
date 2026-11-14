@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-13T01:34:03.427Z",
- "today": "2026-11-13",
+ "updated": "2026-11-14T01:07:11.134Z",
+ "today": "2026-11-14",
  "sources": [
   {
    "key": "bizinfo",
@@ -556,26 +556,6 @@ window.NOTICES = {
    "med": true
   },
   {
-   "first": "2026-10-29",
-   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고",
-   "org": "한국보건산업진흥원",
-   "src": "mohw",
-   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=168&linkId=48947601&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
-   "posted": "2026-07-16",
-   "start": "",
-   "end": "",
-   "via": "보건산업진흥원 게시판",
-   "id": "nwsxwqe",
-   "types": [
-    "기타"
-   ],
-   "areas": [
-    "동남아"
-   ],
-   "regions": [],
-   "med": true
-  },
-  {
    "first": "2026-10-30",
    "title": "AI 의료기술 정책 세미나 개최 안내",
    "org": "한국보건산업진흥원",
@@ -974,26 +954,6 @@ window.NOTICES = {
    "end": "",
    "via": "보건산업진흥원 게시판",
    "id": "n1fvcbrj",
-   "types": [
-    "기타"
-   ],
-   "areas": [
-    "동남아"
-   ],
-   "regions": [],
-   "med": true
-  },
-  {
-   "first": "2026-11-10",
-   "title": "유엔조달시장 진출을 위한 태국 시장개척단 참가기관 및 기업 모집 공고",
-   "org": "한국보건산업진흥원",
-   "src": "mohw",
-   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=167&linkId=48947601&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
-   "posted": "2026-07-16",
-   "start": "",
-   "end": "",
-   "via": "보건산업진흥원 게시판",
-   "id": "nsfxyt1",
    "types": [
     "기타"
    ],
