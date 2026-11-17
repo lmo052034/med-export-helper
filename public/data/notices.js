@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-16T00:30:20.889Z",
- "today": "2026-11-16",
+ "updated": "2026-11-17T03:17:00.489Z",
+ "today": "2026-11-17",
  "sources": [
   {
    "key": "bizinfo",
@@ -1198,6 +1198,61 @@ window.NOTICES = {
    "end": "",
    "via": "보건산업진흥원 게시판",
    "id": "nyg90eu",
+   "types": [
+    "인증"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-17",
+   "title": "서울경제진흥원 연계 KHIDI 컨설팅 데이 사전 접수(~11.27(금))",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4832&linkId=48952772&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1ocrwz0",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-17",
+   "title": "2026년 12월 의료기기 해외 인허가 교육정보 안내서",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4831&linkId=48952764&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "njbrua6",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-17",
+   "title": "해외인증 트렌드 2026 개최 안내 (26.12.7.월, SETEC 컨벤션센터)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4830&linkId=48952763&refMenuId=MENU01493&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-16",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nv5p4gd",
    "types": [
     "인증"
    ],
