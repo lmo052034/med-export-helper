@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-17T03:17:00.489Z",
- "today": "2026-11-17",
+ "updated": "2026-11-18T02:39:07.146Z",
+ "today": "2026-11-18",
  "sources": [
   {
    "key": "bizinfo",
@@ -16,7 +16,7 @@ window.NOTICES = {
    "name": "한국보건산업진흥원 게시판 (보건복지부·의료기기협동조합 글)",
    "url": "https://www.khidi.or.kr/board?menuId=MENU01491",
    "ok": true,
-   "count": 20,
+   "count": 21,
    "note": ""
   }
  ],
@@ -1255,6 +1255,60 @@ window.NOTICES = {
    "id": "nv5p4gd",
    "types": [
     "인증"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-18",
+   "title": "2027 연세대학교 의료산업 최고위자 과정 7기 프로그램 모집",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4834&linkId=48952891&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-17",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n112nauo",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-18",
+   "title": "2026 연구 아이디어 기술사업화 챌린지 DEMO DAY 개최 안내 및 청중평가단 모집",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4833&linkId=48952890&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-17",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nvcqyp6",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-18",
+   "title": "2026 의료 해외진출 성과공유 및 사업설명회",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=10&no1=9999999998&linkId=48952923&menuId=MENU02458&maxIndex=00489506709998&minIndex=00489428759998&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=01&continent=&country=",
+   "posted": "2026-11-18",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n12g5q27",
+   "types": [
+    "교육"
    ],
    "areas": [],
    "regions": [],
