@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-18T02:39:07.146Z",
- "today": "2026-11-18",
+ "updated": "2026-11-19T02:06:21.172Z",
+ "today": "2026-11-19",
  "sources": [
   {
    "key": "bizinfo",
@@ -1307,6 +1307,42 @@ window.NOTICES = {
    "end": "",
    "via": "보건산업진흥원 게시판",
    "id": "n12g5q27",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-19",
+   "title": "[한국경영인증원] 의료기기 멸균 밸리데이션 과정",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4836&linkId=48953029&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-19",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1coi720",
+   "types": [
+    "인증"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-19",
+   "title": "2026 의료 해외진출 성과공유 및 사업설명회",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4835&linkId=48953016&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-18",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nd7nahd",
    "types": [
     "교육"
    ],
