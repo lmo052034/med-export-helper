@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-19T02:06:21.172Z",
- "today": "2026-11-19",
+ "updated": "2026-11-20T01:56:11.155Z",
+ "today": "2026-11-20",
  "sources": [
   {
    "key": "bizinfo",
@@ -1344,6 +1344,45 @@ window.NOTICES = {
    "via": "보건산업진흥원 게시판",
    "id": "nd7nahd",
    "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-20",
+   "title": "2026년 12월 품목갱신 대구 지역 설명회 개최 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4838&linkId=48953089&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-20",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nbvficz",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [
+    "대구"
+   ],
+   "med": true
+  },
+  {
+   "first": "2026-11-20",
+   "title": "2026년 11월 인증본부 통합설명회 개최 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4837&linkId=48953088&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-20",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1qt9aup",
+   "types": [
+    "인증",
     "교육"
    ],
    "areas": [],
