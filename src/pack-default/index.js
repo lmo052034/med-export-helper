@@ -9,8 +9,8 @@ export const PACK = {
   team: "에프킬라",
   asOf: "예시 콘텐츠",
   hero: { eyebrow: "예시 의료기기 (가상)", title: "의료기기 수출 제안", lead: "제품 선정부터 현지 판매 구조까지 살펴보고, 거래조건에 따른 가격과 병원 손익을 확인하세요.", image: null, imageAlt: "", imageCredit: "" },
-  product: { title: "제품 구성", lead: "콘텐츠 팩을 연결하면 실제 제품 사진과 구성이 표시됩니다.", handpieces: [], facts: [{ k: "제안 구성", v: "본체 1세트 (예시)", src: "예시" }], claims: [], caution: "" },
-  country: { title: "진출 국가", lead: "콘텐츠 팩을 연결하면 국가별 등록 현황이 표시됩니다.", scope: "", rows: [], compare: null, gap: [] },
+  product: { title: "제품 구성", lead: "공개 사이트에는 특정 회사의 제품 사진, 가격, 거래처 정보를 싣지 않고 가상 예시로 구조만 보여 줍니다.", handpieces: [], facts: [{ k: "제안 구성", v: "본체 1세트 (예시)", src: "예시" }], claims: [], caution: "" },
+  country: { title: "진출 국가", lead: "국가별 등록 현황은 실제 제품을 정한 뒤 같은 기준으로 조회해 채웁니다.", scope: "", rows: [], compare: null, gap: [] },
   structure: {
     title: "제조사는 파트너에게 팔고, 파트너가 병원에 팝니다", lead: "수출 거래와 현지 거래를 나눠 봅니다.", label: "예시 구조",
     actors: [{ key: "maker", name: "제조사", sub: "예시", roles: ["제조, 수출"] }, { key: "partner", name: "현지 파트너", sub: "예시", roles: ["수입, 병원 판매"] }, { key: "hospital", name: "병원", sub: "예시", roles: ["검수, 대금 지급"] }],
