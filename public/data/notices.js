@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-20T01:56:11.155Z",
- "today": "2026-11-20",
+ "updated": "2026-11-21T01:51:45.366Z",
+ "today": "2026-11-21",
  "sources": [
   {
    "key": "bizinfo",
@@ -1386,6 +1386,28 @@ window.NOTICES = {
     "교육"
    ],
    "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-21",
+   "title": "EU MDR 인증 준비와 디지털의료기기 사이버보안 교육 안내",
+   "org": "대구경북첨단의료산업진흥재단",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4839&linkId=48953106&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-20",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nz2y8l3",
+   "types": [
+    "인증",
+    "마케팅",
+    "교육"
+   ],
+   "areas": [
+    "유럽"
+   ],
    "regions": [],
    "med": true
   }
