@@ -336,7 +336,7 @@ export default function TermsPage() {
             </Grid>
           </>)}
         </div>
-        <aside className={cn("min-w-0 pt-4 pb-10 xl:sticky xl:top-[92px] xl:max-h-[calc(100svh-92px)] xl:overflow-y-auto xl:border-l xl:border-[var(--line)] xl:pl-6", mobileView !== "preview" && "hidden xl:block")} aria-label="서류 미리보기">
+        <aside className={cn("min-w-0 pt-4 pb-10 xl:sticky xl:top-[64px] xl:max-h-[calc(100svh-64px)] xl:overflow-y-auto xl:border-l xl:border-[var(--line)] xl:pl-6", mobileView !== "preview" && "hidden xl:block")} aria-label="서류 미리보기">
           <PreviewPane />
         </aside>
       </div>

@@ -2,14 +2,16 @@
 import { useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { DropdownMenu } from "radix-ui";
-import { ChevronDown, FileDown, FilePlus2, FileUp, FlaskConical, Trash2, X, Check, Loader2, AlertTriangle } from "lucide-react";
+import { ChevronDown, FileDown, FilePlus2, FileUp, FlaskConical, Trash2, X, Check, Loader2, AlertTriangle, Menu, Star } from "lucide-react";
+import { PACK } from "@pack";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "../ui/sheet.jsx";
 import { toast } from "sonner";
 import { useDeal } from "../../lib/deal/DealContext.jsx";
 import { summarize } from "../../lib/deal/checks.js";
 import { Toaster } from "../ui/sonner.jsx";
 import { cn } from "@/lib/utils";
 
-export const KIND = { user: "내 거래", mock: "모의 거래", case: "불러온 사례" };
+export const KIND = { user: "내 거래", mock: "모의 거래", case: "불러온 사례", sample: "대표 모의 거래" };
 
 function SaveStatus() {
   const { status } = useDeal();
@@ -52,6 +54,7 @@ function DealMenu() {
               ))}
             </DropdownMenu.RadioGroup>
             <DropdownMenu.Separator className="my-1 h-px bg-[var(--line)]" />
+            <DropdownMenu.Item className={item} onSelect={actions.openSample}><Star className="size-4" />대표 모의 거래 열기</DropdownMenu.Item>
             <DropdownMenu.Item className={item} onSelect={actions.newBlank}><FilePlus2 className="size-4" />새 거래 (빈칸)</DropdownMenu.Item>
             <DropdownMenu.Item className={item} onSelect={actions.openMock}><FlaskConical className="size-4" />모의 거래 열기</DropdownMenu.Item>
             <DropdownMenu.Item className={item} onSelect={() => file.current?.click()}><FileUp className="size-4" />사례 파일 불러오기 (JSON)</DropdownMenu.Item>
@@ -65,34 +68,34 @@ function DealMenu() {
   );
 }
 
-const TABS = [["/deal", "거래조건"], ["/review", "검토 결과"], ["/docs", "서류 미리보기"]];
+const MENU = [["/", "수출 제안"], ["/price", "가격·수익성"], ["/deal", "거래서류"], ["/evidence", "근거자료"]];
+const DOC_GROUP = ["/deal", "/review", "/docs"];
+const SUBTABS = [["/deal", "거래조건 입력"], ["/review", "검토 결과"], ["/docs", "서류 미리보기"]];
+const isActive = (p, pathname) => (p === "/deal" ? DOC_GROUP.includes(pathname) : p === pathname);
 
-export function AppShell({ children }) {
-  const { deal, findings, notes, dismissNotes } = useDeal();
-  const { pathname, search } = useLocation();
-  const nav = useNavigate();
+function DealBar({ showTabs }) {
+  const { deal, findings } = useDeal();
   const s = summarize(findings);
-  const fromOld = new URLSearchParams(search).get("from") === "old";
+  const nav = useNavigate();
+  const { pathname } = useLocation();
   return (
-    <div className="min-h-svh bg-white">
-      <a href="#main" className="skip-link">본문으로 건너뛰기</a>
-      <header className="app-header no-print sticky top-0 z-40 border-b border-[var(--line)] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-2.5 sm:px-6">
-          <div className="min-w-0 flex-1">
-            <p className="text-[12px] text-[#6e6e73]">의료기기 수출 거래서류 검토</p>
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-              <h1 className="truncate text-[17px] font-semibold tracking-tight">{deal.meta.name || "이름 없는 거래"}</h1>
-              <span className={cn("text-[12px] font-medium", deal.kind === "user" ? "text-[#6e6e73]" : "text-amber-700")}>{deal.kind !== "user" && deal.caseLabel ? deal.caseLabel : KIND[deal.kind]}</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="hidden md:inline"><SaveStatus /></span>
-            <DealMenu />
-            <button type="button" onClick={() => nav("/docs?print=1")} className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-[13px] font-medium text-white hover:brightness-110">인쇄·PDF</button>
+    <div className="no-print border-b border-[var(--line)] bg-white">
+      <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-4 gap-y-1 px-4 pt-2.5 pb-2 sm:px-6">
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
+            {showTabs ? <h1 className="truncate text-[15px] leading-normal font-semibold tracking-tight" data-testid="deal-name">{deal.meta.name || "이름 없는 거래"}</h1> : <span className="truncate text-[15px] font-semibold tracking-tight" data-testid="deal-name">{deal.meta.name || "이름 없는 거래"}</span>}
+            <span className={cn("text-[12px] font-medium", deal.kind === "user" ? "text-[#6e6e73]" : "text-amber-700")}>{KIND[deal.kind]}</span>
           </div>
         </div>
-        <nav aria-label="주요 메뉴" className="mx-auto flex max-w-[1440px] items-end gap-1 overflow-x-auto px-2 sm:px-4">
-          {TABS.map(([p, l]) => (
+        <div className="flex items-center gap-2">
+          <span className="hidden md:inline"><SaveStatus /></span>
+          <DealMenu />
+          {showTabs && <button type="button" onClick={() => nav("/docs?print=1")} className="inline-flex h-8 items-center rounded-full bg-primary px-3.5 text-[13px] font-medium text-white hover:brightness-110">인쇄·PDF</button>}
+        </div>
+      </div>
+      {showTabs && (
+        <nav aria-label="거래서류 메뉴" className="mx-auto flex max-w-[1200px] items-end gap-1 overflow-x-auto px-2 sm:px-4">
+          {SUBTABS.map(([p, l]) => (
             <NavLink key={p} to={p} className={({ isActive }) => cn("tab-link", isActive && "is-active")}>
               {l}
               {p === "/review" && (s.fix > 0 ? <span className="ml-1.5 rounded bg-amber-100 px-1.5 text-[11px] font-semibold text-amber-800 tabular-nums">수정 {s.fix}</span> : s.confirm > 0 ? <span className="ml-1.5 text-[11px] text-[#6e6e73] tabular-nums">확인 {s.confirm}</span> : null)}
@@ -100,12 +103,48 @@ export function AppShell({ children }) {
           ))}
           <span className="ml-auto pb-2 pr-2 md:hidden"><SaveStatus /></span>
         </nav>
+      )}
+    </div>
+  );
+}
+
+export function AppShell({ children }) {
+  const { notes, dismissNotes } = useDeal();
+  const { pathname, search } = useLocation();
+  const nav = useNavigate();
+  const [menu, setMenu] = useState(false);
+  const fromOld = new URLSearchParams(search).get("from") === "old";
+  const work = pathname !== "/" && pathname !== "/evidence";
+  return (
+    <div className="min-h-svh bg-white">
+      <a href="#main" className="skip-link">본문으로 건너뛰기</a>
+      <header className="app-header no-print sticky top-0 z-40 border-b border-[var(--line)] bg-white">
+        <div className="mx-auto flex h-12 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
+          <Link to="/" className="shrink-0 text-[15px] font-semibold tracking-tight">{PACK.brand}</Link>
+          <nav aria-label="주요 메뉴" className="ml-auto hidden h-full items-stretch gap-1 md:flex">
+            {MENU.map(([p, l]) => (
+              <Link key={p} to={p} aria-current={isActive(p, pathname) ? "page" : undefined} className={cn("top-link", isActive(p, pathname) && "is-active")}>{l}</Link>
+            ))}
+          </nav>
+          <button type="button" className="ml-auto grid size-10 place-items-center rounded-full hover:bg-[var(--fill)] md:hidden" aria-label="메뉴 열기" aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="size-5" /></button>
+        </div>
       </header>
+      <Sheet open={menu} onOpenChange={setMenu}>
+        <SheetContent side="right" className="w-[min(86vw,340px)] p-0 gap-0">
+          <div className="border-b border-[var(--line)] px-5 pt-5 pb-4"><SheetTitle className="text-[17px]">{PACK.brand}</SheetTitle><SheetDescription className="text-[13px]">메뉴</SheetDescription></div>
+          <nav aria-label="모바일 메뉴" className="flex flex-col p-2">
+            {MENU.map(([p, l]) => (
+              <Link key={p} to={p} onClick={() => setMenu(false)} aria-current={isActive(p, pathname) ? "page" : undefined} className={cn("rounded-xl px-4 py-3.5 text-[17px]", isActive(p, pathname) ? "bg-[var(--fill-soft)] font-semibold text-primary" : "hover:bg-[var(--fill-soft)]")}>{l}</Link>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+      {work && <DealBar showTabs={DOC_GROUP.includes(pathname)} />}
       {(notes.length > 0 || fromOld) && (
         <div className="no-print border-b border-[var(--line)] bg-[var(--fill-soft)]">
-          <div className="mx-auto flex max-w-[1440px] items-start gap-3 px-4 py-2.5 text-[13px] sm:px-6">
+          <div className="mx-auto flex max-w-[1200px] items-start gap-3 px-4 py-2.5 text-[13px] sm:px-6">
             <div className="flex-1 space-y-0.5">
-              {fromOld && <p>이전 메뉴(준비 진단·지원사업·KOTRA 사례 등)는 이번 개편에서 정리했어요. 거래조건부터 입력하세요.</p>}
+              {fromOld && <p>이전 메뉴(준비 진단, 지원사업, KOTRA 사례 등)는 정리했어요. 거래조건은 '거래서류'에서 입력해요.</p>}
               {notes.map((n, i) => <p key={i}>{n.text}</p>)}
             </div>
             <button type="button" aria-label="알림 닫기" onClick={() => { dismissNotes(); if (fromOld) nav(pathname, { replace: true }); }} className="rounded p-1 hover:bg-[var(--fill)]"><X className="size-4" /></button>
@@ -113,10 +152,14 @@ export function AppShell({ children }) {
         </div>
       )}
       <main id="main" tabIndex={-1} className="outline-none">{children}</main>
-      <footer className="no-print border-t border-[var(--line)] px-4 py-5 text-[12px] leading-relaxed text-[#6e6e73] sm:px-6">
-        <div className="mx-auto max-w-[1440px] space-y-1">
-          <p>입력한 거래정보는 이 브라우저(localStorage)에만 저장돼요. 서버로 보내지 않고, 다른 기기에서는 보이지 않아요. 옮기려면 '거래 → 파일로 내보내기'를 쓰세요.</p>
-          <p>검토는 입력값의 누락·계산·서류 간 일치를 규칙으로 확인해요. 법적 적합성, 통관 승인, 판매 가능 여부는 판단하지 않아요. · 에프킬라</p>
+      <footer className="no-print border-t border-[var(--line)] bg-[var(--surface-2)] py-8 text-[12px] leading-relaxed text-[#6e6e73]">
+        <div className="mx-auto grid max-w-[1200px] gap-4 px-4 sm:grid-cols-[1fr_auto] sm:px-6">
+          <div className="space-y-1">
+            <p className="font-medium text-[#424245]">{PACK.footer.project}</p>
+            <p>대표 사례는 팀이 설정한 모의 거래예요. 회사 자료, 공개자료, 팀 설정값을 근거자료에서 구분해 보여 줘요. {PACK.asOf}.</p>
+            <p>입력한 값은 이 브라우저(localStorage)에만 저장돼요. 계산과 검토는 입력값과 규칙으로만 하며, 법적 적합성이나 통관 승인, 판매 가능 여부를 판단하지 않아요.</p>
+          </div>
+          <Link to="/evidence" className="self-start text-[13px] font-medium text-primary">근거자료 보기</Link>
         </div>
       </footer>
       <Toaster position="bottom-center" />

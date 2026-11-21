@@ -2,13 +2,14 @@
 const { test, expect } = require('@playwright/test');
 
 const open = (page, id) => page.getByRole('button', { name: new RegExp(id) }).first().click();
-const reviewTab = (page) => page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: /검토 결과/ });
+const reviewTab = (page) => page.getByRole('navigation', { name: '거래서류 메뉴' }).getByRole('link', { name: /검토 결과/ });
 
 test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 이동 → 입력 후 해소 → 인쇄', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '거래서류' }).click();
   await expect(page).toHaveURL(/#\/deal$/);
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('모의 거래');
 
   // 2. 구성(핸드피스 단가)·수량 변경 → 미리보기 총액 갱신
   await open(page, '제품·가격');
@@ -120,8 +121,10 @@ test('사례 파일 불러오기는 기존 거래를 덮어쓰지 않음', async
   expect(list.length).toBe(before + 1);
 });
 
-test('이전 메뉴 주소는 오류 없이 거래조건으로', async ({ page }) => {
-  for (const p of ['/#/promo', '/#/cases/kotra-1', '/#/readiness/3', '/#/unknown']) {
+test('이전 메뉴 주소는 오류 없이 거래서류로, 모르는 주소는 첫 화면으로', async ({ page }) => {
+  await page.goto('/#/unknown');
+  await expect(page).toHaveURL(/#\/$/);
+  for (const p of ['/#/promo', '/#/cases/kotra-1', '/#/readiness/3']) {
     await page.goto(p);
     await expect(page).toHaveURL(/#\/deal/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -132,7 +135,7 @@ test('이전 메뉴 주소는 오류 없이 거래조건으로', async ({ page }
 
 test('모바일 390px: 입력·미리보기 전환, 가로 넘침 없음', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const p of ['/#/deal', '/#/review', '/#/docs']) {
+  for (const p of ['/#/', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/price?tab=cash', '/#/deal', '/#/review', '/#/docs', '/#/evidence']) {
     await page.goto(p);
     const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(over, p).toBeLessThanOrEqual(0);
@@ -158,4 +161,76 @@ test('모든 입력칸에 이름표가 있고 키보드로 이동 가능', async
   await page.getByRole('button', { name: /당사자/ }).focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#f-parties-maker-name')).toBeVisible();
+});
+
+test('메뉴와 주소: 직접 열기, 뒤로 가기, 새로고침이 같은 화면', async ({ page }) => {
+  const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/#/price?tab=cash');
+  await expect(page.getByRole('tab', { name: '결제 흐름' })).toHaveAttribute('aria-selected', 'true');
+  await page.reload();
+  await expect(page.getByRole('tab', { name: '결제 흐름' })).toHaveAttribute('aria-selected', 'true');
+  const top = page.getByRole('navigation', { name: '주요 메뉴' });
+  await top.getByRole('link', { name: '근거자료' }).click();
+  await expect(page).toHaveURL(/#\/evidence$/);
+  await expect(top.getByRole('link', { name: '근거자료' })).toHaveAttribute('aria-current', 'page');
+  await page.goBack();
+  await expect(page).toHaveURL(/tab=cash/);
+  await page.goto('/#/review');
+  await expect(top.getByRole('link', { name: '거래서류' })).toHaveAttribute('aria-current', 'page');
+  expect(errors).toEqual([]);
+});
+
+test('병원 운영: 시술 건수 변경은 병원 손익만, 판매가 변경은 견적과 도입비까지', async ({ page }) => {
+  await page.goto('/#/docs?doc=local');
+  const quoteTotal = async () => (await page.locator('[data-doc="local"] tfoot').innerText());
+  const q0 = await quoteTotal();
+  await page.goto('/#/price?tab=hospital');
+  const surplus = page.getByTestId('h-surplus');
+  const s0 = await surplus.innerText();
+  await page.getByLabel('월 유료 시술 건수', { exact: true }).fill('70');
+  await expect(surplus).not.toHaveText(s0);
+  await expect(surplus).toContainText('기준안 대비 +');
+  await expect(page.getByText('변경됨').first()).toBeVisible();
+  await page.goto('/#/docs?doc=local');
+  expect(await quoteTotal()).toBe(q0);
+  await page.goto('/#/price?tab=deal');
+  const line = page.locator('[data-field^="local.lines."] input[inputmode="decimal"]').first();
+  await line.fill('999000000');
+  await page.goto('/#/docs?doc=local');
+  expect(await quoteTotal()).not.toBe(q0);
+  await expect(page.locator('[data-doc="local"] tfoot')).toContainText('1,108,890,000');
+  await page.goto('/#/price?tab=hospital');
+  await expect(page.getByTestId('h-payback')).toContainText('개월');
+  await page.getByRole('button', { name: '기준값으로 되돌리기' }).first().click();
+  await expect(page.getByLabel('월 유료 시술 건수', { exact: true })).not.toHaveValue('70');
+});
+
+test('병원 운영: 0과 음수, 잉여 0 이하에서는 산출 불가로 표시', async ({ page }) => {
+  await page.goto('/#/price?tab=hospital');
+  const n = page.getByLabel('월 유료 시술 건수', { exact: true });
+  await n.fill('0');
+  await expect(page.getByTestId('h-payback')).toContainText('산출 불가');
+  await expect(page.getByTestId('h-bep')).toContainText('회');
+  await n.fill('-3');
+  await expect(page.getByText('음수는 쓸 수 없어요.')).toBeVisible();
+  await expect(page.getByTestId('h-surplus')).toContainText('—');
+  await n.fill('');
+  await expect(page.getByText('비어 있어요. 0과 다르게 계산하지 않아요.')).toBeVisible();
+  await n.fill('40');
+  await page.getByLabel('회당 실제 수납액', { exact: true }).fill('1');
+  await expect(page.getByTestId('h-bep')).toContainText('산출 불가');
+});
+
+test('대표 모의 거래 다시 열기는 내 거래를 덮어쓰지 않음', async ({ page }) => {
+  await page.goto('/#/deal');
+  await page.getByRole('button', { name: '거래', exact: true }).click();
+  await page.getByRole('menuitem', { name: '새 거래 (빈칸)' }).click();
+  await page.locator('#f-meta-name').fill('내 거래 보존');
+  await page.waitForTimeout(400);
+  await page.getByRole('button', { name: '거래', exact: true }).click();
+  await page.getByRole('menuitem', { name: '대표 모의 거래 열기' }).click();
+  await expect(page.getByTestId('deal-name')).not.toHaveText('내 거래 보존');
+  const names = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('mdk:deals')).list).map((d) => [d.kind, d.meta.name]));
+  expect(names.some(([, n]) => n === '내 거래 보존')).toBe(true);
+  expect(names.filter(([k]) => k === 'sample').length).toBe(1);
 });

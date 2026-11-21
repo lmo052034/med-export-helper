@@ -24,7 +24,7 @@ function Miss({ field, label }) {
 const V = ({ v, field, label }) => (String(v ?? "").trim() ? <span data-doc-field={field}>{v}</span> : <Miss field={field} label={label} />);
 
 function Stamp({ d }) {
-  const mock = d.kind === "mock" || d.kind === "case";
+  const mock = d.kind !== "user";
   return <p className="doc-stamp">{mock ? "DRAFT · ASSUMED FOR SIMULATION" : "DRAFT · FOR REVIEW"}</p>;
 }
 function Paper({ id, children, d, title }) {
@@ -32,7 +32,7 @@ function Paper({ id, children, d, title }) {
     <article className="doc-paper" data-doc={id} aria-label={title}>
       <Stamp d={d} />
       {children}
-      <p className="doc-foot">{d.kind === "case" ? `Case data loaded from file (${d.caseLabel || "case"}). ` : d.kind === "mock" ? "Mock values for demonstration. " : ""}Generated from one set of deal data; not checked against any external document.</p>
+      <p className="doc-foot">{d.kind === "case" ? `Case data loaded from file (${d.caseLabel || "case"}). ` : d.kind === "mock" ? "Mock values for demonstration. " : d.kind === "sample" ? "Sample deal with mock terms set by the team; company and public figures are marked in the evidence list. " : ""}Generated from one set of deal data; not checked against any external document.</p>
     </article>
   );
 }
