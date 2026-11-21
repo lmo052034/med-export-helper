@@ -2,41 +2,31 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./index.css";
-import { AppProvider, Layout } from "./components/shell.jsx";
-import Home from "./pages/Home.jsx";
-import Readiness from "./pages/Readiness.jsx";
-import Programs from "./pages/Programs.jsx";
-import Market from "./pages/Market.jsx";
-import Compliance from "./pages/Compliance.jsx";
-import Promo from "./pages/Promo.jsx";
-import Buyer from "./pages/Buyer.jsx";
-import Deal from "./pages/Deal.jsx";
-import Log from "./pages/Log.jsx";
-import Cases from "./pages/Cases.jsx";
+import { DealProvider } from "./lib/deal/DealContext.jsx";
+import { AppShell } from "./components/deal/AppShell.jsx";
+import TermsPage from "./pages/TermsPage.jsx";
+import ReviewPage from "./pages/ReviewPage.jsx";
+import DocsPage from "./pages/DocsPage.jsx";
+
+// 이전 메뉴 주소(공유된 링크, 즐겨찾기)는 오류 없이 거래조건 화면으로 보냅니다
+const OLD = ["/readiness", "/readiness/:id", "/programs", "/market", "/compliance", "/promo", "/buyer", "/log", "/cases", "/cases/:id"];
 
 // GitHub Pages는 서버 라우팅이 없어 주소에 #을 씁니다 (새로고침해도 같은 화면)
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HashRouter>
-      <AppProvider>
-        <Layout>
+      <DealProvider>
+        <AppShell>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/readiness" element={<Readiness />} />
-            <Route path="/readiness/:id" element={<Readiness />} />
-            <Route path="/programs" element={<Programs />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/compliance" element={<Compliance />} />
-            <Route path="/promo" element={<Promo />} />
-            <Route path="/buyer" element={<Buyer />} />
-            <Route path="/deal" element={<Deal />} />
-            <Route path="/log" element={<Log />} />
-            <Route path="/cases" element={<Cases />} />
-            <Route path="/cases/:id" element={<Cases />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="/" element={<Navigate to="/deal" replace />} />
+            <Route path="/deal" element={<TermsPage />} />
+            <Route path="/review" element={<ReviewPage />} />
+            <Route path="/docs" element={<DocsPage />} />
+            {OLD.map((p) => <Route key={p} path={p} element={<Navigate to="/deal?from=old" replace />} />)}
+            <Route path="*" element={<Navigate to="/deal" replace />} />
           </Routes>
-        </Layout>
-      </AppProvider>
+        </AppShell>
+      </DealProvider>
     </HashRouter>
   </StrictMode>
 );
