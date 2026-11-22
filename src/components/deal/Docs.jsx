@@ -25,7 +25,7 @@ const V = ({ v, field, label }) => (String(v ?? "").trim() ? <span data-doc-fiel
 
 function Stamp({ d }) {
   const mock = d.kind !== "user";
-  return <p className="doc-stamp">{mock ? "DRAFT · ASSUMED FOR SIMULATION" : "DRAFT · FOR REVIEW"}</p>;
+  return <p className="doc-stamp">{mock ? "DRAFT, ASSUMED FOR SIMULATION" : "DRAFT, FOR REVIEW"}</p>;
 }
 function Paper({ id, children, d, title }) {
   return (
@@ -42,7 +42,7 @@ const PartyBlock = ({ k, p, role, need = [] }) => (
     <p className="font-semibold"><V v={p.name} field={`parties.${role}.name`} label="회사명" /></p>
     {(p.address || need.includes("address")) && <p><V v={p.address} field={`parties.${role}.address`} label="주소" /></p>}
     {p.contact && <p>Attn: {p.contact}</p>}
-    {(p.email || p.phone) && <p className="text-[#6e6e73]">{[p.email, p.phone].filter(Boolean).join(" · ")}</p>}
+    {(p.email || p.phone) && <p className="text-[#6e6e73]">{[p.email, p.phone].filter(Boolean).join(", ")}</p>}
   </div>
 );
 
@@ -67,7 +67,7 @@ function ItemsTable({ d, E, terms, showHs = true, showWeights }) {
             <tr key={x.id}><td /><td>{x.label || "Additional cost"}</td>{showHs && <td />}<td /><td /><td className="r">{x.minor !== null ? fmtMoney(x.minor, cur, { bare: true }) : <Miss field={`exp.extras.${x.id}.amount`} label="금액" />}</td></tr>
           ))}
         </tbody>
-        <tfoot><tr><td colSpan={showHs ? 5 : 4}>TOTAL{terms.incoterm ? ` · ${terms.incoterm} ${terms.place}` : ""}</td><td className="r nowrap">{E.total !== null ? fmtMoney(E.total, cur) : <span className="doc-miss-static">계산 불가 (빈칸 있음)</span>}</td></tr></tfoot>
+        <tfoot><tr><td colSpan={showHs ? 5 : 4}>TOTAL{terms.incoterm ? `, ${terms.incoterm} ${terms.place}` : ""}</td><td className="r nowrap">{E.total !== null ? fmtMoney(E.total, cur) : <span className="doc-miss-static">계산 불가 (빈칸 있음)</span>}</td></tr></tfoot>
       </table>
     </div>
   );
@@ -89,7 +89,7 @@ export function QuoteDoc({ d }) {
       <div className="doc-grid2"><PartyBlock k="Messrs." p={buyer} role={d.roles.exportBuyer} /><div className="doc-box"><p className="doc-k">Validity</p><p><V v={d.exp.validityDays && `${d.exp.validityDays} days from quotation date`} field="exp.validityDays" label="유효기간" /></p><p className="doc-k mt-2">Origin</p><p>{d.exp.origin || "—"}</p></div></div>
       <ItemsTable d={d} E={E} terms={terms} />
       <dl className="doc-terms">
-        <dt>Delivery terms</dt><dd data-doc-field="exp.incoterm">{d.exp.incoterm && d.exp.place ? `${d.exp.incoterm} ${d.exp.place} (Incoterms ${d.exp.incotermVersion})` : <Miss field={d.exp.incoterm ? "exp.place" : "exp.incoterm"} label="인도조건·장소" />}{d.exp.exportClearance ? `; ${d.exp.exportClearance}` : ""}</dd>
+        <dt>Delivery terms</dt><dd data-doc-field="exp.incoterm">{d.exp.incoterm && d.exp.place ? `${d.exp.incoterm} ${d.exp.place} (Incoterms ${d.exp.incotermVersion})` : <Miss field={d.exp.incoterm ? "exp.place" : "exp.incoterm"} label="인도조건, 장소" />}{d.exp.exportClearance ? `; ${d.exp.exportClearance}` : ""}</dd>
         <dt>Payment</dt><dd data-doc-field="exp.payment">{pt || <Miss field="exp.payment" label="결제조건" />}</dd>
         <dt>Lead time</dt><dd><V v={d.exp.leadTime} field="exp.leadTime" label="납기" /></dd>
         {d.exp.transport && <><dt>Transport</dt><dd>{{ air: "By air", sea: "By sea", road: "By road", multi: "Multimodal" }[d.exp.transport] || d.exp.transport}</dd></>}
@@ -121,7 +121,7 @@ export function InvoiceDoc({ d }) {
       <ItemsTable d={d} E={E} terms={t} />
       {E.total !== null && <p className="mt-2 text-[12px] font-semibold">{amountInWords(E.total, E.cur)}.</p>}
       <dl className="doc-terms">
-        <dt>Terms of delivery</dt><dd data-doc-field="exp.incoterm" className={cn(t.overridden && "doc-diff")}>{t.incoterm && t.place ? `${t.incoterm} ${t.place} (Incoterms ${d.exp.incotermVersion})` : <Miss field="exp.incoterm" label="인도조건" />}{t.overridden && <span className="no-print"> · 견적서와 다름{d.exp.invoiceOverride.reason ? `: ${d.exp.invoiceOverride.reason}` : ""}</span>}</dd>
+        <dt>Terms of delivery</dt><dd data-doc-field="exp.incoterm" className={cn(t.overridden && "doc-diff")}>{t.incoterm && t.place ? `${t.incoterm} ${t.place} (Incoterms ${d.exp.incotermVersion})` : <Miss field="exp.incoterm" label="인도조건" />}{t.overridden && <span className="no-print">, 견적서와 다름{d.exp.invoiceOverride.reason ? `: ${d.exp.invoiceOverride.reason}` : ""}</span>}</dd>
         <dt>Terms of payment</dt><dd>{pt || <Miss field="exp.payment" label="결제조건" />}</dd>
         <dt>Packages</dt><dd data-doc-field="exp.packages">{W.pk.state === "ok" ? `${fmtNum(W.pk.value)} ${d.exp.packageUnit}` : <Miss field="exp.packages" label="포장 수량" />}{d.exp.packing ? `, ${d.exp.packing}` : ""}</dd>
         <dt>N.W. / G.W.</dt><dd data-doc-field="exp.gw">
@@ -164,8 +164,8 @@ export function EmailDoc({ d }) {
       <div className="whitespace-pre-wrap text-[14px] leading-[1.6]">{lines.join("\n")}</div>
       <div className="doc-signature" data-doc-field="email.senderName">
         <p className="font-semibold"><V v={em.senderName} field="email.senderName" label="발신자 이름" /></p>
-        <p>{[em.senderTitle, em.senderOrg].filter(Boolean).join(", ") || <Miss field="email.senderTitle" label="직함·소속" />}</p>
-        <p>{[em.senderEmail, em.senderPhone].filter(Boolean).join(" · ") || <Miss field="email.senderEmail" label="연락처" />}</p>
+        <p>{[em.senderTitle, em.senderOrg].filter(Boolean).join(", ") || <Miss field="email.senderTitle" label="직함, 소속" />}</p>
+        <p>{[em.senderEmail, em.senderPhone].filter(Boolean).join(", ") || <Miss field="email.senderEmail" label="연락처" />}</p>
       </div>
     </Paper>
   );

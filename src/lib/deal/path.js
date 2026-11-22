@@ -1,4 +1,4 @@
-/* "exp.items.<id>.price" 같은 경로로 값 읽기·쓰기. 배열은 id로 찾습니다 */
+/* "exp.items.<id>.price" 같은 경로로 값 읽기, 쓰기. 배열은 id로 찾습니다 */
 export function getPath(obj, path) {
   return path.split(".").reduce((o, k) => {
     if (o == null) return undefined;

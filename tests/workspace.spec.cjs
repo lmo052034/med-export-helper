@@ -1,18 +1,18 @@
-// 거래조건 → 검토 결과 → 서류 미리보기 시연 흐름과 저장·이전 데이터·인쇄·모바일 확인
+// 거래조건 → 검토 결과 → 서류 미리보기 시연 흐름과 저장, 이전 데이터, 인쇄, 모바일 확인
 const { test, expect } = require('@playwright/test');
 
 const open = (page, id) => page.getByRole('button', { name: new RegExp(id) }).first().click();
 const reviewTab = (page) => page.getByRole('navigation', { name: '거래서류 메뉴' }).getByRole('link', { name: /검토 결과/ });
 
-test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 이동 → 입력 후 해소 → 인쇄', async ({ page }) => {
+test('시연 흐름: 구성 변경 → 금액 갱신 → 중량, 서명 누락 이동 → 입력 후 해소 → 인쇄', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
+  await page.goto('/#/overview');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '거래와 서류' }).click();
   await expect(page).toHaveURL(/#\/deal$/);
 
-  // 2. 구성(핸드피스 단가)·수량 변경 → 미리보기 총액 갱신
-  await open(page, '제품·가격');
+  // 2. 구성(핸드피스 단가), 수량 변경 → 미리보기 총액 갱신
+  await open(page, '제품, 가격');
   const preview = page.getByRole('complementary', { name: '서류 미리보기' });
   await expect(preview.locator('[data-doc="quote"] tfoot')).toContainText('계산 불가');
   await page.getByLabel('2번 품목 단가').fill('500');
@@ -21,13 +21,13 @@ test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 �
   await preview.getByRole('tab', { name: '상업송장 초안' }).click();
   await expect(preview.locator('[data-doc="invoice"] tfoot')).toContainText('20,500.00');
 
-  // 4. 검토 결과에 총중량·서명 누락
+  // 4. 검토 결과에 총중량, 서명 누락
   await reviewTab(page).click();
   const gw = page.locator('li', { hasText: '총중량(G.W.)' }).first();
   await expect(gw).toBeVisible();
   await expect(page.locator('li', { hasText: '메일 서명: 발신자 이름' })).toBeVisible();
 
-  // 5. 입력란으로 이동 → 포커스·강조
+  // 5. 입력란으로 이동 → 포커스, 강조
   await gw.getByRole('button', { name: '입력란으로 이동' }).click();
   await expect(page).toHaveURL(/#\/deal/);
   await expect(page.locator('#f-exp-gw')).toBeFocused();
@@ -35,7 +35,7 @@ test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 �
   // 6. 값 입력 → 문제 해소
   await page.locator('#f-exp-nw').fill('38.5');
   await page.locator('#f-exp-gw').fill('52');
-  await open(page, '서류·메일');
+  await open(page, '서류, 메일');
   await page.getByLabel('발신자 이름').fill('Test Sender');
   await page.getByLabel('발신자 이메일').fill('sender@example.com');
   await reviewTab(page).click();
@@ -55,28 +55,28 @@ test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 �
 
 test('총중량이 순중량보다 작으면 수정 필요', async ({ page }) => {
   await page.goto('/#/deal');
-  await open(page, '포장·중량');
+  await open(page, '포장, 중량');
   await page.locator('#f-exp-nw').fill('50');
   await page.locator('#f-exp-gw').fill('40');
   await expect(page.locator('[data-field="exp.gw"]')).toContainText('수정 필요');
   await expect(page.locator('#f-exp-gw')).toHaveAttribute('aria-invalid', 'true');
 });
 
-test('빈칸·0·음수·문자 입력과 결제 합계', async ({ page }) => {
+test('빈칸, 0, 음수, 문자 입력과 결제 합계', async ({ page }) => {
   await page.goto('/#/deal');
-  await open(page, '제품·가격');
+  await open(page, '제품, 가격');
   await page.getByLabel('1번 품목 수량').fill('abc');
   await expect(page.getByLabel('1번 품목 수량')).toHaveAttribute('aria-invalid', 'true');
   await page.getByLabel('1번 품목 수량').fill('-1');
   await expect(page.getByLabel('1번 품목 수량')).toHaveAttribute('aria-invalid', 'true');
   await page.getByLabel('1번 품목 수량').fill('1');
-  await open(page, '결제·운송');
+  await open(page, '결제, 운송');
   await page.getByLabel('1회차 비율').fill('90');
   await reviewTab(page).click();
   await expect(page.locator('li', { hasText: '비율 합계' }).first()).toContainText('90%');
 });
 
-test('새로고침해도 입력값 복원, 모의·내 거래 분리', async ({ page }) => {
+test('새로고침해도 입력값 복원, 모의, 내 거래 분리', async ({ page }) => {
   await page.goto('/#/deal');
   await page.locator('#f-meta-name').fill('복원 확인 거래');
   await expect(page.getByRole('status').first()).toContainText('저장됨');
@@ -93,7 +93,7 @@ test('이전 버전 저장값(mdk:deal)을 새 거래로 옮기고 원본은 남
   const old = { seller: { co: 'Old Maker' }, buyer: { co: 'Old Buyer' }, items: [{ model: 'X1', qty: '3', unit: '200' }], inco: 'FOB', place: 'Busan', sender: 'Lee' };
   await page.addInitScript((v) => { if (!localStorage.getItem('mdk:deals')) localStorage.setItem('mdk:deal', JSON.stringify(v)); }, old);
   await page.goto('/#/deal');
-  await expect(page.getByText('이전 버전의 견적서·인보이스 입력값을 새 거래로 옮겼어요')).toBeVisible();
+  await expect(page.getByText('이전 버전의 견적서, 인보이스 입력값을 새 거래로 옮겼어요')).toBeVisible();
   await open(page, '당사자');
   await expect(page.locator('#f-parties-maker-name')).toHaveValue('Old Maker');
   await expect(page.locator('[data-doc="quote"] tfoot')).toContainText('600.00');
@@ -133,9 +133,9 @@ test('이전 메뉴 주소는 오류 없이 거래서류로, 모르는 주소는
   await expect(page.getByText('이전 메뉴(준비 진단')).toBeVisible();
 });
 
-test('모바일 390px: 입력·미리보기 전환, 가로 넘침 없음', async ({ page }) => {
+test('모바일 390px: 입력, 미리보기 전환, 가로 넘침 없음', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const p of ['/#/', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/price?tab=cash', '/#/deal', '/#/review', '/#/docs', '/#/evidence']) {
+  for (const p of ['/#/', '/#/setup', '/#/overview', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/price?tab=cash', '/#/deal', '/#/review', '/#/docs', '/#/evidence']) {
     await page.goto(p);
     const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(over, p).toBeLessThanOrEqual(0);
@@ -149,7 +149,7 @@ test('모바일 390px: 입력·미리보기 전환, 가로 넘침 없음', async
 
 test('모든 입력칸에 이름표가 있고 키보드로 이동 가능', async ({ page }) => {
   await page.goto('/#/deal');
-  for (const s of ['당사자', '제품·가격', '결제·운송', '포장·중량', '설치·서비스', '현지 판매', '서류·메일']) await open(page, s);
+  for (const s of ['당사자', '제품, 가격', '결제, 운송', '포장, 중량', '설치, 서비스', '현지 판매', '서류, 메일']) await open(page, s);
   const unnamed = await page.evaluate(() => [...document.querySelectorAll('main input:not([type=file]), main select, main textarea')].filter((el) => !(el.labels && el.labels.length) && !el.getAttribute('aria-label')).map((el) => el.id || el.name));
   expect(unnamed).toEqual([]);
   const p2 = await page.context().newPage();
@@ -233,4 +233,32 @@ test('대표 모의 거래 다시 열기는 내 거래를 덮어쓰지 않음', 
   const names = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('mdk:deals')).list).map((d) => [d.kind, d.meta.name]));
   expect(names.some(([, n]) => n === '내 거래 보존')).toBe(true);
   expect(names.filter(([k]) => k === 'sample').length).toBe(1);
+});
+
+test('처음 온 사람: 사이트 안내 → 3단계 설정 → 이름 인사 홈, 설정 저장', async ({ page }) => {
+  const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
+  await page.getByRole('button', { name: '사용자 설정 시작' }).click();
+  await expect(page.getByText('1/3단계')).toBeVisible();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page.getByRole('alert')).toContainText('이름을 입력');
+  await page.getByLabel('이름').fill('테스트');
+  await page.getByRole('button', { name: '다음' }).click();
+  await page.getByRole('radio', { name: /현지 파트너|PT/ }).first().check();
+  await page.getByRole('radio', { name: /현지 영업/ }).check();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page.getByText('3/3단계')).toBeVisible();
+  await page.getByRole('button', { name: '설정 완료' }).click();
+  await expect(page.getByRole('heading', { name: '테스트님, 안녕하세요' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /내 할 일, 현지 영업/ })).toBeVisible();
+  await page.getByRole('link', { name: '수익성' }).first().click();
+  await page.goto('/#/settings');
+  await page.getByLabel('직함').fill('영업 과장');
+  await expect(page.getByText('저장하지 않은 변경 사항')).toBeVisible();
+  await page.getByRole('button', { name: '저장', exact: true }).click();
+  await page.goto('/');
+  await expect(page.getByText('영업 과장')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '최근 연 화면' })).toBeVisible();
+  expect(errors).toEqual([]);
 });

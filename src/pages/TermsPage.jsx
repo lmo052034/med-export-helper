@@ -71,7 +71,7 @@ function PaymentRows({ base, cur, sched }) {
       </div>
       <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
         <AddBtn onClick={() => add(base, { label: "", pct: "", amount: "", due: "" })}>회차 추가</AddBtn>
-        <span className="text-[12px] text-[#6e6e73]">{sched.mode === "pct" ? `비율 합계 ${fmtNum(sched.pctSum)}%` : sched.mode === "amount" ? `금액 합계 ${fmtMoney(sched.amountSum, cur)}` : sched.mode === "mixed" ? "비율과 금액을 섞어 적었어요" : ""}{sched.remainder ? ` · 반올림 차이 ${fmtMoney(Math.abs(sched.remainder), cur, { bare: true })}를 마지막 회차에 반영` : ""}</span>
+        <span className="text-[12px] text-[#6e6e73]">{sched.mode === "pct" ? `비율 합계 ${fmtNum(sched.pctSum)}%` : sched.mode === "amount" ? `금액 합계 ${fmtMoney(sched.amountSum, cur)}` : sched.mode === "mixed" ? "비율과 금액을 섞어 적었어요" : ""}{sched.remainder ? `, 반올림 차이 ${fmtMoney(Math.abs(sched.remainder), cur, { bare: true })}를 마지막 회차에 반영` : ""}</span>
       </div>
     </div>
   );
@@ -98,11 +98,11 @@ function ItemsEditor({ onEv }) {
                 <CellInput path={`exp.items.${it.id}.qty`} label={`${i + 1}번 품목 수량`} type="number" placeholder="수량" />
                 <CellInput path={`exp.items.${it.id}.unit`} label={`${i + 1}번 품목 단위`} placeholder="set" />
                 <CellInput path={`exp.items.${it.id}.price`} label={`${i + 1}번 품목 단가`} type="number" placeholder={`단가 ${cur}`} />
-                <CellInput path={`exp.items.${it.id}.priceSource`} label={`${i + 1}번 품목 가격 근거`} placeholder="가격 근거 (가격표·합의 등)" className="col-span-3 sm:col-span-1" />
+                <CellInput path={`exp.items.${it.id}.priceSource`} label={`${i + 1}번 품목 가격 근거`} placeholder="가격 근거 (가격표, 합의 등)" className="col-span-3 sm:col-span-1" />
                 <CellInput path={`exp.items.${it.id}.hs`} label={`${i + 1}번 품목 HS 코드`} placeholder="HS 코드" className="col-span-2 sm:col-span-1" />
                 <span className="sm:hidden justify-self-end"><DelBtn onClick={() => remove("exp.items", it.id)} label={`${i + 1}번 품목 삭제`} /></span>
               </div>
-              <p className="mt-1.5 text-right text-[13px] tabular-nums text-[#424245]">{c?.minor !== null && c?.minor !== undefined ? `금액 ${fmtMoney(c.minor, cur)}` : it.kind !== "main" && c?.p.state === "blank" ? <span className="text-amber-700">추가 구성의 가격 확인 필요 · 금액을 계산하지 않았어요</span> : "금액 —"}</p>
+              <p className="mt-1.5 text-right text-[13px] tabular-nums text-[#424245]">{c?.minor !== null && c?.minor !== undefined ? `금액 ${fmtMoney(c.minor, cur)}` : it.kind !== "main" && c?.p.state === "blank" ? <span className="text-amber-700">추가 구성의 가격 확인 필요, 금액을 계산하지 않았어요</span> : "금액 —"}</p>
             </div>
           );
         })}
@@ -123,7 +123,7 @@ function ItemsEditor({ onEv }) {
             <DelBtn onClick={() => remove("exp.extras", x.id)} label={`비용 ${i + 1} 삭제`} />
           </div>
         ))}
-        {!deal.exp.extras.length && <p className="text-[13px] text-[#6e6e73]">운임·보험·포장비처럼 단가와 따로 받는 비용이 있으면 추가하세요. '총액에 포함'을 끄면 총액 계산에서 빠져요.</p>}
+        {!deal.exp.extras.length && <p className="text-[13px] text-[#6e6e73]">운임, 보험, 포장비처럼 단가와 따로 받는 비용이 있으면 추가하세요. '총액에 포함'을 끄면 총액 계산에서 빠져요.</p>}
       </div>
       <AddBtn onClick={() => add("exp.extras", { label: "", amount: "", included: true })}>비용 추가</AddBtn>
       <div className="mt-4 flex items-baseline justify-between border-t border-[var(--line)] pt-3">
@@ -144,7 +144,7 @@ function PreviewPane({ compact }) {
         {docs.map(([k, l]) => <button key={k} role="tab" type="button" aria-selected={doc === k} onClick={() => setDoc(k)} className="seg-btn">{l}</button>)}
       </div>
       <div className="preview-scale"><DocView id={doc} d={deal} /></div>
-      <p className="mt-2 text-[12px] text-[#6e6e73]">입력하면 바로 바뀌어요. 같은 기준정보로 만든 서류라 금액·조건이 서로 같아요(기준정보로 동기화됨).</p>
+      <p className="mt-2 text-[12px] text-[#6e6e73]">입력하면 바로 바뀌어요. 같은 기준정보로 만든 서류라 금액, 조건이 서로 같아요(기준정보로 동기화됨).</p>
     </div>
   );
 }
@@ -158,7 +158,7 @@ export default function TermsPage() {
   const focus = params.get("focus");
   const toggle = (id) => setOpen((s) => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
-  // 검토 결과·서류에서 넘어온 입력란 이동
+  // 검토 결과, 서류에서 넘어온 입력란 이동
   useEffect(() => { if (focus) { setOpen((s) => new Set([...s, sectionOf(focus)])); setMobileView("form"); } }, [focus]);
   useLayoutEffect(() => {
     if (!focus) return;
@@ -181,14 +181,14 @@ export default function TermsPage() {
 
   const E = calcExport(deal), L = calcLocal(deal), W = weights(deal), cur = deal.exp.currency;
   const sum = {
-    basic: [deal.meta.no, deal.meta.stage === "invoice" ? "출하·인보이스 단계" : "견적 단계"].filter(Boolean).join(" · "),
+    basic: [deal.meta.no, deal.meta.stage === "invoice" ? "출하, 인보이스 단계" : "견적 단계"].filter(Boolean).join(", "),
     parties: PARTY.map(([k]) => deal.parties[k].name).filter(Boolean).join(" → "),
-    items: `${deal.exp.items.map((i) => i.model || i.desc).filter(Boolean).join(", ") || "품목 없음"} · ${E.total !== null ? fmtMoney(E.total, cur) : "총액 미계산"}`,
-    terms: [deal.exp.incoterm && `${deal.exp.incoterm} ${deal.exp.place}`, deal.exp.payment.map((p) => p.label || (p.pct && p.pct + "%")).filter(Boolean).join(" / ")].filter(Boolean).join(" · "),
-    packing: `${deal.exp.packages || "?"} ${deal.exp.packageUnit} · N.W. ${deal.exp.nw || "—"} · G.W. ${deal.exp.gw || "—"} ${deal.exp.gwUnit}`,
-    service: [deal.service.installBy && `설치 ${deal.service.installBy}`, deal.service.asBy && `A/S ${deal.service.asBy}`].filter(Boolean).join(" · ") || "합의 내용 없음",
-    local: deal.local.enabled ? `${L.total !== null ? fmtMoney(L.total, deal.local.currency) : "총액 미계산"} · ${deal.local.priceBasis === "partner" ? "파트너 제공 가격" : deal.local.priceBasis === "mock" ? "팀 모의 가격" : "가격 출처 미선택"}` : "사용 안 함",
-    docs: [deal.exp.quoteNo, deal.exp.invoiceNo, deal.email.senderName ? `서명 ${deal.email.senderName}` : "서명 없음"].filter(Boolean).join(" · "),
+    items: `${deal.exp.items.map((i) => i.model || i.desc).filter(Boolean).join(", ") || "품목 없음"}, ${E.total !== null ? fmtMoney(E.total, cur) : "총액 미계산"}`,
+    terms: [deal.exp.incoterm && `${deal.exp.incoterm} ${deal.exp.place}`, deal.exp.payment.map((p) => p.label || (p.pct && p.pct + "%")).filter(Boolean).join(" / ")].filter(Boolean).join(", "),
+    packing: `${deal.exp.packages || "?"} ${deal.exp.packageUnit}, N.W. ${deal.exp.nw || "—"}, G.W. ${deal.exp.gw || "—"} ${deal.exp.gwUnit}`,
+    service: [deal.service.installBy && `설치 ${deal.service.installBy}`, deal.service.asBy && `A/S ${deal.service.asBy}`].filter(Boolean).join(", ") || "합의 내용 없음",
+    local: deal.local.enabled ? `${L.total !== null ? fmtMoney(L.total, deal.local.currency) : "총액 미계산"}, ${deal.local.priceBasis === "partner" ? "파트너 제공 가격" : deal.local.priceBasis === "mock" ? "팀 모의 가격" : "가격 출처 미선택"}` : "사용 안 함",
+    docs: [deal.exp.quoteNo, deal.exp.invoiceNo, deal.email.senderName ? `서명 ${deal.email.senderName}` : "서명 없음"].filter(Boolean).join(", "),
   };
   const roleOpts = PARTY.map(([k, l]) => [k, `${l}${deal.parties[k].name ? ` (${deal.parties[k].name})` : ""}`]);
   const S = (id, n, body) => <Section id={id} n={n} open={open.has(id)} onToggle={() => toggle(id)} summary={sum[id]}>{body}</Section>;
@@ -202,7 +202,7 @@ export default function TermsPage() {
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_560px]">
         <div className={cn("min-w-0 pt-4 pb-16", mobileView !== "form" && "hidden xl:block")}>
           <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-[14px] text-[#424245]">한 거래의 기준정보를 입력하면 견적서·인보이스·메일이 함께 바뀌어요.</p>
+            <p className="text-[14px] text-[#424245]">한 거래의 기준정보를 입력하면 견적서, 인보이스, 메일이 함께 바뀌어요.</p>
             <button type="button" onClick={() => setEv("*")} className="text-[13px] font-medium text-primary">근거자료 전체 ({deal.evidence.length})</button>
           </div>
 
@@ -210,7 +210,7 @@ export default function TermsPage() {
             <DealField path="meta.name" label="거래명" placeholder="예: 인도네시아 파트너 1세트 수출" wide />
             <DealField path="meta.no" label="거래번호" />
             <DealField path="meta.date" label="작성일" type="date" />
-            <DealField path="meta.stage" label="작성 단계" type="select" options={[["quote", "견적 단계 (인보이스 항목은 확인만)"], ["invoice", "출하·인보이스 단계 (중량·주소 필수)"]]} wide hint="단계에 따라 반드시 채울 항목이 달라져요." />
+            <DealField path="meta.stage" label="작성 단계" type="select" options={[["quote", "견적 단계 (인보이스 항목은 확인만)"], ["invoice", "출하, 인보이스 단계 (중량, 주소 필수)"]]} wide hint="단계에 따라 반드시 채울 항목이 달라져요." />
           </Grid>)}
 
           {S("parties", 2, <>
@@ -219,7 +219,7 @@ export default function TermsPage() {
                 <Sub first={i === 0}>{l}</Sub>
                 <Grid>
                   <DealField path={`parties.${k}.name`} label="회사명 (영문)" evidence={`parties.${k}`} onEvidence={setEv} />
-                  <DealField path={`parties.${k}.contact`} label="담당자" placeholder="받은 명함·메일 기준" />
+                  <DealField path={`parties.${k}.contact`} label="담당자" placeholder="받은 명함, 메일 기준" />
                   <DealField path={`parties.${k}.address`} label="주소 (영문)" wide placeholder="회사 자료에 있는 주소만" />
                   <DealField path={`parties.${k}.email`} label="이메일" type="email" />
                   <DealField path={`parties.${k}.phone`} label="전화" />
@@ -233,7 +233,7 @@ export default function TermsPage() {
               <DealField path="roles.consignee" label="수하인 (인보이스)" type="select" options={roleOpts} hint="화물을 받는 회사. 보통 수입자인 구매자와 같아요." />
               {deal.local.enabled && <><DealField path="roles.localSeller" label="현지 판매 판매자" type="select" options={roleOpts} /><DealField path="roles.localBuyer" label="현지 판매 구매자" type="select" options={roleOpts} /></>}
             </Grid>
-            <Sub>거래 상대방 요청사항·합의사항</Sub>
+            <Sub>거래 상대방 요청사항, 합의사항</Sub>
             <Grid>
               <DealField path="counterpart.requests" label="상대방 요청사항" type="textarea" placeholder="예: 시연 일정, 인증서 사본 요청" />
               <DealField path="counterpart.agreements" label="합의한 내용" type="textarea" placeholder="메일 본문에 'As agreed'로 들어가요" />
@@ -274,7 +274,7 @@ export default function TermsPage() {
           {S("service", 6, <Grid>
             <DealField path="service.installBy" label="설치 담당" /><DealField path="service.install" label="설치 합의 내용" />
             <DealField path="service.trainingBy" label="교육 담당" /><DealField path="service.training" label="교육 합의 내용" />
-            <DealField path="service.asBy" label="A/S 담당" /><DealField path="service.warranty" label="보증·A/S 합의 내용" />
+            <DealField path="service.asBy" label="A/S 담당" /><DealField path="service.warranty" label="보증, A/S 합의 내용" />
             <DealField path="service.notes" label="메모" type="textarea" wide />
           </Grid>)}
 
@@ -291,7 +291,7 @@ export default function TermsPage() {
               <div className="space-y-2" id={fieldId("local.lines")} tabIndex={-1}>
                 {deal.local.lines.map((l, i) => (
                   <div key={l.id} className="grid grid-cols-[minmax(0,1fr)_60px_32px] sm:grid-cols-[minmax(0,1fr)_60px_60px_150px_32px] items-center gap-2">
-                    <CellInput path={`local.lines.${l.id}.desc`} label={`현지 품목 ${i + 1}`} placeholder="품목 (설치·교육 포함 여부 등)" />
+                    <CellInput path={`local.lines.${l.id}.desc`} label={`현지 품목 ${i + 1}`} placeholder="품목 (설치, 교육 포함 여부 등)" />
                     <CellInput path={`local.lines.${l.id}.qty`} label={`현지 품목 ${i + 1} 수량`} type="number" placeholder="수량" />
                     <span className="hidden sm:block"><CellInput path={`local.lines.${l.id}.unit`} label={`현지 품목 ${i + 1} 단위`} /></span>
                     <CellInput path={`local.lines.${l.id}.price`} label={`현지 품목 ${i + 1} 가격`} type="number" placeholder={deal.local.currency} className="col-span-2 sm:col-span-1" />
@@ -300,7 +300,7 @@ export default function TermsPage() {
                 ))}
               </div>
               <AddBtn onClick={() => add("local.lines", { desc: "", qty: "1", unit: "set", price: "" })}>품목 추가</AddBtn>
-              <p className="mt-2 text-right text-[14px] tabular-nums">공급가 {L.net !== null ? fmtMoney(L.net, deal.local.currency) : "—"} · 부가세 {L.vatMinor !== null ? fmtMoney(L.vatMinor, deal.local.currency, { bare: true }) : "—"} · <b>합계 {L.total !== null ? fmtMoney(L.total, deal.local.currency) : "—"}</b></p>
+              <p className="mt-2 text-right text-[14px] tabular-nums">공급가 {L.net !== null ? fmtMoney(L.net, deal.local.currency) : "—"}, 부가세 {L.vatMinor !== null ? fmtMoney(L.vatMinor, deal.local.currency, { bare: true }) : "—"}, <b>합계 {L.total !== null ? fmtMoney(L.total, deal.local.currency) : "—"}</b></p>
               <Sub>현지 결제 일정</Sub>
               <PaymentRows base="local.payment" cur={deal.local.currency} sched={L.pay} />
               <div className="mt-4"><Grid cols={3}>
@@ -315,7 +315,7 @@ export default function TermsPage() {
             <Grid>
               <DealField path="exp.quoteNo" label="견적서 번호" /><DealField path="exp.quoteDate" label="견적일" type="date" />
               <DealField path="exp.invoiceNo" label="인보이스 번호" /><DealField path="exp.invoiceDate" label="인보이스 날짜" type="date" />
-              <DealField path="exp.origin" label="원산지" /><DealField path="exp.destination" label="도착 국가·도시" />
+              <DealField path="exp.origin" label="원산지" /><DealField path="exp.destination" label="도착 국가, 도시" />
               <DealField path="exp.remarks" label="견적서 비고" type="textarea" wide />
             </Grid>
             <Sub>인보이스만 다르게 적을 조건</Sub>

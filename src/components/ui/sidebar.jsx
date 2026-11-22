@@ -1,4 +1,4 @@
-/* shadcn/ui Sidebar (inset · offcanvas만 옮김) */
+/* shadcn/ui Sidebar (inset, offcanvas만 옮김) */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Slot } from "radix-ui";
 import { cva } from "class-variance-authority";

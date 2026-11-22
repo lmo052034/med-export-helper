@@ -1,8 +1,8 @@
-/* 화면 틀: 위쪽에 거래명·저장 상태·주요 작업, 그 아래 메뉴 세 개(거래조건·검토 결과·서류 미리보기) */
-import { useRef, useState } from "react";
+/* 화면 틀: 위쪽에 거래명, 저장 상태, 주요 작업, 그 아래 메뉴 세 개(거래조건, 검토 결과, 서류 미리보기) */
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { DropdownMenu } from "radix-ui";
-import { ChevronDown, FileDown, FilePlus2, FileUp, FlaskConical, Trash2, X, Check, Loader2, AlertTriangle, Menu, Star } from "lucide-react";
+import { ChevronDown, UserRound, Settings2, BookOpen, FileDown, FilePlus2, FileUp, FlaskConical, Trash2, X, Check, Loader2, AlertTriangle, Menu, Star } from "lucide-react";
 import { PACK } from "@pack";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "../ui/sheet.jsx";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { useDeal } from "../../lib/deal/DealContext.jsx";
 import { summarize } from "../../lib/deal/checks.js";
 import { Toaster } from "../ui/sonner.jsx";
 import { cn } from "@/lib/utils";
+import { useProfile, touchRecent, roleOf } from "../../lib/profile.js";
 
 export const KIND = { user: "내 거래", mock: "연습용 거래", case: "불러온 사례", sample: "진행 중 거래" };
 
@@ -68,7 +69,7 @@ function DealMenu() {
   );
 }
 
-const MENU = [["/", "홈"], ["/desk", "업무 현황"], ["/price", "수익성"], ["/hospital", "병원 제안"], ["/deal", "거래와 서류"], ["/evidence", "자료실"]];
+const MENU = [["/", "홈"], ["/desk", "업무 현황"], ["/overview", "거래 요약"], ["/price", "수익성"], ["/hospital", "병원 제안"], ["/deal", "거래와 서류"], ["/evidence", "자료실"]];
 const DOC_GROUP = ["/deal", "/review", "/docs"];
 const SUBTABS = [["/deal", "거래조건 입력"], ["/review", "검토 결과"], ["/docs", "서류 미리보기"]];
 const isActive = (p, pathname) => (p === "/deal" ? DOC_GROUP.includes(pathname) : p === pathname);
@@ -90,7 +91,7 @@ function DealBar({ showTabs }) {
         <div className="flex items-center gap-2">
           <span className="hidden md:inline"><SaveStatus /></span>
           <DealMenu />
-          {showTabs && <button type="button" onClick={() => nav("/docs?print=1")} className="inline-flex h-8 items-center rounded-full bg-primary px-3.5 text-[13px] font-medium text-white hover:brightness-110">인쇄·PDF</button>}
+          {showTabs && <button type="button" onClick={() => nav("/docs?print=1")} className="inline-flex h-8 items-center rounded-md bg-primary px-3.5 text-[13px] font-medium text-white hover:brightness-110">인쇄와 PDF</button>}
         </div>
       </div>
       {showTabs && (
@@ -108,25 +109,54 @@ function DealBar({ showTabs }) {
   );
 }
 
+function UserMenu() {
+  const p = useProfile();
+  const item = "flex items-center gap-2 rounded-md px-2.5 py-2 text-[14px] outline-none data-[highlighted]:bg-[var(--fill)] cursor-pointer";
+  if (!p) return <Link to="/setup" className="hidden h-8 items-center rounded-md border border-[var(--line-strong)] px-3 text-[13px] font-medium hover:bg-[var(--fill-soft)] md:inline-flex">사용자 설정</Link>;
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger className="inline-flex h-8 max-w-[180px] items-center gap-2 rounded-md px-1.5 text-[13px] hover:bg-[var(--fill)]" aria-label={`사용자 메뉴, ${p.name}`}>
+        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--fill)] text-[12px] font-semibold text-[#424245]">{p.name.slice(0, 1)}</span>
+        <span className="hidden truncate font-medium lg:inline">{p.name}</span>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content align="end" sideOffset={6} className="z-50 w-60 rounded-lg border border-[var(--line)] bg-white p-1.5 shadow-[0_12px_32px_rgb(0_0_0/0.12)]">
+          <div className="px-2.5 pt-1.5 pb-2"><p className="text-[14px] font-semibold">{p.name}</p><p className="text-[12px] text-[#6e6e73]">{[roleOf(p)?.label, p.title].filter(Boolean).join(", ") || "역할 미정"}</p></div>
+          <DropdownMenu.Separator className="my-1 h-px bg-[var(--line)]" />
+          <DropdownMenu.Item asChild className={item}><Link to="/settings"><Settings2 className="size-4" />내 설정</Link></DropdownMenu.Item>
+          <DropdownMenu.Item asChild className={item}><Link to="/start"><BookOpen className="size-4" />사이트 안내</Link></DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
+
 export function AppShell({ children }) {
   const { notes, dismissNotes } = useDeal();
   const { pathname, search } = useLocation();
   const nav = useNavigate();
   const [menu, setMenu] = useState(false);
+  const profile = useProfile();
+  const { deal, actions } = useDeal();
+  useEffect(() => { touchRecent(pathname); }, [pathname]);
   const fromOld = new URLSearchParams(search).get("from") === "old";
-  const work = pathname !== "/" && pathname !== "/desk" && pathname !== "/evidence" && pathname !== "/hospital";
+  const bare = pathname === "/setup" || ((pathname === "/" || pathname === "/start") && !profile);
+  const work = !["/", "/desk", "/evidence", "/hospital", "/overview", "/start", "/setup", "/settings"].includes(pathname);
   return (
     <div className="min-h-svh bg-white">
       <a href="#main" className="skip-link">본문으로 건너뛰기</a>
       <header className="app-header no-print sticky top-0 z-40 border-b border-[var(--line)] bg-white">
         <div className="mx-auto flex h-12 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
           <Link to="/" className="shrink-0 text-[15px] font-semibold tracking-tight">{PACK.brand}</Link>
-          <nav aria-label="주요 메뉴" className="ml-auto hidden h-full items-stretch gap-1 md:flex">
+          {bare ? <span className="ml-auto text-[13px] text-[#6e6e73]">{PACK.asOf}</span> : <>
+          <nav aria-label="주요 메뉴" className="ml-auto hidden h-full items-stretch gap-0.5 md:flex">
             {MENU.map(([p, l]) => (
               <Link key={p} to={p} aria-current={isActive(p, pathname) ? "page" : undefined} className={cn("top-link", isActive(p, pathname) && "is-active")}>{l}</Link>
             ))}
           </nav>
-          <button type="button" className="ml-auto grid size-10 place-items-center rounded-full hover:bg-[var(--fill)] md:hidden" aria-label="메뉴 열기" aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="size-5" /></button>
+          <span className="ml-auto flex md:ml-2"><UserMenu /></span>
+          <button type="button" className="grid size-10 place-items-center rounded-full hover:bg-[var(--fill)] md:hidden" aria-label="메뉴 열기" aria-expanded={menu} onClick={() => setMenu(true)}><Menu className="size-5" /></button>
+          </>}
         </div>
       </header>
       <Sheet open={menu} onOpenChange={setMenu}>
@@ -136,9 +166,19 @@ export function AppShell({ children }) {
             {MENU.map(([p, l]) => (
               <Link key={p} to={p} onClick={() => setMenu(false)} aria-current={isActive(p, pathname) ? "page" : undefined} className={cn("rounded-xl px-4 py-3.5 text-[17px]", isActive(p, pathname) ? "bg-[var(--fill-soft)] font-semibold text-primary" : "hover:bg-[var(--fill-soft)]")}>{l}</Link>
             ))}
+            <Link to={profile ? "/settings" : "/setup"} onClick={() => setMenu(false)} className="mt-2 rounded-xl border-t border-[var(--line)] px-4 py-3.5 text-[17px] hover:bg-[var(--fill-soft)]">{profile ? "내 설정" : "사용자 설정"}</Link>
           </nav>
         </SheetContent>
       </Sheet>
+      {!bare && deal.kind === "mock" && (
+        <div className="no-print border-b border-[var(--line)] bg-[#f5f5f7]">
+          <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2 text-[13px] sm:px-6">
+            <span className="font-semibold">연습용 거래</span>
+            <span className="text-[#424245]">이 거래의 숫자는 실제 거래와 섞이지 않습니다.</span>
+            <button type="button" onClick={actions.openSample} className="ml-auto font-medium text-primary hover:underline">진행 중 거래로 돌아가기</button>
+          </div>
+        </div>
+      )}
       {work && <DealBar showTabs={DOC_GROUP.includes(pathname)} />}
       {(notes.length > 0 || fromOld) && (
         <div className="no-print border-b border-[var(--line)] bg-[var(--fill-soft)]">

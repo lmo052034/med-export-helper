@@ -2,6 +2,7 @@
    병원이 시술가, 환자 수, 결제 조건을 넣으면 손익분기와 월 손익이 바로 바뀌고,
    같은 숫자로 인도네시아어 제안서와 원장 질문 답변을 만듭니다 (AI 연결 시 문장을 다듬음). */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { currentProfile } from "../lib/profile.js";
 import { Popover } from "radix-ui";
 import { toast } from "sonner";
 import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Copy, ExternalLink, FileText, Info, KeyRound, Loader2, MessageCircleQuestion, Plus, Printer, RotateCcw, Sparkles, Square, Trash2 } from "lucide-react";
@@ -24,8 +25,8 @@ const T = {
 /* ---------- 작은 부품 ---------- */
 function Badge({ basis, className }) {
   const b = BASIS[basis] || BASIS.team;
-  const tone = { official: "bg-[oklch(0.95_0.03_180)] text-[oklch(0.38_0.07_180)]", company: "bg-[#eef1ff] text-[#3b4aa8]", team: "bg-[var(--fill)] text-[#424245]", hospital: "bg-[oklch(0.95_0.05_85)] text-[oklch(0.42_0.09_65)]", missing: "bg-[#fff1f0] text-[#b42318]" }[b.tone];
-  return <span className={cn("inline-flex items-center rounded-full px-2 py-[1px] text-[11px] font-semibold", tone, className)}>{b.ko}</span>;
+  const tone = b.tone === "missing" ? "text-amber-700 font-semibold" : "text-[#86868b]";
+  return <span className={cn("inline-flex items-center text-[11px]", tone, className)}>{b.ko}</span>;
 }
 
 function SourcePop({ meta, onReset }) {
@@ -92,10 +93,10 @@ function Num({ c, set, path, label, unit, hint, slider, className, meta }) {
 
 function Step({ no, title, sub, children, aside }) {
   return (
-    <section className="rv-step rounded-[18px] border border-[var(--line)] bg-white p-5 sm:p-6" aria-labelledby={`step-${no}`}>
+    <section className="rv-step rounded-xl border border-[var(--line)] bg-white p-5 sm:p-6" aria-labelledby={`step-${no}`}>
       <header className="mb-4 flex items-start gap-3">
-        <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#1d1d1f] text-[13px] font-semibold text-white tabular-nums">{no}</span>
-        <div className="min-w-0 flex-1"><h2 id={`step-${no}`} className="text-[19px] leading-tight">{title}</h2>{sub && <p className="mt-0.5 text-[13px] text-[#6e6e73]">{sub}</p>}</div>
+        <span className="pt-0.5 text-[13px] font-semibold text-[#86868b] tabular-nums">{no}.</span>
+        <div className="min-w-0 flex-1"><h2 id={`step-${no}`} className="text-[18px] font-semibold leading-tight">{title}</h2>{sub && <p className="mt-0.5 text-[13px] text-[#6e6e73]">{sub}</p>}</div>
         {aside}
       </header>
       {children}
@@ -116,7 +117,7 @@ function BepMeter({ r, h, t }) {
         <div className={cn("absolute inset-y-0 left-0 rounded-full transition-[width] duration-300", over ? "bg-primary" : "bg-[#a1a1a6]")} style={{ width: pct(plan) }} />
       </div>
       <div className="relative mt-1.5 h-9 text-[11px] text-[#6e6e73]">
-        {bep !== null && <span className="absolute -translate-x-1/2 text-center" style={{ left: pct(bep) }}><span className="mx-auto block h-2 w-px bg-white/70" /><span className="whitespace-nowrap font-semibold text-white">{t.bep} {fmt(bep)}</span></span>}
+        {bep !== null && <span className="absolute -translate-x-1/2 text-center" style={{ left: pct(bep) }}><span className="mx-auto block h-2 w-px bg-[#6e6e73]" /><span className="whitespace-nowrap font-semibold text-[#1d1d1f]">{t.bep} {fmt(bep)}</span></span>}
         <span className="absolute -translate-x-1/2 whitespace-nowrap text-center" style={{ left: pct(plan), top: 18 }}>{t.plan} {fmt(plan, 1)}</span>
         {r.capacity && <span className="absolute right-0 top-0">{t.cap} {fmt(r.capacity)}</span>}
       </div>
@@ -130,30 +131,30 @@ function ResultPanel({ c, r, lang, setLang, set }) {
   const money = lang === "id" ? rpShort : krShort;
   const good = h.profit !== null && h.profit >= 0;
   return (
-    <aside className="rv-result rounded-[22px] bg-[#1d1d1f] p-5 text-white sm:p-6" aria-label={t.result} aria-live="polite">
+    <aside className="rv-result rounded-xl border border-[var(--line-strong)] bg-white p-5 sm:p-6" aria-label={t.result} aria-live="polite">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[13px] font-medium text-white/60">{t.result}</p>
-        <div className="flex rounded-full bg-white/10 p-[3px] text-[12px] font-semibold" role="radiogroup" aria-label="결과 화면 언어">
-          {[["ko", "한국어"], ["id", "Bahasa"]].map(([k, l]) => <button key={k} type="button" role="radio" aria-checked={lang === k} onClick={() => setLang(k)} className={cn("rounded-full px-2.5 py-1 transition-colors", lang === k ? "bg-white text-[#1d1d1f]" : "text-white/70 hover:text-white")}>{l}</button>)}
+        <p className="text-[13px] font-medium text-[#6e6e73]">{t.result}</p>
+        <div className="flex rounded-full bg-[var(--fill)] p-[3px] text-[12px] font-semibold" role="radiogroup" aria-label="결과 화면 언어">
+          {[["ko", "한국어"], ["id", "Bahasa"]].map(([k, l]) => <button key={k} type="button" role="radio" aria-checked={lang === k} onClick={() => setLang(k)} className={cn("rounded-full px-2.5 py-1 transition-colors", lang === k ? "bg-white text-[#1d1d1f] shadow-[0_1px_2px_rgb(0_0_0/0.1)]" : "text-[#6e6e73] hover:text-[#1d1d1f]")}>{l}</button>)}
         </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-4">
         <div>
-          <p className="text-[13px] text-white/60">{t.bep}</p>
-          <p className="mt-0.5 text-[44px] leading-none font-bold tracking-[-0.04em] tabular-nums" data-testid="bep">{fmt(h.bep)}<span className="ml-1 text-[15px] font-medium tracking-normal text-white/60">{t.perMonth}</span></p>
-          <p className="mt-1.5 text-[12px] leading-snug text-white/55">{lang === "id" ? h.basisId : h.basisKo}</p>
+          <p className="text-[13px] text-[#6e6e73]">{t.bep}</p>
+          <p className="mt-0.5 text-[44px] leading-none font-bold tracking-[-0.04em] tabular-nums" data-testid="bep">{fmt(h.bep)}<span className="ml-1 text-[15px] font-medium tracking-normal text-[#6e6e73]">{t.perMonth}</span></p>
+          <p className="mt-1.5 text-[12px] leading-snug text-[#86868b]">{lang === "id" ? h.basisId : h.basisKo}</p>
         </div>
         <div>
-          <p className="text-[13px] text-white/60">{t.monthly}{h.financed ? ` (${t.during})` : ""}</p>
-          <p className={cn("mt-0.5 text-[32px] leading-none font-bold tracking-[-0.03em] tabular-nums", good ? "text-[oklch(0.82_0.11_175)]" : "text-[#ff9f8f]")} data-testid="profit">{money(h.profit)}</p>
-          <p className="mt-1.5 text-[12px] leading-snug text-white/55">{t.plan} {fmt(r.S, 1)} {t.perMonth}</p>
+          <p className="text-[13px] text-[#6e6e73]">{t.monthly}{h.financed ? ` (${t.during})` : ""}</p>
+          <p className={cn("mt-0.5 text-[32px] leading-none font-bold tracking-[-0.03em] tabular-nums", good ? "text-primary" : "text-amber-700")} data-testid="profit">{money(h.profit)}</p>
+          <p className="mt-1.5 text-[12px] leading-snug text-[#86868b]">{t.plan} {fmt(r.S, 1)} {t.perMonth}</p>
         </div>
       </div>
 
       <BepMeter r={r} h={h} t={t} />
 
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[14px] bg-white/10 text-[13px]">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--line)] bg-[var(--line)] text-[13px]">
         {[
           [t.per, `+${money(r.ps.contribution)}`],
           [t.payback, r.payback !== null ? `${fmt(Math.ceil(r.payback))} ${t.months}` : t.none],
@@ -161,19 +162,19 @@ function ResultPanel({ c, r, lang, setLang, set }) {
           [`${t.bep} ${t.patients}`, r.bepPatients(h.bep) !== null ? `${fmt(r.bepPatients(h.bep), 1)}` : "—"],
           [`${t.bep} (${t.op})`, `${fmt(r.bepOperating)} ${t.perMonth}`],
           [h.financed ? t.after : `${t.monthly} (${t.op})`, money(r.opProfit)],
-        ].map(([k, v]) => <div key={k} className="bg-[#1d1d1f] px-3.5 py-3"><dt className="text-[12px] leading-snug text-white/55">{k}</dt><dd className="mt-0.5 text-[17px] font-semibold tabular-nums">{v}</dd></div>)}
+        ].map(([k, v]) => <div key={k} className="bg-white px-3.5 py-3"><dt className="text-[12px] leading-snug text-[#86868b]">{k}</dt><dd className="mt-0.5 text-[17px] font-semibold tabular-nums">{v}</dd></div>)}
       </dl>
 
       {/* 시연용: 원장이 말하는 숫자를 바로 반영 */}
-      <div className="mt-5 space-y-3 rounded-[14px] bg-white/[0.06] p-4">
+      <div className="mt-5 space-y-3 rounded-lg bg-[var(--surface-2)] p-4">
         <Quick label={lang === "id" ? "Harga per tindakan" : "회당 시술가"} value={c.rev.price} min={100000} max={1500000} step={10000} onChange={(v) => set("rev.price", v)} fmtV={(v) => rp(Number(v))} />
         {c.demand.mode === "patients"
           ? <Quick label={lang === "id" ? "Pasien baru per bulan" : "월 신규 환자"} value={c.demand.newPatients} min={0} max={80} step={1} onChange={(v) => set("demand.newPatients", v)} fmtV={(v) => (lang === "id" ? `${v} pasien` : `${v}명`)} />
           : <Quick label={lang === "id" ? "Tindakan berbayar per bulan" : "월 유료 시술"} value={c.demand.sessions} min={0} max={Math.max(200, r.capacity || 0)} step={1} onChange={(v) => set("demand.sessions", v)} fmtV={(v) => (lang === "id" ? `${v} tindakan` : `${v}회`)} />}
       </div>
 
-      {r.missing.length > 0 && <p className="mt-4 rounded-[12px] bg-[#ff9f8f]/12 px-3.5 py-2.5 text-[12px] leading-relaxed text-[#ffd0c7]"><b className="font-semibold">{t.missing}:</b> {(lang === "id" ? missingId(r.missing) : r.missing).join(", ")}</p>}
-      <p className="mt-3 text-[11px] leading-relaxed text-white/45">{t.pre}</p>
+      {r.missing.length > 0 && <p className="mt-4 rounded-lg bg-amber-50 px-3.5 py-2.5 text-[12px] leading-relaxed text-amber-800"><b className="font-semibold">{t.missing}:</b> {(lang === "id" ? missingId(r.missing) : r.missing).join(", ")}</p>}
+      <p className="mt-3 text-[11px] leading-relaxed text-[#86868b]">{t.pre}</p>
     </aside>
   );
 }
@@ -182,8 +183,8 @@ function Quick({ label, value, min, max, step, onChange, fmtV }) {
   const v = Number(String(value).replace(/,/g, "")) || 0;
   return (
     <label className="block">
-      <span className="flex items-baseline justify-between text-[12px] text-white/60"><span>{label}</span><span className="text-[15px] font-semibold text-white tabular-nums">{fmtV(v)}</span></span>
-      <input type="range" min={min} max={max} step={step} value={Math.min(Math.max(v, min), max)} onChange={(e) => onChange(e.target.value)} className="range range-dark mt-1.5 w-full" />
+      <span className="flex items-baseline justify-between text-[12px] text-[#6e6e73]"><span>{label}</span><span className="text-[15px] font-semibold text-[#1d1d1f] tabular-nums">{fmtV(v)}</span></span>
+      <input type="range" min={min} max={max} step={step} value={Math.min(Math.max(v, min), max)} onChange={(e) => onChange(e.target.value)} className="range mt-1.5 w-full" />
     </label>
   );
 }
@@ -285,7 +286,7 @@ function printDoc(title, text, lang = "ko") {
 }
 
 function ProposalTab({ c, r, sens, metaFor }) {
-  const [pl, setPl] = useState("ko");
+  const [pl, setPl] = useState(() => currentProfile()?.docLang || "ko");
   const ai = useAi();
   const base = pl === "ko" ? proposalKo(c, r) : proposalId(c, r);
   const text = ai.text || base;
@@ -296,11 +297,11 @@ function ProposalTab({ c, r, sens, metaFor }) {
         <Seg size="sm" label="제안서 언어" value={pl} onChange={(v) => { setPl(v); ai.clear(); }} options={[["ko", "한국어"], ["id", "인도네시아어"]]} />
         <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] font-semibold", ai.text ? "bg-primary/10 text-primary" : "bg-[var(--fill)] text-[#424245]")}>{ai.text ? (ai.busy ? "AI 작성 중" : "AI가 다듬은 문안") : "계산값으로 만든 기본 문안"}</span>
         <span className="ml-auto flex flex-wrap gap-2">
-          {ai.busy ? <button type="button" onClick={ai.stop} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Square className="size-3.5" />멈추기</button>
-            : <button type="button" onClick={() => ai.run({ task: "proposal", lang: pl, context: aiContext(c, r, sens, metaFor) })} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3.5 text-[13px] font-semibold text-white"><Sparkles className="size-3.5" />AI로 다듬기</button>}
-          {ai.text && !ai.busy && <button type="button" onClick={ai.clear} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><RotateCcw className="size-3.5" />기본 문안</button>}
-          <button type="button" onClick={() => copy(text)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Copy className="size-3.5" />복사</button>
-          <button type="button" onClick={() => printDoc(title, text, pl)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Printer className="size-3.5" />인쇄, PDF</button>
+          {ai.busy ? <button type="button" onClick={ai.stop} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-3.5 text-[13px] font-medium hover:bg-[var(--fill-soft)]"><Square className="size-3.5" />멈추기</button>
+            : <button type="button" onClick={() => ai.run({ task: "proposal", lang: pl, context: aiContext(c, r, sens, metaFor) })} className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-[13px] font-semibold text-white"><Sparkles className="size-3.5" />AI로 다듬기</button>}
+          {ai.text && !ai.busy && <button type="button" onClick={ai.clear} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-3.5 text-[13px] font-medium hover:bg-[var(--fill-soft)]"><RotateCcw className="size-3.5" />기본 문안</button>}
+          <button type="button" onClick={() => copy(text)} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-3.5 text-[13px] font-medium hover:bg-[var(--fill-soft)]"><Copy className="size-3.5" />복사</button>
+          <button type="button" onClick={() => printDoc(title, text, pl)} className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-3.5 text-[13px] font-medium hover:bg-[var(--fill-soft)]"><Printer className="size-3.5" />인쇄와 PDF</button>
         </span>
       </div>
       {ai.error && <p className="mb-3 rounded-[12px] bg-amber-50 px-3.5 py-2.5 text-[13px] text-amber-800">{ai.error} 기본 문안은 그대로 쓸 수 있어요.</p>}
@@ -319,9 +320,9 @@ function QaTab({ c, r, sens, metaFor }) {
     <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
       <ul className="space-y-1.5" role="listbox" aria-label="자주 묻는 질문">
         {QUESTIONS.map((x) => (
-          <li key={x.key}><button type="button" role="option" aria-selected={open === x.key} onClick={() => { setOpen(x.key); ai.clear(); }} className={cn("w-full rounded-[12px] px-3.5 py-2.5 text-left transition-colors", open === x.key ? "bg-[#1d1d1f] text-white" : "hover:bg-[var(--fill-soft)]")}>
+          <li key={x.key}><button type="button" role="option" aria-selected={open === x.key} onClick={() => { setOpen(x.key); ai.clear(); }} className={cn("w-full rounded-[12px] px-3.5 py-2.5 text-left transition-colors", open === x.key ? "bg-[var(--fill-soft)] font-medium ring-1 ring-inset ring-[var(--line-strong)]" : "hover:bg-[var(--fill-soft)]")}>
             <span className="block text-[14px] font-medium leading-snug">{x.ko}</span>
-            <span lang="id" className={cn("block text-[12px]", open === x.key ? "text-white/60" : "text-[#86868b]")}>{x.id}</span>
+            <span lang="id" className={cn("block text-[12px]", "text-[#86868b]")}>{x.id}</span>
           </button></li>
         ))}
       </ul>
@@ -330,7 +331,7 @@ function QaTab({ c, r, sens, metaFor }) {
           <article className="rounded-[16px] border border-[var(--line)] p-5" data-testid="answer">
             <p className="text-[16px] leading-[1.7]">{ans.ko}</p>
             <p lang="id" className="mt-3 border-t border-[var(--line)] pt-3 text-[13px] leading-relaxed text-[#6e6e73]"><span className="mr-1.5 rounded bg-[var(--fill)] px-1.5 py-0.5 text-[11px] font-semibold text-[#424245]">인도네시아어</span>{ans.id}</p>
-            <div className="mt-3 flex gap-2"><button type="button" onClick={() => copy(ans.ko)} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3 text-[12px] font-semibold"><Copy className="size-3" />한국어 복사</button><button type="button" onClick={() => copy(ans.id)} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3 text-[12px] font-semibold"><Copy className="size-3" />인도네시아어 복사</button></div>
+            <div className="mt-3 flex gap-2"><button type="button" onClick={() => copy(ans.ko)} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-3 text-[12px] font-medium"><Copy className="size-3" />한국어 복사</button><button type="button" onClick={() => copy(ans.id)} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-3 text-[12px] font-medium"><Copy className="size-3" />인도네시아어 복사</button></div>
           </article>
         )}
         <form className="rounded-[16px] bg-[var(--surface-2)] p-4" onSubmit={(e) => { e.preventDefault(); if (q.trim()) ai.run({ task: "qa", lang: "ko", question: q.trim(), context: aiContext(c, r, sens, metaFor) }); }}>
@@ -338,7 +339,7 @@ function QaTab({ c, r, sens, metaFor }) {
           <div className="mt-2 flex gap-2">
             <input id="qa-free" value={q} onChange={(e) => setQ(e.target.value)} placeholder="예: 치료사를 2명 쓰면 손익분기는 몇 회인가요?" className={cn(CTRL, "h-11")} />
             {ai.busy ? <button type="button" onClick={ai.stop} className="h-11 shrink-0 rounded-full bg-[var(--fill)] px-4 text-[13px] font-semibold">멈추기</button>
-              : <button type="submit" className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 text-[13px] font-semibold text-white"><MessageCircleQuestion className="size-4" />답 만들기</button>}
+              : <button type="submit" className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-lg bg-primary px-4 text-[13px] font-semibold text-white"><MessageCircleQuestion className="size-4" />답 만들기</button>}
           </div>
           {ai.error && <p className="mt-2 text-[13px] text-amber-800">{ai.error}</p>}
         </form>
@@ -395,7 +396,7 @@ function SourcesTab({ c, r }) {
 /* ---------- 페이지 ---------- */
 export default function HospitalReviewPage() {
   const [store, setStore] = useState(loadCases);
-  const [lang, setLang] = useState("ko");
+  const [lang, setLang] = useState(() => currentProfile()?.docLang || "ko");
   const [tab, setTab] = useState("cash");
   const c = store.list.find((x) => x.id === store.active) || store.list[0];
   useEffect(() => { saveCases(store); }, [store]);
@@ -418,10 +419,10 @@ export default function HospitalReviewPage() {
     <div className="rv bg-[var(--surface-2)]">
       {/* 머리말 */}
       <div className="border-b border-[var(--line)] bg-white">
-        <div className="mx-auto max-w-[1200px] px-4 pt-8 pb-6 sm:px-6 sm:pt-12">
-          <p className="text-[13px] font-semibold text-primary">병원 도입 검토 <span className="font-normal text-[#86868b]">{DEVICE.model ? `${DEVICE.model}, ` : ""}{PACK_LABEL}</span></p>
-          <h1 className="mt-2 text-[32px] sm:text-[44px]">병원별 도입 수익성 검토</h1>
-          <p className="mt-3 max-w-[680px] text-[17px] leading-relaxed text-[#424245]">원장이 말하는 시술가, 환자 수, 결제 조건을 그 자리에서 넣으면 손익분기와 월 손익이 바로 바뀌어요. 같은 숫자로 제안서(한국어, 인도네시아어)와 원장 질문 답변을 만들어요.</p>
+        <div className="mx-auto max-w-[1200px] px-4 pt-8 pb-6 sm:px-6 sm:pt-10">
+          <p className="text-[13px] text-[#6e6e73]">병원 제안 / {DEVICE.model ? `${DEVICE.model}, ` : ""}{PACK_LABEL}</p>
+          <h1 className="mt-1 text-[28px] font-bold tracking-tight">병원 도입 수익성 검토</h1>
+          <p className="mt-2 max-w-[680px] text-[15px] leading-relaxed text-[#424245]">원장이 말하는 시술가, 환자 수, 결제 조건을 그 자리에서 넣으면 손익분기와 월 손익이 바로 바뀌어요. 같은 숫자로 제안서(한국어, 인도네시아어)와 원장 질문 답변을 만들어요.</p>
           <div className="mt-6 flex flex-wrap items-end gap-3">
             <div className="min-w-[200px] flex-1 sm:max-w-[280px]">
               <label htmlFor="case-pick" className="mb-1 block text-[12px] text-[#6e6e73]">검토 중인 병원 ({store.list.length}곳 저장)</label>
@@ -435,10 +436,10 @@ export default function HospitalReviewPage() {
             <div className="min-w-[180px] flex-1 sm:max-w-[240px]"><label htmlFor="case-name" className="mb-1 block text-[12px] text-[#6e6e73]">병원 이름</label><input id="case-name" value={c.name} onChange={(e) => set("name", e.target.value)} placeholder="RS ..." className={cn(CTRL, "h-11")} /></div>
             <div className="min-w-[140px] flex-1 sm:max-w-[180px]"><label htmlFor="case-city" className="mb-1 block text-[12px] text-[#6e6e73]">도시</label><input id="case-city" value={c.city} onChange={(e) => set("city", e.target.value)} placeholder="Jakarta" className={cn(CTRL, "h-11")} /></div>
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={addCase} className="inline-flex h-11 items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 text-[14px] font-semibold text-white"><Plus className="size-4" />새 병원</button>
-              <button type="button" onClick={dupCase} className="inline-flex h-11 items-center gap-1.5 rounded-full bg-[var(--fill)] px-4 text-[14px] font-semibold"><Copy className="size-4" />복제</button>
-              <button type="button" onClick={resetCase} className="inline-flex h-11 items-center gap-1.5 rounded-full bg-[var(--fill)] px-4 text-[14px] font-semibold"><RotateCcw className="size-4" />기본 조건</button>
-              <button type="button" onClick={delCase} aria-label="이 병원 검토 삭제" className="grid size-11 place-items-center rounded-full bg-[var(--fill)] text-[#6e6e73] hover:text-[#b42318]"><Trash2 className="size-4" /></button>
+              <button type="button" onClick={addCase} className="inline-flex h-11 items-center gap-1.5 rounded-lg bg-primary px-4 text-[14px] font-semibold text-white hover:brightness-110"><Plus className="size-4" />새 병원</button>
+              <button type="button" onClick={dupCase} className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-4 text-[14px] font-medium hover:bg-[var(--fill-soft)]"><Copy className="size-4" />복제</button>
+              <button type="button" onClick={resetCase} className="inline-flex h-11 items-center gap-1.5 rounded-lg border border-[var(--line-strong)] bg-white px-4 text-[14px] font-medium hover:bg-[var(--fill-soft)]"><RotateCcw className="size-4" />기본 조건</button>
+              <button type="button" onClick={delCase} aria-label="이 병원 검토 삭제" className="grid size-11 place-items-center rounded-lg border border-[var(--line-strong)] bg-white text-[#6e6e73] hover:text-[#b42318]"><Trash2 className="size-4" /></button>
             </div>
           </div>
         </div>
@@ -552,8 +553,8 @@ export default function HospitalReviewPage() {
       <div className="border-t border-[var(--line)] bg-white">
         <div className="mx-auto max-w-[1200px] px-4 py-8 sm:px-6">
           <div className="flex flex-wrap items-center gap-3">
-            <div role="tablist" aria-label="검토 결과 자세히" className="flex max-w-full gap-1 overflow-x-auto rounded-full bg-[var(--fill)] p-1">
-              {TABS.map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("shrink-0 rounded-full px-4 py-2 text-[14px] font-semibold transition-[background,color]", tab === k ? "bg-white text-[#1d1d1f] shadow-[0_1px_3px_rgb(0_0_0/0.1)]" : "text-[#6e6e73] hover:text-[#1d1d1f]")}>{l}</button>)}
+            <div role="tablist" aria-label="검토 결과 자세히" className="flex max-w-full gap-1 overflow-x-auto border-b border-[var(--line)]">
+              {TABS.map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className={cn("tab-link", tab === k && "is-active")}>{l}</button>)}
             </div>
             {(tab === "proposal" || tab === "qa") && <span className="ml-auto"><AiBox /></span>}
           </div>
@@ -568,11 +569,11 @@ export default function HospitalReviewPage() {
       </div>
 
       {/* 모바일: 아래 줄에 핵심 숫자 */}
-      <div className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-[#1d1d1f] px-4 pt-2.5 pb-[max(10px,env(safe-area-inset-bottom))] text-white lg:hidden">
+      <div className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-[var(--line)] bg-white px-4 pt-2.5 pb-[max(10px,env(safe-area-inset-bottom))] lg:hidden">
         <div className="mx-auto flex max-w-[640px] items-center justify-between gap-3 text-[12px]">
-          <span><span className="block text-white/55">손익분기</span><b className="text-[17px] tabular-nums">{fmt(h.bep)}회</b></span>
-          <span><span className="block text-white/55">월 손익</span><b className="text-[17px] tabular-nums">{krShort(h.profit)}</b></span>
-          <span><span className="block text-white/55">회수</span><b className="text-[17px] tabular-nums">{r.payback !== null ? `${Math.ceil(r.payback)}개월` : "—"}</b></span>
+          <span><span className="block text-[#6e6e73]">손익분기</span><b className="text-[17px] tabular-nums">{fmt(h.bep)}회</b></span>
+          <span><span className="block text-[#6e6e73]">월 손익</span><b className="text-[17px] tabular-nums">{krShort(h.profit)}</b></span>
+          <span><span className="block text-[#6e6e73]">회수</span><b className="text-[17px] tabular-nums">{r.payback !== null ? `${Math.ceil(r.payback)}개월` : "—"}</b></span>
         </div>
       </div>
       <div className="h-16 lg:hidden" />

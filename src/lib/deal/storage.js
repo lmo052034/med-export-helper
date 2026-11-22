@@ -45,7 +45,7 @@ export function loadAll(makeSample = mockDeal) {
     const old = readRaw("mdk:deal");
     if (old.ok && old.value) {
       const m = migrateV1(old.value);
-      if (m) { list[m.id] = m; notes.push({ type: "migrated", text: "이전 버전의 견적서·인보이스 입력값을 새 거래로 옮겼어요. 이전 값도 그대로 남아 있어요." }); }
+      if (m) { list[m.id] = m; notes.push({ type: "migrated", text: "이전 버전의 견적서, 인보이스 입력값을 새 거래로 옮겼어요. 이전 값도 그대로 남아 있어요." }); }
     }
     const log = readRaw("mdk:log");
     const ev = log.ok ? logToEvidence(log.value) : [];

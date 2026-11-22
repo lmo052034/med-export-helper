@@ -18,7 +18,7 @@ const rp = (v) => (v === null || v === undefined ? "—" : `Rp ${fmt(v)}`);
 const rpShort = (v) => { const a = Math.abs(v); const s = v < 0 ? "−" : ""; return a >= 1e9 ? `${s}${fmt(a / 1e9, 2)}B` : a >= 1e6 ? `${s}${fmt(a / 1e6, 1)}M` : `${s}${fmt(a)}`; };
 const VARIANT = import.meta.env.VITE_VARIANT || "c";
 const BASIS = [["company", "회사 자료"], ["official", "공개자료"], ["team", "팀 설정"], ["user", "사용자 입력"]];
-const WHEN = [["before-ship", "출하 전"], ["import", "수입 신고"], ["install", "설치·운영"], ["finance", "금융"]];
+const WHEN = [["before-ship", "출하 전"], ["import", "수입 신고"], ["install", "설치, 운영"], ["finance", "금융"]];
 const CTRL = "w-full min-w-0 rounded-[10px] border border-[var(--line-strong)] bg-white px-3 text-[15px] outline-none transition-[box-shadow,border-color] focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20 aria-[invalid=true]:border-amber-500";
 
 function Changed({ path }) {
@@ -82,7 +82,7 @@ function SelectField({ path, label, options }) {
   );
 }
 
-/* 비용 행 (병원 변동비·고정비) */
+/* 비용 행 (병원 변동비, 고정비) */
 function HvRows({ base, unit, title, onEv, evPath }) {
   const { deal, update, add, remove } = useDeal();
   const rows = getPath(deal, base);
@@ -290,7 +290,7 @@ function DealPrice({ onEv }) {
               </div>
             ))}
           </div>
-          <button type="button" onClick={() => add("exp.items", { kind: "handpiece", model: "", desc: "", qty: "1", unit: "pc", price: "", priceSource: "", hs: deal.exp.items[0]?.hs || "" })} className="mt-2 inline-flex h-8 items-center gap-1 rounded-full px-2 text-[13px] font-medium text-primary hover:bg-[var(--fill-soft)]"><Plus className="size-3.5" />핸드피스·옵션 추가</button>
+          <button type="button" onClick={() => add("exp.items", { kind: "handpiece", model: "", desc: "", qty: "1", unit: "pc", price: "", priceSource: "", hs: deal.exp.items[0]?.hs || "" })} className="mt-2 inline-flex h-8 items-center gap-1 rounded-full px-2 text-[13px] font-medium text-primary hover:bg-[var(--fill-soft)]"><Plus className="size-3.5" />핸드피스, 옵션 추가</button>
           <p className="mt-2 text-[14px]">수출 금액 <b className="tabular-nums">{E.total !== null ? fmtMoney(E.total, ec) : "빈칸이 있어 계산하지 않았어요"}</b> <span className="text-[12px] text-[#6e6e73]">{deal.exp.incoterm} {deal.exp.place}</span></p>
         </fieldset>
 
@@ -378,7 +378,7 @@ function DealPrice({ onEv }) {
         <ul className="mt-3 space-y-1 text-[12px] leading-relaxed text-[#6e6e73]">
           {P.missing.length > 0 && <li className="text-amber-700">계산에 넣지 못한 항목: {P.missing.join(", ")}</li>}
           {P.excluded.length > 0 && <li>손익에서 뺀 항목: {P.excluded.join(", ")}</li>}
-          <li>수입 부가세와 PPh 22는 공제·선납으로 보고 손익에서 빼고, 결제 흐름의 현금 지출에만 넣어요.</li>
+          <li>수입 부가세와 PPh 22는 공제, 선납으로 보고 손익에서 빼고, 결제 흐름의 현금 지출에만 넣어요.</li>
           <li>제조원가 자료가 없어 제조사 이익은 계산하지 않아요. 제조사 매출은 수출 금액 {E.total !== null ? fmtMoney(E.total, ec) : "—"}이에요.</li>
           {deal.sampleKey && PACK.notes?.partner && <li>{PACK.notes.partner}</li>}
         </ul>
@@ -391,7 +391,7 @@ function DealPrice({ onEv }) {
 function Cash() {
   const { deal } = useDeal();
   const C = cashFlow(deal);
-  const who = { "hospital→partner": "병원 → 파트너", "partner→maker": "파트너 → 제조사", "partner→carrier": "파트너 → 운송·보험", "partner→customs": "파트너 → 세관", "partner→local": "파트너 → 현지 비용" };
+  const who = { "hospital→partner": "병원 → 파트너", "partner→maker": "파트너 → 제조사", "partner→carrier": "파트너 → 운송, 보험", "partner→customs": "파트너 → 세관", "partner→local": "파트너 → 현지 비용" };
   return (
     <div className="max-w-[860px]">
       <p className="text-[14px] text-[#424245]">날짜가 정해지지 않아 단계 순서로만 보여 줘요. 파트너의 처음 현금은 0으로 가정했어요.</p>
