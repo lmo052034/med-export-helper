@@ -221,3 +221,12 @@ main .grid > * { min-width: 0; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 html { scroll-behavior: smooth; scroll-padding-top: 56px; }
+
+/* 병원 도입 검토: 어두운 결과 패널 안 슬라이더 */
+.range-dark::-webkit-slider-runnable-track { background: rgba(255,255,255,.16); }
+.range-dark::-moz-range-track { background: rgba(255,255,255,.16); }
+.range-dark::-webkit-slider-thumb { box-shadow: 0 0 0 1px rgba(0,0,0,.2), 0 2px 6px rgba(0,0,0,.35); }
+.rv-result { box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.45); }
+.rv-step { transition: box-shadow .2s ease; }
+.rv-step:focus-within { box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 35%, transparent), 0 8px 24px -12px rgb(0 0 0 / 0.12); }
+@media (prefers-reduced-motion: reduce) { .rv * { transition: none !important; } }

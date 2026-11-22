@@ -10,6 +10,7 @@ import DocsPage from "./pages/DocsPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import PricePage from "./pages/PricePage.jsx";
 import EvidencePage from "./pages/EvidencePage.jsx";
+import HospitalReviewPage from "./pages/HospitalReviewPage.jsx";
 
 // 이전 메뉴 주소(공유된 링크, 즐겨찾기)는 오류 없이 거래서류 화면으로 보냅니다
 const OLD = ["/readiness", "/readiness/:id", "/programs", "/market", "/compliance", "/promo", "/buyer", "/log", "/cases", "/cases/:id"];
@@ -24,6 +25,7 @@ createRoot(document.getElementById("root")).render(
             <Route path="/" element={<HomePage />} />
             <Route path="/price" element={<PricePage />} />
             <Route path="/evidence" element={<EvidencePage />} />
+            <Route path="/hospital" element={<HospitalReviewPage />} />
             <Route path="/deal" element={<TermsPage />} />
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/docs" element={<DocsPage />} />

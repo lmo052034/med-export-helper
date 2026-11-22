@@ -68,7 +68,7 @@ function DealMenu() {
   );
 }
 
-const MENU = [["/", "수출 제안"], ["/price", "가격·수익성"], ["/deal", "거래서류"], ["/evidence", "근거자료"]];
+const MENU = [["/", "수출 제안"], ["/price", "가격·수익성"], ["/hospital", "병원 도입 검토"], ["/deal", "거래서류"], ["/evidence", "근거자료"]];
 const DOC_GROUP = ["/deal", "/review", "/docs"];
 const SUBTABS = [["/deal", "거래조건 입력"], ["/review", "검토 결과"], ["/docs", "서류 미리보기"]];
 const isActive = (p, pathname) => (p === "/deal" ? DOC_GROUP.includes(pathname) : p === pathname);
@@ -114,7 +114,7 @@ export function AppShell({ children }) {
   const nav = useNavigate();
   const [menu, setMenu] = useState(false);
   const fromOld = new URLSearchParams(search).get("from") === "old";
-  const work = pathname !== "/" && pathname !== "/evidence";
+  const work = pathname !== "/" && pathname !== "/evidence" && pathname !== "/hospital";
   return (
     <div className="min-h-svh bg-white">
       <a href="#main" className="skip-link">본문으로 건너뛰기</a>

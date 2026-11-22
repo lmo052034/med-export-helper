@@ -36,3 +36,25 @@ export function sampleDeal() {
   d.baseline = snapshot(d);
   return sanitize(d);
 }
+
+/* 병원 도입 검토 (공개판): 특정 장비 없이 인도네시아 공통 근거만. 장비 값은 예시이며 '가정'으로 표시됩니다 */
+PACK.review = {
+  label: "공개판 예시 조건",
+  sampleName: "예시 병원 A",
+  device: { name: "치료 장비 (예시)", nameId: "alat terapi", model: "" },
+  defaults: {
+    device: { price: "300000000", lifeMonths: "48" },
+    rev: { price: "300000" },
+    demand: { sessions: "40", course: "4" },
+    vc: { consumable: "5000", va: "300" },
+    fixed: [{ id: "therapist", label: "전담 치료 인력", labelId: "Terapis", amount: "7000000" }],
+  },
+  sources: {
+    "device.price": { basis: "team", src: "예시 값. 파트너의 공식 견적가(부가세 포함)로 바꿔 넣을 것", note: "병원은 장비 매입 부가세를 공제받지 못함 (PP 49/2022)" },
+    "rev.price": { basis: "official", src: "민간 물리치료 회당 Rp100–475천 범위 안의 예시 값 (Cermati, 2024)", note: "실제 수납액은 병원 숫자로" },
+    "demand.sessions": { basis: "team", src: "예시 값. 병원의 월 유료 시술 수로" },
+    "demand.course": { basis: "team", src: "예시 값. 장비, 적응증별 표준 코스로" },
+  },
+  benchmarks: [],
+  facts: [],
+};
