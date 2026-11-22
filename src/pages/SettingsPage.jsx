@@ -33,7 +33,7 @@ export default function SettingsPage() {
     saveProfile({ ...profile, ...p, name: p.name.trim(), title: p.title.trim(), recent: profile.recent, done: profile.done });
     toast.success("설정을 저장했습니다.");
   };
-  const roles = PEOPLE.roles.filter((r) => !p.org || p.org === "other" || !r.org || r.org === p.org);
+  const roles = PEOPLE.roles.filter((r) => !p.org || r.org === p.org);
 
   return (
     <div className="bg-[var(--surface-2)] px-4 pt-10 pb-28 sm:px-6">
@@ -50,7 +50,7 @@ export default function SettingsPage() {
 
           <Section title="소속과 역할" desc="역할에 맞는 할 일이 홈 맨 위에 옵니다.">
             <fieldset className="grid gap-2"><legend className="mb-2 text-[14px] font-medium">소속</legend>
-              <Choice name="st-org" value={p.org} options={PEOPLE.orgs} onChange={(v) => setP((x) => ({ ...x, org: v, role: PEOPLE.roles.find((r) => r.id === x.role && (r.org === v || v === "other")) ? x.role : "" }))} />
+              <Choice name="st-org" value={p.org} options={PEOPLE.orgs} onChange={(v) => setP((x) => ({ ...x, org: v, role: PEOPLE.roles.find((r) => r.id === x.role && r.org === v) ? x.role : "" }))} />
             </fieldset>
             <fieldset className="grid gap-2"><legend className="mb-2 text-[14px] font-medium">역할</legend>
               <Choice name="st-role" value={p.role} options={roles} onChange={set("role")} />

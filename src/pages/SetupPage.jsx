@@ -52,7 +52,7 @@ export default function SetupPage() {
   const [open, setOpen] = useState("sample");
   const [err, setErr] = useState("");
   const set = (k) => (v) => setP((x) => ({ ...x, [k]: v }));
-  const roles = PEOPLE.roles.filter((r) => !p.org || !r.org || r.org === p.org || p.org === "other");
+  const roles = PEOPLE.roles.filter((r) => !p.org || r.org === p.org);
 
   const next = () => {
     if (step === 0 && !p.name.trim()) { setErr("이름을 입력해 주세요. 홈 인사와 담당자 표시에 씁니다."); return; }
@@ -100,7 +100,7 @@ export default function SetupPage() {
           {step === 1 && (
             <div className="mt-6 grid gap-6">
               <fieldset className="grid gap-2"><legend className="mb-2 text-[14px] font-medium">소속</legend>
-                <Choice name="org" value={p.org} options={PEOPLE.orgs} onChange={(v) => setP((x) => ({ ...x, org: v, role: PEOPLE.roles.find((r) => r.id === x.role && (r.org === v || v === "other")) ? x.role : "" }))} />
+                <Choice name="org" value={p.org} options={PEOPLE.orgs} onChange={(v) => setP((x) => ({ ...x, org: v, role: PEOPLE.roles.find((r) => r.id === x.role && r.org === v) ? x.role : "" }))} />
               </fieldset>
               <fieldset className="grid gap-2"><legend className="mb-2 text-[14px] font-medium">역할</legend>
                 <Choice name="role" value={p.role} options={roles} onChange={set("role")} />

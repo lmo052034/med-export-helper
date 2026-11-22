@@ -6,10 +6,10 @@ export const PACK = {
   key: "default",
   sampleKey: "default-v1",
   brand: "파트너 데스크",
-  team: "에프킬라",
+  credit: "에프킬라 (개발, 디자인)",
   asOf: "자료 기준 2026.11",
   hero: {
-    eyebrow: "해외영업팀과 에프킬라의 인도네시아 수출 데스크",
+    eyebrow: "본사 해외영업팀과 현지 파트너의 업무 화면",
     title: "의료기기\n인도네시아 수출 운영",
     lead: "현지 파트너와의 수출 거래, 병원 도입 제안, 선적 서류까지 지금 진행 중인 업무를 한곳에서 이어 갑니다.",
     cta: "진행 현황 보기",
@@ -56,7 +56,7 @@ export const PACK = {
     ],
     note: "현황판의 병원과 일정은 화면 구성용 샘플 데이터입니다.",
   },
-  footer: { project: "파트너 데스크, 해외영업팀과 에프킬라", lines: ["본사 해외영업과 현지 파트너가 병원 영업, 견적, 선적 서류를 함께 보는 화면입니다."] },
+  footer: { project: "파트너 데스크, 본사 해외영업팀과 현지 파트너 공용", lines: ["본사 해외영업과 현지 파트너가 병원 영업, 견적, 선적 서류를 함께 보는 화면입니다."] },
 };
 
 export function sampleDeal() {
