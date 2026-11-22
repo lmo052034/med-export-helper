@@ -15,7 +15,7 @@ function readRaw(k) {
 
 /* 처음 열 때: 새 저장값 → 없으면 이전 버전 값 옮기기 → 없으면 모의 거래.
    읽을 수 없는 값은 지우지 않고 백업 키로 옮긴 뒤 알려 줍니다 */
-export function loadAll() {
+export function loadAll(makeSample = mockDeal) {
   const notes = [];
   const cur = readRaw(KEY);
   let store = null;
@@ -27,7 +27,15 @@ export function loadAll() {
     }
     if (broken) notes.push({ type: "recovered", text: `저장된 거래 ${broken}건을 읽지 못해 제외했어요. 원본은 백업해 두었어요.` });
     if (broken) backup(cur.raw);
-    if (Object.keys(list).length) store = { active: list[cur.value.active] ? cur.value.active : Object.keys(list)[0], list };
+    if (Object.keys(list).length) {
+      store = { active: list[cur.value.active] ? cur.value.active : Object.keys(list)[0], list };
+      // 대표 모의 거래가 없으면 추가만 하고, 지금 보던 거래는 그대로 둡니다
+      const sample = makeSample();
+      if (!Object.values(list).some((d) => d.sampleKey && d.sampleKey === sample.sampleKey)) {
+        list[sample.id] = sample;
+        notes.push({ type: "sample", text: "대표 모의 거래를 목록에 추가했어요. 기존 거래는 그대로예요." });
+      }
+    }
   } else if (cur.raw !== null) {
     backup(cur.raw);
     notes.push({ type: "recovered", text: "저장된 거래 데이터를 읽지 못했어요. 원본은 백업하고 새로 시작했어요." });
@@ -41,7 +49,7 @@ export function loadAll() {
     }
     const log = readRaw("mdk:log");
     const ev = log.ok ? logToEvidence(log.value) : [];
-    const mock = mockDeal();
+    const mock = makeSample();
     list[mock.id] = mock;
     const first = Object.values(list).find((d) => d.kind === "user") || mock;
     if (ev.length) { first.evidence = [...first.evidence, ...ev]; notes.push({ type: "migrated", text: `이전 AI 답 확인 기록 ${ev.length}건을 근거자료로 옮겼어요.` }); }
@@ -74,6 +82,7 @@ export function importDeal(text) {
   const raw = obj && obj.deal ? obj.deal : obj;
   const d = sanitize(raw);
   d.id = Math.random().toString(36).slice(2, 10); // 기존 거래를 덮어쓰지 않게 항상 새 id
+  if (d.kind === "sample") { d.kind = "case"; d.sampleKey = ""; } // 파일로 불러온 대표 사례는 사본으로
   if (d.kind !== "case" && d.kind !== "mock") d.kind = "user";
   return d;
 }

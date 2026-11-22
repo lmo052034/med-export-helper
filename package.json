@@ -10,7 +10,7 @@
     "collect": "node scripts/collect-notices.mjs",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:unit": "node --test unit/deal.unit.mjs"
+    "test:unit": "node --test unit/deal.unit.mjs unit/econ.unit.mjs"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",

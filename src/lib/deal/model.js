@@ -1,7 +1,7 @@
 /* 거래 기준정보: 견적서·인보이스·메일·현지 견적이 모두 이 한 덩어리에서 만들어집니다.
    숫자는 입력한 문자열 그대로 저장해 빈칸과 0을 구분합니다 */
 
-export const SCHEMA = 2;
+export const SCHEMA = 3;
 const uid = () => Math.random().toString(36).slice(2, 10);
 export const newId = uid;
 
@@ -12,8 +12,9 @@ export function blankDeal() {
   return {
     schema: SCHEMA,
     id: uid(),
-    kind: "user", // user = 직접 입력, mock = 화면 시연용 모의 거래, case = 파일에서 불러온 사례
+    kind: "user", // user = 직접 입력, sample = 대표 모의 거래, mock = 화면 시연용 모의 거래, case = 파일에서 불러온 사례
     caseLabel: "",
+    sampleKey: "",
     meta: { name: "", no: "", date: today, stage: "quote", updatedAt: null },
     parties: { maker: party(), partner: party(), hospital: party() },
     roles: { exportSeller: "maker", exportBuyer: "partner", consignee: "partner", localSeller: "partner", localBuyer: "hospital" },
@@ -42,9 +43,27 @@ export function blankDeal() {
     service: { install: "", installBy: "", training: "", trainingBy: "", warranty: "", asBy: "", notes: "" },
     counterpart: { requests: "", agreements: "" },
     email: { toName: "", toEmail: "", subject: "", intro: "", senderName: "", senderTitle: "", senderOrg: "", senderEmail: "", senderPhone: "" },
+    econ: blankEcon(),
     evidence: [],
     review: { at: null, hash: null },
     changes: [],
+    baseline: null, // 기준안: 대표 사례를 처음 만들 때의 가격·병원 운영 입력값 (비교와 되돌리기에 사용)
+  };
+}
+
+/* 가격·수익성 입력. 출처 구분 basis: company 회사 자료, public 공개자료, team 팀 설정(모의), user 사용자 입력 */
+export function blankEcon() {
+  return {
+    fx: { rate: "", date: "", source: "" }, // 현지 통화 / 수출 통화 (예: IDR per USD)
+    dutyPct: "", dutyBasis: "", importVatPct: "", pph22Pct: "",
+    costs: [], // 파트너가 부담하는 수입·현지 비용 (운임, 보험, 설치·교육, 금융비 등)
+    hospital: {
+      investMode: "local", investCustom: "", // local = 현지 견적 총액(부가세 포함)을 초기 도입비로 사용
+      price: "", priceKind: "", priceSource: "",
+      sessions: "", workDays: "", horizon: "60",
+      variable: [], fixed: [],
+    },
+    scenarios: [],
   };
 }
 
@@ -103,6 +122,9 @@ const rowShape = {
   line: { id: "", desc: "", qty: "", unit: "set", price: "" },
   ev: { id: "", field: "", title: "", ref: "", asOf: "", checkedAt: "", supports: "", status: "team", confirmed: false },
   change: { at: "", field: "", from: "", to: "" },
+  cost: { id: "", label: "", amount: "", currency: "USD", basis: "team", included: true, inCif: false, when: "before-ship", note: "" },
+  hv: { id: "", label: "", amount: "", basis: "team", note: "" },
+  scen: { id: "", label: "", price: "", sessions: "", note: "" },
 };
 const rows = (arr, shape) => (Array.isArray(arr) ? arr.filter(isObj).map((r) => ({ ...mergeShape(shape, r), id: str(r.id) || uid() })) : []);
 
@@ -111,7 +133,7 @@ export function sanitize(raw) {
   const d = mergeShape(blankDeal(), raw);
   d.schema = SCHEMA;
   d.id = str(raw.id) || uid();
-  if (!["user", "mock", "case"].includes(d.kind)) d.kind = "user";
+  if (!["user", "mock", "case", "sample"].includes(d.kind)) d.kind = "user";
   if (!["quote", "invoice"].includes(d.meta.stage)) d.meta.stage = "quote";
   d.exp.items = rows(d.exp.items, rowShape.item);
   if (!d.exp.items.length) d.exp.items = blankDeal().exp.items;
@@ -122,6 +144,12 @@ export function sanitize(raw) {
   d.evidence = rows(d.evidence, rowShape.ev);
   d.changes = rows(d.changes, rowShape.change).slice(-50);
   if (!isObj(d.review)) d.review = { at: null, hash: null };
+  d.econ.costs = rows(d.econ.costs, rowShape.cost);
+  d.econ.hospital.variable = rows(d.econ.hospital.variable, rowShape.hv);
+  d.econ.hospital.fixed = rows(d.econ.hospital.fixed, rowShape.hv);
+  d.econ.scenarios = rows(d.econ.scenarios, rowShape.scen);
+  if (!["local", "custom"].includes(d.econ.hospital.investMode)) d.econ.hospital.investMode = "local";
+  d.baseline = isObj(raw.baseline) ? raw.baseline : null;
   return d;
 }
 
@@ -163,6 +191,12 @@ export function logToEvidence(log) {
 }
 
 /* 검토 후 바뀌면 다시 확인해야 하는 핵심 조건 */
+/* 기준안 스냅숏: 가격·구성·결제·병원 운영 입력만 담아 비교와 되돌리기에 씁니다 */
+export function snapshot(d) {
+  const c = (v) => JSON.parse(JSON.stringify(v));
+  return { exp: { items: c(d.exp.items), extras: c(d.exp.extras), payment: c(d.exp.payment), currency: d.exp.currency }, local: { lines: c(d.local.lines), vatPct: d.local.vatPct, payment: c(d.local.payment) }, econ: c(d.econ) };
+}
+
 export function keyTerms(d) {
   return JSON.stringify([
     d.exp.currency, d.exp.items.map((i) => [i.model, i.qty, i.unit, i.price]), d.exp.extras.map((x) => [x.label, x.amount, x.included]),

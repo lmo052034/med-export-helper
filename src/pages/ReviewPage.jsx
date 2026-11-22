@@ -10,12 +10,21 @@ import { cn } from "@/lib/utils";
 const DOC_NAME = Object.fromEntries(DOCS);
 const EV_NAME = Object.fromEntries(EV_STATUS);
 const FIELD_KO = { model: "모델", qty: "수량", unit: "단위", price: "단가", amount: "금액", pct: "비율", name: "회사명", incoterm: "인도조건", place: "지정 장소", nw: "순중량", gw: "총중량", packages: "포장 수량", currency: "통화", vatPct: "부가세율" };
-function changeLabel(d, field) {
+export function changeLabel(d, field) {
   const ks = field.split("."), last = FIELD_KO[ks[ks.length - 1]] || ks[ks.length - 1];
   if (ks[1] === "items") { const it = d.exp.items.find((x) => x.id === ks[2]); return `${it ? it.model || it.desc || "품목" : "삭제된 품목"} ${last}`; }
   if (ks[1] === "extras") return `별도 비용 ${last}`;
   if (ks[1] === "payment") return `${ks[0] === "local" ? "현지 " : ""}결제 회차 ${last}`;
   if (ks[1] === "lines") return `현지 품목 ${last}`;
+  if (ks[0] === "econ") {
+    if (ks[1] === "fx") return "환율";
+    if (ks[1] === "dutyPct") return "관세율";
+    if (ks[1] === "costs") { const c = d.econ.costs.find((x) => x.id === ks[2]); return `${c ? c.label : "삭제된 비용"} ${ks[3] === "included" ? "포함 여부" : "금액"}`; }
+    if (ks[1] === "hospital") {
+      if (ks[2] === "variable" || ks[2] === "fixed") { const r = d.econ.hospital[ks[2]].find((x) => x.id === ks[3]); return `병원 ${ks[2] === "variable" ? "변동비" : "고정비"} ${r ? r.label : "(삭제됨)"}`; }
+      return { price: "회당 수납액", sessions: "월 시술 건수", investCustom: "병원 도입비", investMode: "도입비 방식" }[ks[2]] || ks[2];
+    }
+  }
   if (ks[0] === "parties") return `${{ maker: "제조사", partner: "파트너", hospital: "병원" }[ks[1]] || ks[1]} ${last}`;
   return last;
 }
