@@ -11,6 +11,7 @@ import { fmtMoney, parseNum } from "../lib/deal/money.js";
 import { DocView } from "../components/deal/Docs.jsx";
 import { LineChart } from "../components/deal/LineChart.jsx";
 import { cn } from "@/lib/utils";
+import Desk from "../components/deal/Desk.jsx";
 
 const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : (Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d }));
 const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp ${fmt(v)}`);
