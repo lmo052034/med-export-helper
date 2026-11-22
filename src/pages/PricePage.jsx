@@ -24,16 +24,29 @@ function Changed({ path }) {
   const { deal, actions } = useDeal();
   if (!changedFrom(deal, path)) return null;
   const b = getPath(deal.baseline, path);
-  return <button type="button" onClick={() => actions.resetToBaseline(path)} className="inline-flex items-center gap-1 rounded-full bg-[var(--fill)] px-2 py-0.5 text-[11px] font-medium text-[#424245] hover:bg-[var(--fill-strong)]" title="기준값으로 되돌리기"><RotateCcw className="size-3" aria-hidden="true" />변경됨{b !== undefined && b !== "" ? ` (기준 ${fmt(parseNum(b).value ?? NaN) !== "—" ? fmt(parseNum(b).value, 2) : b})` : ""}</button>;
+  return <button type="button" onClick={() => actions.resetToBaseline(path)} className="inline-flex items-center gap-1 text-[12px] font-medium text-primary hover:underline" title="기준값으로 되돌리기"><RotateCcw className="size-3" aria-hidden="true" />변경됨{b !== undefined && b !== "" ? ` (기준 ${fmt(parseNum(b).value ?? NaN) !== "—" ? fmt(parseNum(b).value, 2) : b})` : ""}</button>;
 }
 
 /* 숫자 입력 + (선택) 슬라이더 */
-function NumField({ path, label, unit, slider, hint, evidence, onEv, wide }) {
+function NumField({ path, label, unit, slider, hint, evidence, onEv, wide, row }) {
   const { deal, update } = useDeal();
   const v = getPath(deal, path) ?? "";
   const p = parseNum(v);
   const bad = p.state === "invalid" || (p.state === "ok" && p.value < 0);
   const id = fieldId(path);
+  if (row) return (
+    <div className="field min-w-0 border-b border-[var(--line)] py-3" data-field={path}>
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,170px)_36px] items-center gap-x-3">
+        <span className="flex min-w-0 items-center gap-1"><label htmlFor={id} className="text-[14px] text-[#424245]">{label}</label>{evidence && <EvidenceButton path={evidence} onOpen={onEv} />}</span>
+        <input id={id} type="text" inputMode="decimal" autoComplete="off" value={v} aria-invalid={bad || p.state === "blank" || undefined} aria-describedby={`${id}-h`} onChange={(e) => update(path, e.target.value)} className={cn(CTRL, "h-10 text-right tabular-nums")} />
+        <span className="text-[13px] text-[#6e6e73]">{unit}</span>
+      </div>
+      {slider && <input type="range" aria-label={`${label} 슬라이더`} min={slider.min} max={slider.max} step={slider.step} value={p.state === "ok" ? Math.min(Math.max(p.value, slider.min), slider.max) : slider.min} onChange={(e) => update(path, e.target.value)} className="range mt-3 w-full" />}
+      <p id={`${id}-h`} className={cn("mt-1.5 flex flex-wrap items-center gap-x-2 text-[12px] leading-snug", bad || p.state === "blank" ? "text-amber-700" : "text-[#86868b]")}>
+        <span>{p.state === "blank" ? "비어 있어요. 0과 다르게 계산하지 않아요." : bad ? (p.state === "invalid" ? "숫자로 적어 주세요." : "음수는 쓸 수 없어요.") : hint}</span><Changed path={path} />
+      </p>
+    </div>
+  );
   return (
     <div className={cn("field min-w-0", wide && "sm:col-span-2")} data-field={path}>
       <div className="mb-1 flex flex-wrap items-center gap-2">
@@ -94,13 +107,11 @@ function HvRows({ base, unit, title, onEv, evPath }) {
   );
 }
 
-function Stat({ k, v, sub, delta, tone, testid }) {
+function ResRow({ k, sub, v, delta, warn, testid }) {
   return (
-    <div className="min-w-0 bg-white p-5" data-testid={testid}>
-      <dt className="text-[13px] text-[#6e6e73]">{k}</dt>
-      <dd className={cn("mt-1.5 text-[26px] leading-tight font-semibold tracking-tight tabular-nums", tone === "warn" && "text-amber-700 text-[17px]")}>{v}</dd>
-      {delta && <dd className="mt-1 text-[12px] font-medium text-[#424245] tabular-nums">{delta}</dd>}
-      {sub && <dd className="mt-1 text-[12px] text-[#86868b]">{sub}</dd>}
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 border-b border-[var(--line)] py-3" data-testid={testid}>
+      <dt className="text-[14px] text-[#424245]">{k}{sub && <span className="block text-[12px] text-[#86868b]">{sub}</span>}</dt>
+      <dd className={cn("text-right text-[18px] font-semibold tabular-nums", warn && "text-[15px] text-amber-700")}>{v}{delta && <span className="block text-[12px] font-medium text-[#6e6e73]">{delta}</span>}</dd>
     </div>
   );
 }
@@ -116,9 +127,12 @@ function Hospital({ onEv }) {
   const L = calcLocal(deal);
   const h = deal.econ.hospital;
   const scen = deal.econ.scenarios;
+  const life = Number(PACK.review?.defaults?.device?.lifeMonths) || 48;
+  const bepDep = H.contribution > 0 && H.invest !== null && H.fixed !== null ? Math.ceil((H.fixed + H.invest / life) / H.contribution) : null;
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
       <div className="space-y-7">
+        <h2 className="text-[17px] font-semibold">입력</h2>
         <div className="field" data-field="econ.hospital.investCustom">
           <p className="text-[13px] font-medium text-[#424245]">병원 초기 도입비</p>
           <div className="mt-1 flex flex-wrap gap-4 text-[14px]">
@@ -129,12 +143,12 @@ function Hospital({ onEv }) {
             <p className="mt-2 text-[15px]"><b className="tabular-nums">{rp(L.total)}</b> <span className="text-[12px] text-[#6e6e73]">현지 판매가 + 부가세 {deal.local.vatPct || "—"}%. 병원은 매입 부가세를 공제받지 못한다고 보고 포함 (팀 해석). <Link to="/price?tab=deal" className="text-primary">판매가 바꾸기</Link></span></p>
           ) : <div className="mt-2"><NumField path="econ.hospital.investCustom" label="초기 도입비" unit="IDR" hint="장비 구입에 드는 현금. 월 비용에 다시 넣지 않아요." /></div>}
         </div>
-        <NumField path="econ.hospital.price" label="회당 실제 수납액" unit="IDR" slider={{ min: 100000, max: 1200000, step: 1000 }} hint={h.priceSource || "공개 정가와 실제 수납액은 다를 수 있어요."} evidence="econ.hospital.price" onEv={onEv} />
+        <NumField row path="econ.hospital.price" label="회당 실제 수납액" unit="IDR" slider={{ min: 100000, max: 1200000, step: 1000 }} hint={h.priceSource || "공개 정가와 실제 수납액은 다를 수 있어요."} evidence="econ.hospital.price" onEv={onEv} />
         <SelectField path="econ.hospital.priceKind" label="수납액의 성격" options={[["", "선택"], ["actual", "병원 실제 수납액"], ["public-list", "공개 정가"], ["public-promo", "공개 판촉가 (수납액으로 가정)"], ["mock", "팀 모의값"]]} />
-        <NumField path="econ.hospital.sessions" label="월 유료 시술 건수" unit="회" slider={{ min: 0, max: 150, step: 1 }} hint={H.perDay !== null ? `가동일 ${h.workDays}일 기준 하루 약 ${fmt(H.perDay, 1)}회. 환자 수나 치료 코스 수가 아니라 유료 시술 횟수예요.` : "환자 수나 치료 코스 수가 아니라 유료 시술 횟수예요."} />
-        <div className="grid grid-cols-2 gap-4">
-          <NumField path="econ.hospital.workDays" label="월 가동일수" unit="일" hint="하루 평균 계산에만 써요." />
-          <NumField path="econ.hospital.horizon" label="누적 계산 기간" unit="개월" hint="최대 120개월" />
+        <NumField row path="econ.hospital.sessions" label="월 유료 시술 건수" unit="회" slider={{ min: 0, max: 150, step: 1 }} hint={H.perDay !== null ? `가동일 ${h.workDays}일 기준 하루 약 ${fmt(H.perDay, 1)}회. 환자 수나 치료 코스 수가 아니라 유료 시술 횟수예요.` : "환자 수나 치료 코스 수가 아니라 유료 시술 횟수예요."} />
+        <div>
+          <NumField row path="econ.hospital.workDays" label="월 가동일수" unit="일" hint="하루 평균 계산에만 써요." />
+          <NumField row path="econ.hospital.horizon" label="누적 계산 기간" unit="개월" hint="최대 120개월" />
         </div>
         <HvRows base="econ.hospital.variable" unit="IDR/회" title="회당 변동비" onEv={onEv} evPath="econ.hospital.variable" />
         <HvRows base="econ.hospital.fixed" unit="IDR/월" title="월 추가 고정비" onEv={onEv} evPath="econ.hospital.fixed" />
@@ -152,17 +166,27 @@ function Hospital({ onEv }) {
             {H.issues.map((i) => <p key={i.field}>{i.text}</p>)}
           </div>
         )}
-        <dl className="grid gap-px overflow-hidden rounded-[22px] bg-[var(--line)] sm:grid-cols-2" aria-live="polite">
-          <Stat testid="h-contribution" k="회당 공헌액" v={rp(H.contribution)} sub="수납액 − 회당 변동비" delta={B && diff(H.contribution, B.contribution)} />
-          <Stat testid="h-surplus" k="월 운영 현금잉여" v={rp(H.surplus)} sub={`시술 ${H.sessions ?? "—"}회 × 공헌액 − 고정비 ${rp(H.fixed)}`} delta={B && diff(H.surplus, B.surplus)} />
-          <Stat testid="h-bep" k="운영 손익분기 시술량" v={H.bep !== null ? `월 ${H.bep}회` : "산출 불가"} tone={H.bep === null && H.bepNote ? "warn" : undefined} sub={H.bep !== null ? "고정비 ÷ 회당 공헌액, 올림" : H.bepNote} delta={B && H.bep !== null && B.bep !== null && H.bep !== B.bep ? `기준안 월 ${B.bep}회` : null} />
-          <Stat testid="h-payback" k="단순 투자 회수 예상" v={H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"} tone={H.payback === null && H.paybackNote ? "warn" : undefined} sub={H.payback !== null ? `도입비 ${rp(H.invest)} ÷ 월 현금잉여` : H.paybackNote} delta={B && H.payback !== null && B.payback !== null && Math.abs(H.payback - B.payback) > 0.05 ? `기준안 ${fmt(B.payback, 1)}개월` : null} />
-        </dl>
+        <h2 className="text-[17px] font-semibold">결과</h2>
+        <div aria-live="polite" className="mt-3">
+          <div data-testid="h-surplus" className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1 border-b border-[var(--line-strong)] pb-4">
+            <div>
+              <p className="text-[13px] text-[#6e6e73]">월 운영 현금잉여 (시술 {H.sessions ?? "—"}회)</p>
+              <p className="mt-0.5 text-[36px] leading-tight font-semibold tracking-tight tabular-nums">{rp(H.surplus)}</p>
+            </div>
+            <p className="text-right text-[12px] text-[#6e6e73]">{B && diff(H.surplus, B.surplus) && <span className="block font-medium text-[#424245] tabular-nums">{diff(H.surplus, B.surplus)}</span>}시술 × 공헌액 − 고정비 {rp(H.fixed)}</p>
+          </div>
+          <dl>
+            <ResRow testid="h-contribution" k="회당 공헌액" sub="수납액 − 회당 변동비" v={rp(H.contribution)} delta={B && diff(H.contribution, B.contribution)} />
+            <ResRow k={`손익분기 (장비비 ${life}개월 배분)`} sub="고정비 + 도입비 ÷ 배분 개월, 공헌액으로 나눠 올림" v={bepDep !== null ? `월 ${bepDep}회` : "산출 불가"} />
+            <ResRow testid="h-bep" k="손익분기 (운영비만)" sub={H.bep !== null ? "고정비 ÷ 회당 공헌액, 올림" : H.bepNote} v={H.bep !== null ? `월 ${H.bep}회` : "산출 불가"} warn={H.bep === null && H.bepNote} delta={B && H.bep !== null && B.bep !== null && H.bep !== B.bep ? `기준안 월 ${B.bep}회` : null} />
+            <ResRow testid="h-payback" k="투자 회수" sub={H.payback !== null ? `도입비 ${rp(H.invest)} ÷ 월 현금잉여` : H.paybackNote} v={H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"} warn={H.payback === null && H.paybackNote} delta={B && H.payback !== null && B.payback !== null && Math.abs(H.payback - B.payback) > 0.05 ? `기준안 ${fmt(B.payback, 1)}개월` : null} />
+          </dl>
+        </div>
         <p className="mt-2 text-[12px] text-[#86868b]">월 조건이 일정하다는 전제의 계산이에요. 수요 예측이나 성공 가능성이 아니에요.</p>
 
         <div className="mt-8">
-          <h3 className="text-[15px] font-semibold">시술량별 월 운영 현금잉여</h3>
-          <LineChart data={curve} base={baseCurve} label="월 시술 건수에 따른 월 운영 현금잉여 그래프" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={rpShort} markers={[...(H.sessions !== null && H.surplus !== null ? [{ x: H.sessions, y: H.surplus, label: `현재 ${H.sessions}회: ${rpShort(H.surplus)}` }] : []), ...(H.bep !== null ? [{ x: H.bep, y: 0, label: `손익분기 ${H.bep}회`, color: "#86868b" }] : [])]} />
+          <h3 className="text-[15px] font-semibold">월 시술 건수별 월 운영 현금잉여</h3>
+          <LineChart data={curve} base={baseCurve} label="월 시술 건수에 따른 월 운영 현금잉여 그래프" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={rpShort} markers={[...(H.sessions !== null && H.surplus !== null ? [{ x: H.sessions, y: H.surplus, label: `현재 ${H.sessions}회: ${rpShort(H.surplus)}` }] : []), ...(bepDep !== null ? [{ x: bepDep, label: `장비비 포함 손익분기 ${bepDep}회`, color: "var(--primary)" }] : []), ...(H.bep !== null ? [{ x: H.bep, y: 0, label: `운영비만 ${H.bep}회`, color: "#86868b" }] : [])]} />
         </div>
         <div className="mt-8">
           <h3 className="text-[15px] font-semibold">누적 현금흐름 (도입 시점부터)</h3>
@@ -361,7 +385,7 @@ function Cash() {
   );
 }
 
-const TABS = [["deal", "거래 가격"], ["hospital", "병원 운영"], ["cash", "결제 흐름"]];
+const TABS = [["hospital", "병원 손익"], ["deal", "파트너 마진"], ["cash", "자금 흐름"]];
 
 export default function PricePage() {
   const { deal, actions } = useDeal();
@@ -373,14 +397,14 @@ export default function PricePage() {
     <div className="mx-auto max-w-[1200px] px-4 pb-28 sm:px-6 lg:pb-20">
       <div className="flex flex-wrap items-end justify-between gap-4 pt-10 pb-6">
         <div>
-          <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">가격과 수익성</h1>
-          <p className="mt-1 max-w-[640px] text-[15px] text-[#424245]">같은 거래 데이터로 계산해요. 병원 판매가를 바꾸면 현지 견적과 병원 도입비가, 시술량을 바꾸면 병원 손익만 바뀌어요.</p>
+          <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">수익성</h1>
+          <p className="mt-1 max-w-[640px] text-[15px] text-[#424245]">병원 손익, 파트너 마진, 자금 흐름을 같은 거래 데이터로 계산합니다. 판매가를 바꾸면 현지 견적과 병원 도입비가 함께, 시술량을 바꾸면 병원 손익만 바뀝니다.</p>
         </div>
         {deal.baseline && (
           <button type="button" onClick={() => actions.resetToBaseline()} disabled={!anyChanged} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--line-strong)] px-4 text-[14px] font-medium disabled:opacity-40"><RotateCcw className="size-4" />기준값으로 되돌리기</button>
         )}
       </div>
-      <div role="tablist" aria-label="가격과 수익성 보기" className="seg mb-8">
+      <div role="tablist" aria-label="수익성 보기" className="seg mb-8">
         {TABS.map(([k, l]) => <button key={k} role="tab" type="button" aria-selected={tab === k} onClick={() => setParams({ tab: k })} className="seg-btn">{l}</button>)}
       </div>
       {tab === "hospital" && <Hospital onEv={setEv} />}

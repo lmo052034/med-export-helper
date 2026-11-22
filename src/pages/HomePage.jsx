@@ -1,250 +1,250 @@
-/* 업무 현황: 업무 현황판 → 제품, 시장, 거래 구조 기준 → 서류와 근거.
-   글은 콘텐츠 팩(@pack)에서, 숫자는 대표 모의 거래의 계산 함수에서 가져옵니다 */
-import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, ChevronRight } from "lucide-react";
-import { PACK, sampleDeal } from "@pack";
+/* 홈(통합 화면): 오늘 업무 요약 → 제품(사진과 설명) → 거래조건(표) → 수익성(입력과 그래프) → 서류(미리보기).
+   모든 숫자는 지금 열린 거래(useDeal)와 같은 계산 함수에서 가져옵니다. 세부 화면은 각 영역의 링크로 이동 */
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
+import { PACK } from "@pack";
 import { useDeal } from "../lib/deal/DealContext.jsx";
 import { calcExport, calcLocal } from "../lib/deal/calc.js";
-import { hospitalCalc } from "../lib/deal/econ.js";
-import { summarize } from "../lib/deal/checks.js";
-import { fmtMoney } from "../lib/deal/money.js";
+import { hospitalCalc, surplusCurve } from "../lib/deal/econ.js";
+import { fmtMoney, parseNum } from "../lib/deal/money.js";
+import { DocView } from "../components/deal/Docs.jsx";
+import { LineChart } from "../components/deal/LineChart.jsx";
 import { cn } from "@/lib/utils";
-import Desk from "../components/deal/Desk.jsx";
 
-const idr = (v) => (v === null || v === undefined ? "—" : `Rp ${Math.round(v).toLocaleString("en-US")}`);
+const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : (Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d }));
+const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp ${fmt(v)}`);
+const rpShort = (v) => { const a = Math.abs(v); const s = v < 0 ? "−" : ""; return a >= 1e9 ? `${s}${fmt(a / 1e9, 2)}B` : a >= 1e6 ? `${s}${fmt(a / 1e6, 1)}M` : `${s}${fmt(a)}`; };
+const CTRL = "w-full min-w-0 rounded-[10px] border border-[var(--line-strong)] bg-white px-3 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20";
 
-function Section({ id, kicker, title, lead, children, tone = "white" }) {
+/* 영역 머리글: 제목 왼쪽, 세부 화면 링크 오른쪽 */
+function Panel({ id, title, to, more, className, children }) {
   return (
-    <section id={id} aria-labelledby={`${id}-t`} className={cn("px-4 py-20 sm:px-6 sm:py-28", tone === "gray" && "bg-[var(--surface-2)]")}>
-      <div className="mx-auto max-w-[1080px]">
-        {kicker && <p className="text-[14px] font-semibold text-primary">{kicker}</p>}
-        <h2 id={`${id}-t`} className="mt-2 max-w-[760px] text-balance text-[32px] leading-[1.15] font-bold tracking-[-0.03em] sm:text-[44px]">{title}</h2>
-        {lead && <p className="mt-4 max-w-[680px] text-[17px] leading-relaxed text-[#424245] sm:text-[19px]">{lead}</p>}
-        <div className="mt-12">{children}</div>
+    <section id={id} aria-labelledby={`${id}-t`} className={cn("min-w-0 rounded-2xl bg-white p-5 sm:p-7", className)}>
+      <div className="flex items-baseline justify-between gap-4 border-b border-[var(--line)] pb-3">
+        <h2 id={`${id}-t`} className="text-[19px] font-semibold tracking-tight">{title}</h2>
+        {to && <Link to={to} className="inline-flex shrink-0 items-center gap-1 text-[13px] font-medium text-primary hover:underline">{more}<ArrowRight className="size-3.5" aria-hidden="true" /></Link>}
       </div>
+      <div className="pt-5">{children}</div>
     </section>
   );
 }
 
-function Hero() {
-  const h = PACK.hero;
+/* 1. 오늘 업무 요약 */
+function Today() {
+  const D = PACK.desk;
+  if (!D) return null;
+  const by = (...k) => D.tasks.filter((t) => k.includes(t.kind)).length;
+  const figs = [["회신 대기 견적", by("quote", "follow")], ["이번 주 시연", by("demo")], ["서류, 선적 할 일", by("doc", "ship")], ["A/S 요청", by("as")], ["진행 중 병원", D.hospitals.length]];
+  const next = [...D.tasks].sort((a, b) => a.sort - b.sort).slice(0, 4);
   return (
-    <section className="bg-[var(--surface-2)] px-4 pt-14 pb-0 sm:px-6 sm:pt-20" aria-labelledby="hero-t">
-      <div className="mx-auto grid max-w-[1080px] items-end gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
-        <div className="pb-14 md:pb-24">
-          <p className="text-[15px] font-semibold text-[#6e6e73]">{h.eyebrow}</p>
-          <h1 id="hero-t" className="mt-3 text-[40px] leading-[1.08] font-bold tracking-[-0.035em] sm:text-[60px] whitespace-pre-line">{h.title}</h1>
-          <p className="mt-5 max-w-[520px] text-[18px] leading-relaxed text-[#424245] sm:text-[21px]">{h.lead}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#product" className="inline-flex h-11 items-center rounded-full bg-primary px-6 text-[16px] font-medium text-white hover:brightness-110">{h.cta || "진행 현황 보기"}</a>
-            <Link to="/price?tab=hospital" className="inline-flex h-11 items-center gap-1 rounded-full px-5 text-[16px] font-medium text-primary hover:bg-white">병원 수익성 검토<ChevronRight className="size-4" /></Link>
-          </div>
-          {h.status?.length > 0 && (
-            <dl className="mt-10 grid max-w-[560px] grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[var(--line)] sm:grid-cols-3">
-              {h.status.map((s) => (
-                <div key={s.k} className="bg-white px-4 py-3">
-                  <dt className="flex items-center gap-1.5 text-[12px] text-[#6e6e73]">{s.live && <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />}{s.k}</dt>
-                  <dd className="mt-0.5 text-[14px] font-semibold leading-snug text-[#1d1d1f]">{s.v}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-          {h.note && <p className="mt-4 text-[13px] text-[#6e6e73]">{h.note}</p>}
-        </div>
+    <Panel id="today" title="오늘 업무" to="/desk" more="업무 현황 전체">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <dl className="grid self-start grid-cols-3 gap-y-4 sm:grid-cols-5 lg:grid-cols-3 xl:grid-cols-5">
+          {figs.map(([k, v]) => (
+            <div key={k} className="min-w-0 border-l border-[var(--line)] pl-4 first:border-l-0 first:pl-0 [&:nth-child(4)]:border-l-0 [&:nth-child(4)]:pl-0 sm:[&:nth-child(4)]:border-l sm:[&:nth-child(4)]:pl-4 lg:[&:nth-child(4)]:border-l-0 lg:[&:nth-child(4)]:pl-0 xl:[&:nth-child(4)]:border-l xl:[&:nth-child(4)]:pl-4">
+              <dt className="text-[12px] text-[#6e6e73]">{k}</dt>
+              <dd className="mt-0.5 text-[26px] font-semibold tabular-nums tracking-tight">{v}</dd>
+            </div>
+          ))}
+        </dl>
+        <table className="w-full text-[14px]">
+          <caption className="sr-only">가까운 기한 순 할 일</caption>
+          <tbody>
+            {next.map((t) => (
+              <tr key={t.title} className="border-b border-[var(--line)] last:border-0">
+                <td className="w-14 py-2 align-top tabular-nums font-medium text-[#1d1d1f]">{t.due}</td>
+                <td className="py-2 align-top">{t.title}<span className="block text-[12px] text-[#86868b]">{t.owner}{t.meta ? `, ${t.meta}` : ""}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Panel>
+  );
+}
+
+/* 2. 제품: 사진과 설명 */
+function Product() {
+  const p = PACK.product, h = PACK.hero;
+  const facts = p.facts.slice(0, 5);
+  return (
+    <Panel id="product" title="제품" to="/evidence" more="제품 자료" className="lg:col-span-7">
+      <div className={cn("grid gap-6", h.image && "sm:grid-cols-[180px_minmax(0,1fr)]")}>
         {h.image && (
-          <figure className="relative mx-auto w-full max-w-[360px] md:max-w-none">
-            <img src={h.image} alt={h.imageAlt} width="1110" height="1889" className="mx-auto h-auto max-h-[560px] w-auto object-contain" fetchpriority="high" />
-            <figcaption className="pb-3 text-center text-[11px] text-[#86868b]">{h.imageCredit}</figcaption>
+          <figure className="m-0">
+            <div className="grid h-[240px] place-items-center rounded-xl bg-[var(--surface-2)] p-3"><img src={h.image} alt={h.imageAlt} className="max-h-full w-auto object-contain" loading="lazy" /></div>
+            {p.handpieces.length > 0 && (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {p.handpieces.map((hp) => <div key={hp.name} className="grid h-[72px] place-items-center rounded-lg bg-[var(--surface-2)] p-1.5"><img src={hp.img} alt={hp.alt} className="max-h-full w-auto object-contain" loading="lazy" /></div>)}
+              </div>
+            )}
+            <figcaption className="mt-1.5 text-[11px] leading-snug text-[#86868b]">{h.imageCredit}</figcaption>
           </figure>
         )}
+        <div className="min-w-0">
+          <p className="text-[13px] text-[#6e6e73]">{PACK.review?.device?.name || "치료 장비"}</p>
+          <p className="mt-0.5 text-[22px] font-semibold tracking-tight">{PACK.review?.device?.model || PACK.brand}</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-[#424245]">{p.title}. {p.lead}</p>
+          <table className="mt-4 w-full text-[14px]">
+            <tbody>
+              {facts.map((f) => (
+                <tr key={f.k} className="border-t border-[var(--line)]">
+                  <th scope="row" className="w-[34%] py-2 pr-3 text-left align-top font-normal text-[#6e6e73]">{f.k}</th>
+                  <td className="py-2 align-top">{f.v}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </section>
+    </Panel>
   );
 }
 
-function Product() {
-  const p = PACK.product;
+/* 3. 거래조건: 표 */
+function Terms() {
+  const { deal } = useDeal();
+  const E = calcExport(deal), L = calcLocal(deal);
+  const pay = (arr) => arr.filter((p) => p.label || p.pct).map((p) => `${p.pct ? `${p.pct}% ` : ""}${p.label}${p.due ? ` (${p.due})` : ""}`).join(", ") || "—";
+  const items = deal.exp.items.map((i) => `${i.model || "품목"} ${i.qty || "—"} ${i.unit || ""}`.trim()).join(", ");
+  const rows = [
+    ["수출", [
+      ["품목", items],
+      ["인도조건", `${deal.exp.incoterm || "—"} ${deal.exp.place || ""}`.trim()],
+      ["수출 금액", E.total !== null ? fmtMoney(E.total, deal.exp.currency) : "단가 확인 필요"],
+      ["결제", pay(deal.exp.payment)],
+      ["납기", deal.exp.leadTime || "—"],
+      ["HS 코드", deal.exp.items[0]?.hs || "—"],
+    ]],
+    ...(deal.local.enabled ? [["현지 판매", [
+      ["병원 도입가", L.total !== null ? `${rp(L.total)} (부가세 ${deal.local.vatPct || "—"}% 포함)` : "—"],
+      ["결제", pay(deal.local.payment)],
+    ]]] : []),
+  ];
   return (
-    <Section id="product" kicker={p.kicker || "취급 제품"} title={p.title} lead={p.lead}>
-      {p.handpieces.length > 0 && (
-        <div className="grid gap-6 sm:grid-cols-2">
-          {p.handpieces.map((hp) => (
-            <figure key={hp.name} className="rounded-[28px] bg-[var(--surface-2)] px-6 pt-8 pb-6">
-              <div className="grid h-[200px] place-items-center"><img src={hp.img} alt={hp.alt} className="max-h-[200px] w-auto max-w-full object-contain" loading="lazy" /></div>
-              <figcaption className="mt-6">
-                <p className="text-[12px] font-semibold text-primary">{hp.tag}</p>
-                <p className="mt-1 text-[22px] font-semibold tracking-tight">{hp.name}</p>
-                <p className="mt-2 text-[15px] leading-relaxed text-[#424245]">{hp.desc}</p>
-                {hp.note && <p className="mt-2 text-[12px] text-[#86868b]">{hp.note}</p>}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      )}
-      <dl className="mt-10 divide-y divide-[var(--line)] border-y border-[var(--line)]">
-        {p.facts.map((f) => (
-          <div key={f.k} className="grid gap-1 py-4 sm:grid-cols-[200px_minmax(0,1fr)_minmax(0,260px)] sm:gap-6">
-            <dt className="text-[14px] text-[#6e6e73]">{f.k}</dt>
-            <dd className="text-[16px] font-medium">{f.v}</dd>
-            <dd className="text-[12px] text-[#86868b] sm:text-right">{f.src}</dd>
-          </div>
+    <Panel id="terms" title="거래조건" to="/deal" more="거래조건 입력" className="lg:col-span-5">
+      <p className="-mt-1 mb-3 text-[13px] text-[#6e6e73]">{deal.name}</p>
+      <table className="w-full text-[14px]">
+        {rows.map(([g, rs]) => (
+          <tbody key={g}>
+            <tr><th colSpan={2} scope="colgroup" className="pt-3 pb-1 text-left text-[12px] font-semibold text-primary first:pt-0">{g}</th></tr>
+            {rs.map(([k, v]) => (
+              <tr key={g + k} className="border-t border-[var(--line)]">
+                <th scope="row" className="w-[30%] py-2 pr-3 text-left align-top font-normal text-[#6e6e73]">{k}</th>
+                <td className="py-2 align-top tabular-nums">{v}</td>
+              </tr>
+            ))}
+          </tbody>
         ))}
-      </dl>
-      {p.claims.length > 0 && (
-        <div className="mt-8">
-          <p className="text-[13px] font-semibold text-[#6e6e73]">회사 발표 (팀이 원문 게시물을 확인, 인증서 원본은 확인 전)</p>
-          <ul className="mt-2 space-y-1 text-[15px]">{p.claims.map((c) => <li key={c.text}>{c.text} <span className="text-[12px] text-[#86868b]">{c.src}</span></li>)}</ul>
-        </div>
-      )}
-      {p.caution && <p className="mt-8 max-w-[760px] text-[13px] leading-relaxed text-[#6e6e73]">{p.caution}</p>}
-    </Section>
+      </table>
+    </Panel>
   );
 }
 
-function Country() {
-  const c = PACK.country;
-  if (!c.rows.length) return null;
+/* 4. 수익성: 입력과 그래프 */
+function Profit() {
+  const { deal, update } = useDeal();
+  const H = hospitalCalc(deal);
+  const curve = useMemo(() => surplusCurve(deal, 120, 2).map((p) => ({ x: p.n, y: p.v })), [deal]);
+  const h = deal.econ.hospital;
+  const life = Number(PACK.review?.defaults?.device?.lifeMonths) || 48;
+  const bepDep = H.contribution > 0 && H.invest !== null && H.fixed !== null ? Math.ceil((H.fixed + H.invest / life) / H.contribution) : null;
+  const inputs = [
+    ["econ.hospital.price", "회당 실제 수납액", "IDR", h.price, { min: 100000, max: 1200000, step: 1000 }],
+    ["econ.hospital.sessions", "월 유료 시술", "회", h.sessions, { min: 0, max: 150, step: 1 }],
+  ];
+  const out = [
+    ["월 운영 현금잉여", rp(H.surplus)],
+    [`손익분기 (장비비 ${life}개월 배분)`, bepDep !== null ? `월 ${bepDep}회` : "산출 불가"],
+    ["손익분기 (운영비만)", H.bep !== null ? `월 ${H.bep}회` : "산출 불가"],
+    ["투자 회수", H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"],
+    ["병원 도입비", rp(H.invest)],
+  ];
   return (
-    <Section id="country" kicker="진출 시장" title={c.title} lead={c.lead} tone="gray">
-      <ol className="grid gap-4 md:grid-cols-3">
-        {c.rows.map((r) => (
-          <li key={r.country} className={cn("rounded-[24px] bg-white p-6", r.primary && "ring-2 ring-primary")}>
-            <p className="text-[15px] text-[#6e6e73]">{r.country}</p>
-            <p className={cn("mt-1 text-[28px] font-bold tracking-tight", r.primary ? "text-primary" : "text-[#86868b]")}>{r.status}</p>
-            <p className="mt-3 text-[15px] leading-relaxed">{r.detail}</p>
-            <p className="mt-3 text-[13px] leading-relaxed text-[#6e6e73]">{r.need}</p>
-            <p className="mt-4 text-[11px] text-[#86868b]">{r.db}</p>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-6 max-w-[860px] text-[13px] leading-relaxed text-[#6e6e73]">{c.scope}</p>
-      {c.compare && (
-        <details className="group mt-8 rounded-[20px] bg-white">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-4 text-[15px] font-semibold">같은 지표로 비교하기<ChevronRight className="size-4 transition-transform group-open:rotate-90" aria-hidden="true" /></summary>
-          <div className="overflow-x-auto px-6 pb-6">
-            <table className="w-full min-w-[560px] text-left text-[14px]">
-              <thead><tr className="border-b border-[var(--line-strong)]">{c.compare.head.map((h, i) => <th key={i} scope="col" className="py-2 pr-4 font-semibold">{h}</th>)}</tr></thead>
-              <tbody>{c.compare.rows.map((row) => <tr key={row[0]} className="border-b border-[var(--line)]">{row.map((v, i) => i === 0 ? <th key={i} scope="row" className="py-2.5 pr-4 font-normal text-[#6e6e73]">{v}</th> : <td key={i} className="py-2.5 pr-4 tabular-nums">{v || "—"}</td>)}</tr>)}</tbody>
-            </table>
-            <p className="mt-3 text-[12px] text-[#86868b]">{c.compare.note}</p>
+    <Panel id="profit" title="병원 수익성" to="/price" more="수익성 화면" className="lg:col-span-12">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <div className="space-y-5">
+            {inputs.map(([path, label, unit, v, sl]) => {
+              const p = parseNum(v);
+              return (
+                <div key={path}>
+                  <div className="grid grid-cols-[minmax(0,1fr)_150px_32px] items-center gap-2">
+                    <label htmlFor={`home-${path}`} className="text-[14px] text-[#424245]">{label}</label>
+                    <input id={`home-${path}`} inputMode="decimal" value={v} onChange={(e) => update(path, e.target.value)} className={cn(CTRL, "h-10 text-right tabular-nums")} />
+                    <span className="text-[13px] text-[#6e6e73]">{unit}</span>
+                  </div>
+                  <input type="range" aria-label={`${label} 슬라이더`} min={sl.min} max={sl.max} step={sl.step} value={p.state === "ok" ? Math.min(Math.max(p.value, sl.min), sl.max) : sl.min} onChange={(e) => update(path, e.target.value)} className="range mt-2 w-full" />
+                </div>
+              );
+            })}
           </div>
-        </details>
-      )}
-      {c.gap.length > 0 && (
-        <div className="mt-10 max-w-[760px]">
-          <p className="text-[17px] font-semibold">{c.gap[0]}</p>
-          <ul className="mt-3 list-disc space-y-1.5 pl-5 text-[15px] text-[#424245]">{c.gap.slice(1).map((g) => <li key={g}>{g}</li>)}</ul>
-        </div>
-      )}
-    </Section>
-  );
-}
-
-function Structure() {
-  const s = PACK.structure;
-  const modes = Object.entries(s.modes);
-  const [mode, setMode] = useState(modes[0][0]);
-  const m = s.modes[mode];
-  const idx = Object.fromEntries(s.actors.map((a, i) => [a.key, i]));
-  const linkBetween = (a, b) => m.links.find((l) => (idx[l.from] === a && idx[l.to] === b) || (idx[l.from] === b && idx[l.to] === a));
-  return (
-    <Section id="structure" kicker="거래 구조" title={s.title} lead={s.lead}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div role="tablist" aria-label="보기" className="seg">
-          {modes.map(([k, v]) => <button key={k} type="button" role="tab" aria-selected={mode === k} onClick={() => setMode(k)} className="seg-btn">{v.label}</button>)}
-        </div>
-        <p className="text-[12px] font-medium text-amber-700">{s.label}</p>
-      </div>
-      <div className="mt-8 grid items-stretch gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)]" role="tabpanel" aria-label={m.label}>
-        {s.actors.map((a, i) => {
-          const l = i < s.actors.length - 1 ? linkBetween(i, i + 1) : null;
-          const right = l && idx[l.from] === i;
-          return [
-            <div key={a.key} className="rounded-[24px] bg-[var(--surface-2)] p-6">
-              <p className="text-[20px] font-semibold tracking-tight">{a.name}</p>
-              <p className="mt-0.5 text-[13px] text-[#6e6e73]">{a.sub}</p>
-              <ul className="mt-4 space-y-1 text-[14px] text-[#424245]">{a.roles.map((r) => <li key={r}>{r}</li>)}</ul>
-            </div>,
-            i < s.actors.length - 1 && (
-              <div key={a.key + "-l"} className="flex flex-col items-center justify-center px-2 py-2 text-center">
-                {l ? <>
-                  <span className="text-[13px] font-medium leading-snug">{l.text}</span>
-                  <span aria-hidden="true" className={cn("mt-2 text-[22px] text-primary md:rotate-0", "rotate-90")}>{right ? "→" : "←"}</span>
-                  <span className="sr-only">{right ? `${a.name}에서 ${s.actors[i + 1].name}로` : `${s.actors[i + 1].name}에서 ${a.name}로`}</span>
-                </> : <span className="text-[13px] text-[#86868b]">해당 없음</span>}
+          <dl className="mt-6 border-t border-[var(--line)]">
+            {out.map(([k, v], i) => (
+              <div key={k} className="flex items-baseline justify-between gap-3 border-b border-[var(--line)] py-2.5">
+                <dt className="text-[14px] text-[#6e6e73]">{k}</dt>
+                <dd className={cn("tabular-nums", i === 0 ? "text-[20px] font-semibold" : "text-[15px] font-medium")}>{v}</dd>
               </div>
-            ),
-          ];
-        })}
+            ))}
+          </dl>
+          <p className="mt-2 text-[12px] leading-snug text-[#86868b]">장비 1대의 월 현금흐름, 세전. 변동비와 고정비는 수익성 화면에서 바꿉니다.</p>
+        </div>
+        <div className="min-w-0">
+          <p className="mb-2 text-[14px] font-medium text-[#424245]">월 시술 건수별 월 운영 현금잉여</p>
+          <LineChart data={curve} label="월 시술 건수에 따른 월 운영 현금잉여 그래프" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={rpShort} height={260} markers={[...(H.sessions !== null && H.surplus !== null ? [{ x: H.sessions, y: H.surplus, label: `현재 ${H.sessions}회` }] : []), ...(bepDep !== null ? [{ x: bepDep, label: `장비비 포함 손익분기 ${bepDep}회`, color: "var(--primary)" }] : []), ...(H.bep !== null ? [{ x: H.bep, y: 0, label: `운영비만 ${H.bep}회`, color: "#86868b" }] : [])]} />
+        </div>
       </div>
-      {m.note && <p className="mt-6 max-w-[760px] text-[14px] leading-relaxed text-[#424245]">{m.note}</p>}
-    </Section>
+    </Panel>
   );
 }
 
-function TryIt() {
-  const { deals } = useDeal();
-  const nav = useNavigate();
-  const sample = useMemo(() => deals.find((d) => d.sampleKey === PACK.sampleKey) || sampleDeal(), [deals]);
-  const E = calcExport(sample), L = calcLocal(sample), H = hospitalCalc(sample);
-  const kpis = [
-    ["수출 단가", E.total !== null ? fmtMoney(E.total, E.cur) : "가격 확인 필요", `${sample.exp.incoterm} ${sample.exp.place}`.trim()],
-    ["병원 도입비", L.total !== null ? idr(L.total) : "—", "현지 판매가 + 부가세, 내부 설정값"],
-    [`월 ${H.sessions ?? "—"}회 시술 시 운영 현금잉여`, idr(H.surplus), "월 조건이 일정하다는 전제"],
-    ["단순 회수 예상", H.payback ? `약 ${Math.ceil(H.payback)}개월` : "산출 불가", `운영 손익분기 월 ${H.bep ?? "—"}회`],
-  ];
+/* 5. 서류: 문서 미리보기 */
+function Docs() {
+  const { deal } = useDeal();
+  const list = [["quote", "수출 견적서"], ["invoice", "상업송장"], ...(deal.local.enabled ? [["local", "현지 견적"]] : [])];
   return (
-    <Section id="try" kicker="병원 수익성" title="병원 판매가와 월 시술량으로 보는 도입 손익" lead="거래처 병원과 협의 중인 판매가와 시술량을 넣으면 월 손익과 회수 기간이 바로 다시 계산됩니다." tone="gray">
-      <dl className="grid gap-px overflow-hidden rounded-[24px] bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
-        {kpis.map(([k, v, n]) => (
-          <div key={k} className="bg-white p-6">
-            <dt className="text-[13px] text-[#6e6e73]">{k}</dt>
-            <dd className="mt-2 text-[24px] font-semibold tracking-tight tabular-nums">{v}</dd>
-            <dd className="mt-1 text-[12px] text-[#86868b]">{n}</dd>
-          </div>
-        ))}
-      </dl>
-      <p className="mt-4 text-[12px] text-[#86868b]">진행 중 거래 기준. 회당 수납액과 비용 항목의 출처는 근거자료에서 볼 수 있어요.</p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <button type="button" onClick={() => nav("/price?tab=hospital")} className="inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-6 text-[16px] font-medium text-white hover:brightness-110">가격과 수익성 검토<ArrowRight className="size-4" /></button>
-      </div>
-    </Section>
-  );
-}
-
-function DocsLinks() {
-  const { findings } = useDeal();
-  const s = summarize(findings);
-  const items = [
-    ["/docs", "견적서와 인보이스", "입력한 거래조건이 수출 견적서, 상업송장, 현지 견적, 메일 서명에 함께 반영돼요."],
-    ["/review", "누락과 불일치 검토", s.fix ? `지금 거래에 수정 필요 ${s.fix}건, 확인 필요 ${s.confirm}건이 있어요. 누르면 해당 입력칸으로 가요.` : "총중량, 서명, 결제 합계, 인도조건을 규칙으로 확인해요."],
-    ["/evidence", "계산 근거와 자료 출처", "회사 자료, 공개자료, 내부 설정값을 나눠 보여 주고 계산식을 공개해요."],
-  ];
-  return (
-    <Section id="docs" kicker="서류와 근거" title="확정한 조건은 견적서와 인보이스로 바로 이어집니다">
-      <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
-        {items.map(([to, t, d]) => (
-          <li key={to}>
-            <Link to={to} className="group flex items-center gap-6 py-6">
-              <span className="min-w-0 flex-1"><span className="block text-[21px] font-semibold tracking-tight">{t}</span><span className="mt-1 block text-[15px] text-[#424245]">{d}</span></span>
-              <ArrowRight className="size-5 shrink-0 text-primary transition-transform group-hover:translate-x-1" aria-hidden="true" />
+    <Panel id="docs" title="서류" to="/docs" more="서류 전체" className="lg:col-span-12">
+      <ul className={cn("grid gap-5 sm:grid-cols-2", list.length === 3 && "lg:grid-cols-3")}>
+        {list.map(([k, t]) => (
+          <li key={k} className="min-w-0">
+            <Link to={`/docs?doc=${k}`} className="group block">
+              <div className="relative h-[300px] overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--surface-2)]" aria-hidden="true">
+                <div className="pointer-events-none absolute top-3 left-1/2 w-[820px] origin-top -translate-x-1/2 scale-[0.4] bg-white shadow-sm" inert="">
+                  <DocView id={k} d={deal} />
+                </div>
+                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[var(--surface-2)] to-transparent" />
+              </div>
+              <p className="mt-2 flex items-center justify-between text-[14px] font-medium">{t}<ArrowRight className="size-4 text-primary transition-transform group-hover:translate-x-0.5" aria-hidden="true" /></p>
             </Link>
           </li>
         ))}
       </ul>
-    </Section>
+    </Panel>
   );
 }
 
 export default function HomePage() {
+  const D = PACK.desk;
   return (
-    <>
-      <Desk />
-      <Product />
-      <Country />
-      <Structure />
-      <DocsLinks />
-    </>
+    <div className="bg-[var(--surface-2)] px-4 pt-8 pb-16 sm:px-6 sm:pt-10">
+      <div className="mx-auto max-w-[1200px]">
+        <div className="flex flex-wrap items-end justify-between gap-2 pb-5">
+          <div>
+            <h1 className="text-[28px] font-bold tracking-[-0.03em] sm:text-[34px]">{PACK.brand}</h1>
+            {D?.team && <p className="mt-0.5 text-[14px] text-[#6e6e73]">{D.team}</p>}
+          </div>
+          {D?.asOf && <p className="text-[13px] text-[#6e6e73]">{D.asOf}</p>}
+        </div>
+        <div className="grid gap-5 lg:grid-cols-12">
+          <div className="lg:col-span-12"><Today /></div>
+          <Product />
+          <Terms />
+          <Profit />
+          <Docs />
+        </div>
+        {D?.note && <p className="mt-4 text-[12px] text-[#86868b]">{D.note}</p>}
+      </div>
+    </div>
   );
 }

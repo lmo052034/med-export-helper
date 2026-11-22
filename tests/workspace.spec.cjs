@@ -8,7 +8,7 @@ test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 �
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '선적 서류' }).click();
+  await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '거래와 서류' }).click();
   await expect(page).toHaveURL(/#\/deal$/);
 
   // 2. 구성(핸드피스 단가)·수량 변경 → 미리보기 총액 갱신
@@ -166,9 +166,9 @@ test('모든 입력칸에 이름표가 있고 키보드로 이동 가능', async
 test('메뉴와 주소: 직접 열기, 뒤로 가기, 새로고침이 같은 화면', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/#/price?tab=cash');
-  await expect(page.getByRole('tab', { name: '결제 흐름' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tab', { name: '자금 흐름' })).toHaveAttribute('aria-selected', 'true');
   await page.reload();
-  await expect(page.getByRole('tab', { name: '결제 흐름' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tab', { name: '자금 흐름' })).toHaveAttribute('aria-selected', 'true');
   const top = page.getByRole('navigation', { name: '주요 메뉴' });
   await top.getByRole('link', { name: '자료실' }).click();
   await expect(page).toHaveURL(/#\/evidence$/);
@@ -176,7 +176,7 @@ test('메뉴와 주소: 직접 열기, 뒤로 가기, 새로고침이 같은 화
   await page.goBack();
   await expect(page).toHaveURL(/tab=cash/);
   await page.goto('/#/review');
-  await expect(top.getByRole('link', { name: '선적 서류' })).toHaveAttribute('aria-current', 'page');
+  await expect(top.getByRole('link', { name: '거래와 서류' })).toHaveAttribute('aria-current', 'page');
   expect(errors).toEqual([]);
 });
 
