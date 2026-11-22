@@ -16,6 +16,7 @@ import { PACK } from "@pack";
 const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d });
 const rp = (v) => (v === null || v === undefined ? "—" : `Rp ${fmt(v)}`);
 const rpShort = (v) => { const a = Math.abs(v); const s = v < 0 ? "−" : ""; return a >= 1e9 ? `${s}${fmt(a / 1e9, 2)}B` : a >= 1e6 ? `${s}${fmt(a / 1e6, 1)}M` : `${s}${fmt(a)}`; };
+const VARIANT = import.meta.env.VITE_VARIANT || "c";
 const BASIS = [["company", "회사 자료"], ["official", "공개자료"], ["team", "팀 설정"], ["user", "사용자 입력"]];
 const WHEN = [["before-ship", "출하 전"], ["import", "수입 신고"], ["install", "설치·운영"], ["finance", "금융"]];
 const CTRL = "w-full min-w-0 rounded-[10px] border border-[var(--line-strong)] bg-white px-3 text-[15px] outline-none transition-[box-shadow,border-color] focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20 aria-[invalid=true]:border-amber-500";
@@ -36,8 +37,8 @@ function NumField({ path, label, unit, slider, hint, evidence, onEv, wide, row }
   const id = fieldId(path);
   if (row) return (
     <div className="field min-w-0 border-b border-[var(--line)] py-3" data-field={path}>
-      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,170px)_36px] items-center gap-x-3">
-        <span className="flex min-w-0 items-center gap-1"><label htmlFor={id} className="text-[14px] text-[#424245]">{label}</label>{evidence && <EvidenceButton path={evidence} onOpen={onEv} />}</span>
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,150px)_36px] items-center gap-x-3">
+        <span className="flex min-w-0 flex-wrap items-center gap-x-1 [&>button]:shrink-0 [&>button]:whitespace-nowrap"><label htmlFor={id} className="text-[14px] text-[#424245]">{label}</label>{evidence && <EvidenceButton path={evidence} onOpen={onEv} />}</span>
         <input id={id} type="text" inputMode="decimal" autoComplete="off" value={v} aria-invalid={bad || p.state === "blank" || undefined} aria-describedby={`${id}-h`} onChange={(e) => update(path, e.target.value)} className={cn(CTRL, "h-10 text-right tabular-nums")} />
         <span className="text-[13px] text-[#6e6e73]">{unit}</span>
       </div>
@@ -129,8 +130,7 @@ function Hospital({ onEv }) {
   const scen = deal.econ.scenarios;
   const life = Number(PACK.review?.defaults?.device?.lifeMonths) || 48;
   const bepDep = H.contribution > 0 && H.invest !== null && H.fixed !== null ? Math.ceil((H.fixed + H.invest / life) / H.contribution) : null;
-  return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
+  const inputsEl = (
       <div className="space-y-7">
         <h2 className="text-[17px] font-semibold">입력</h2>
         <div className="field" data-field="econ.hospital.investCustom">
@@ -154,13 +154,16 @@ function Hospital({ onEv }) {
         <HvRows base="econ.hospital.fixed" unit="IDR/월" title="월 추가 고정비" onEv={onEv} evPath="econ.hospital.fixed" />
         <p className="text-[12px] leading-relaxed text-[#6e6e73]">월 추가 고정비에는 장비 감가상각이나 할부 상환을 넣지 마세요. 도입비는 초기 투자액으로 한 번만 계산해요. 세전, 병원 전체 손익이 아니라 이 장비 1대의 현금흐름이에요.</p>
       </div>
-
+  );
+  const mobileEl = (
       <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-[var(--line)] bg-white px-4 pt-2 pb-[max(8px,env(safe-area-inset-bottom))] text-center lg:hidden no-print" aria-hidden="true">
         <p className="text-[11px] text-[#6e6e73]">월 현금잉여<b className="block text-[14px] text-foreground tabular-nums">{H.surplus !== null ? rpShort(H.surplus) : "—"}</b></p>
         <p className="text-[11px] text-[#6e6e73]">손익분기<b className="block text-[14px] text-foreground tabular-nums">{H.bep !== null ? `월 ${H.bep}회` : "산출 불가"}</b></p>
         <p className="text-[11px] text-[#6e6e73]">단순 회수<b className="block text-[14px] text-foreground tabular-nums">{H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"}</b></p>
       </div>
-      <div className="min-w-0 lg:sticky lg:top-16 lg:self-start">
+  );
+  const resultsEl = (
+    <div>
         {H.issues.length > 0 && (
           <div className="mb-4 rounded-2xl bg-amber-50 px-4 py-3 text-[13px] text-amber-800" role="status">
             {H.issues.map((i) => <p key={i.field}>{i.text}</p>)}
@@ -183,17 +186,22 @@ function Hospital({ onEv }) {
           </dl>
         </div>
         <p className="mt-2 text-[12px] text-[#86868b]">월 조건이 일정하다는 전제의 계산이에요. 수요 예측이나 성공 가능성이 아니에요.</p>
-
+    </div>
+  );
+  const ch1El = (
         <div className="mt-8">
           <h3 className="text-[15px] font-semibold">월 시술 건수별 월 운영 현금잉여</h3>
           <LineChart data={curve} base={baseCurve} label="월 시술 건수에 따른 월 운영 현금잉여 그래프" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={rpShort} markers={[...(H.sessions !== null && H.surplus !== null ? [{ x: H.sessions, y: H.surplus, label: `현재 ${H.sessions}회: ${rpShort(H.surplus)}` }] : []), ...(bepDep !== null ? [{ x: bepDep, label: `장비비 포함 손익분기 ${bepDep}회`, color: "var(--primary)" }] : []), ...(H.bep !== null ? [{ x: H.bep, y: 0, label: `운영비만 ${H.bep}회`, color: "#86868b" }] : [])]} />
         </div>
+  );
+  const ch2El = (
         <div className="mt-8">
           <h3 className="text-[15px] font-semibold">누적 현금흐름 (도입 시점부터)</h3>
           <LineChart data={H.cumulative.map((p) => ({ x: p.m, y: p.v }))} base={B ? B.cumulative.slice(0, H.horizon + 1).map((p) => ({ x: p.m, y: p.v })) : null} label="개월별 누적 현금흐름 그래프" xLabel="개월" yLabel="IDR 누적" fmtY={rpShort} markers={H.payback !== null && H.payback <= H.horizon ? [{ x: Math.ceil(H.payback), y: H.cumulative[Math.ceil(H.payback)]?.v, label: `회수 ${Math.ceil(H.payback)}개월째` }] : []} />
           {H.payback !== null && H.payback > H.horizon && <p className="text-[12px] text-amber-700">계산 기간 {H.horizon}개월 안에 회수되지 않아요.</p>}
         </div>
-
+  );
+  const scenEl = (
         <div className="mt-10">
           <h3 className="text-[15px] font-semibold">시나리오 비교</h3>
           <p className="text-[12px] text-[#6e6e73]">입력 전제를 직접 바꿀 수 있어요. 성공 확률이나 실제 수요 예측이 아니에요. 다른 비용은 현재 입력값을 그대로 써요.</p>
@@ -217,12 +225,37 @@ function Hospital({ onEv }) {
             </table>
           </div>
         </div>
-        {deal.sampleKey && PACK.notes?.hospital && (
+  );
+  const noteEl = deal.sampleKey && PACK.notes?.hospital ? (
           <details className="mt-8 text-[13px] text-[#424245]">
             <summary className="cursor-pointer font-medium">{PACK.notes.hospital.title}</summary>
             <p className="mt-2 leading-relaxed">{PACK.notes.hospital.body}</p>
           </details>
-        )}
+  ) : null;
+  if (VARIANT === "b") return (
+    <div className="space-y-12">
+      {mobileEl}
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">{resultsEl}<div className="min-w-0 [&>div]:mt-0">{ch1El}</div></div>
+      <div className="grid gap-10 border-t border-[var(--line)] pt-10 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">{inputsEl}<div className="min-w-0 [&>div:first-child]:mt-0">{ch2El}{scenEl}{noteEl}</div></div>
+    </div>
+  );
+  if (VARIANT === "c") return (
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+      <div className="min-w-0 rounded-2xl bg-[var(--surface-2)] p-6 [&_input]:bg-white [&_select]:bg-white">{inputsEl}</div>
+      {mobileEl}
+      <div className="min-w-0 [&>div:first-child]:mt-0">{ch1El}<div className="mt-8">{resultsEl}</div>{ch2El}{scenEl}{noteEl}</div>
+    </div>
+  );
+  return (
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
+      {inputsEl}
+      {mobileEl}
+      <div className="min-w-0 lg:sticky lg:top-16 lg:self-start">
+        {resultsEl}
+        {ch1El}
+        {ch2El}
+        {scenEl}
+        {noteEl}
       </div>
     </div>
   );
