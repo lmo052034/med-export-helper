@@ -61,14 +61,14 @@ function MyWork({ p }) {
   const D = PACK.desk;
   const role = roleOf(p);
   if (!D) return null;
-  const mine = (t) => !role || !role.owner || t.owner.includes(role.owner);
+  const mine = (t) => (!role ? true : role.owner ? t.owner.includes(role.owner) : role.kinds?.length ? role.kinds.includes(t.kind) : true);
   const tasks = [...D.tasks].sort((a, b) => a.sort - b.sort);
   const list = tasks.filter(mine).slice(0, 6);
   const kinds = Object.keys(KINDS).sort((a, b) => (role?.kinds?.includes(b) ? 1 : 0) - (role?.kinds?.includes(a) ? 1 : 0));
   const count = (k) => D.tasks.filter((t) => t.kind === k).length;
   return (
     <>
-      <Box title={role?.owner ? `내 할 일, ${role.label}` : "이번 주 할 일"} right={<Link to="/desk" className="text-[13px] font-medium text-primary hover:underline">업무 현황 전체</Link>}>
+      <Box title={role && (role.owner || role.kinds?.length) ? `내 할 일, ${role.label}` : "이번 주 팀 할 일"} right={<Link to="/desk" className="text-[13px] font-medium text-primary hover:underline">업무 현황 전체</Link>}>
         {list.length === 0
           ? <p className="px-5 py-6 text-[14px] text-[#6e6e73]">이번 주 {role?.label} 담당 할 일이 없습니다. <Link to="/desk" className="text-primary hover:underline">팀 전체 할 일 보기</Link></p>
           : (

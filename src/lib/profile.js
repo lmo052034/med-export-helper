@@ -8,15 +8,16 @@ const ls = () => { try { return window.localStorage; } catch { return null; } };
 
 const DEFAULT_PEOPLE = {
   orgs: [
-    { id: "hq", label: "본사 해외영업팀", desc: "한국 제조사. 수출 견적, 선적 서류, 대금 관리" },
+    { id: "hq", label: "본사", desc: "한국 제조사. 해외영업, 인허가와 품질, 경영 검토" },
     { id: "partner", label: "현지 파트너", desc: "인도네시아 수입, 판매사. 병원 영업, 설치, A/S" },
-    { id: "other", label: "그 밖의 소속", desc: "경영진 검토, 심사, 자문" },
   ],
   roles: [
-    { id: "hq-sales", label: "해외영업", desc: "견적, 수출 서류, 선적", org: "hq", owner: "본사 해외영업", kinds: ["doc", "ship", "follow"] },
+    { id: "hq-sales", label: "해외영업", desc: "견적, 수출 서류, 선적, 대금", org: "hq", owner: "본사 해외영업", kinds: ["doc", "ship", "follow"] },
+    { id: "hq-ra", label: "인허가와 품질", desc: "현지 등록, 원산지증명, 인증 서류", org: "hq", owner: "", kinds: ["doc"] },
+    { id: "hq-mgmt", label: "경영 검토", desc: "전체 현황, 수익성, 근거자료 확인", org: "hq", owner: "", kinds: [] },
     { id: "local-sales", label: "현지 영업", desc: "병원 방문, 시연, 견적 회신", org: "partner", owner: "현지 영업", kinds: ["quote", "demo", "follow"] },
     { id: "tech", label: "기술 지원", desc: "시연 장비, 설치, 교육, A/S", org: "partner", owner: "현지 기술팀", kinds: ["demo", "as"] },
-    { id: "review", label: "검토", desc: "전체 현황과 근거자료 확인", org: "other", owner: "", kinds: [] },
+    { id: "local-mgmt", label: "현지 관리", desc: "병원 계약, 계약금과 잔금, 수입 통관", org: "partner", owner: "", kinds: ["quote", "ship"] },
   ],
 };
 export const PEOPLE = { ...DEFAULT_PEOPLE, ...(PACK.people || {}) };

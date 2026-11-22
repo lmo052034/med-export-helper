@@ -198,6 +198,7 @@ export function AppShell({ children }) {
             <p className="font-medium text-[#424245]">{PACK.footer.project}</p>
             {(PACK.footer.lines || []).map((t, i) => <p key={i}>{t}</p>)}
             <p>숫자마다 출처(회사 자료, 공개자료, 내부 설정값)를 근거자료에 남겨 둡니다. {PACK.asOf}.</p>
+            {PACK.credit && <p>제작: {PACK.credit}</p>}
             <p>작업 내용은 지금 쓰는 브라우저에 저장돼요. 계산과 서류 점검은 입력값과 규칙으로 하며, 통관과 판매 허가는 담당 기관 확인을 거쳐 진행합니다.</p>
           </div>
           <Link to="/evidence" className="self-start text-[13px] font-medium text-primary">근거자료 보기</Link>
