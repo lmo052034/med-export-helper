@@ -95,3 +95,17 @@ export function ago(iso) {
   return `${Math.round(h / 24)}일 전`;
 }
 export const currentProfile = () => cache;
+
+/* 로그아웃: keep = 사용자 정보만 지우고 거래, 체크 내용은 남김 / all = 이 사이트가 이 브라우저에 저장한 것 전부 */
+export function logout(mode = "keep") {
+  try { window.sessionStorage.removeItem("mdk:started"); } catch { /* 무시 */ }
+  if (mode === "all") {
+    const s = ls();
+    try { if (s) Object.keys(s).filter((k) => k.startsWith("mdk:")).forEach((k) => s.removeItem(k)); } catch { /* 무시 */ }
+    cache = null;
+    window.location.hash = "#/start";
+    window.location.reload();
+    return;
+  }
+  saveProfile(null);
+}

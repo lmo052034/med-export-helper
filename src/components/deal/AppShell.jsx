@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { DropdownMenu } from "radix-ui";
-import { ChevronDown, UserRound, Settings2, BookOpen, FileDown, FilePlus2, FileUp, FlaskConical, Trash2, X, Check, Loader2, AlertTriangle, Menu, Star } from "lucide-react";
+import { ChevronDown, UserRound, Settings2, BookOpen, LogOut, FileDown, FilePlus2, FileUp, FlaskConical, Trash2, X, Check, Loader2, AlertTriangle, Menu, Star } from "lucide-react";
 import { PACK } from "@pack";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "../ui/sheet.jsx";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { useDeal } from "../../lib/deal/DealContext.jsx";
 import { summarize } from "../../lib/deal/checks.js";
 import { Toaster } from "../ui/sonner.jsx";
 import { cn } from "@/lib/utils";
+import LogoutDialog from "./LogoutDialog.jsx";
 import { useProfile, touchRecent, roleOf } from "../../lib/profile.js";
 
 export const KIND = { user: "내 거래", mock: "연습용 거래", case: "불러온 사례", sample: "진행 중 거래" };
@@ -41,7 +42,7 @@ function DealMenu() {
     <>
       <input ref={file} type="file" accept="application/json,.json" className="hidden" onChange={onFile} aria-hidden="true" tabIndex={-1} />
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line-strong)] bg-white px-2.5 text-[13px] font-medium hover:bg-[var(--fill)]">거래 <ChevronDown className="size-3.5" /></DropdownMenu.Trigger>
+      <DropdownMenu.Trigger className="inline-flex h-8 items-center gap-1 rounded-md border border-[var(--line-strong)] bg-white px-2.5 text-[13px] font-medium hover:bg-[var(--fill)]">거래 <ChevronDown className="size-3.5" /></DropdownMenu.Trigger>
         <DropdownMenu.Portal>
           <DropdownMenu.Content align="end" sideOffset={6} className="z-50 w-72 rounded-lg border border-[var(--line)] bg-white p-1.5 shadow-[0_12px_32px_rgb(0_0_0/0.12)]">
             <DropdownMenu.Label className="px-2.5 pt-1 pb-1.5 text-[12px] text-[#6e6e73]">저장된 거래 {deals.length}건</DropdownMenu.Label>
@@ -111,13 +112,15 @@ function DealBar({ showTabs }) {
 
 function UserMenu() {
   const p = useProfile();
+  const [out, setOut] = useState(false);
   const item = "flex items-center gap-2 rounded-md px-2.5 py-2 text-[14px] outline-none data-[highlighted]:bg-[var(--fill)] cursor-pointer";
   if (!p) return <Link to="/setup" className="hidden h-8 items-center rounded-md border border-[var(--line-strong)] px-3 text-[13px] font-medium hover:bg-[var(--fill-soft)] md:inline-flex">사용자 설정</Link>;
   return (
+    <span className="flex items-center gap-2">
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className="inline-flex h-8 max-w-[180px] items-center gap-2 rounded-md px-1.5 text-[13px] hover:bg-[var(--fill)]" aria-label={`사용자 메뉴, ${p.name}`}>
         <span className="grid size-6 shrink-0 place-items-center rounded-full bg-[var(--fill)] text-[12px] font-semibold text-[#424245]">{p.name.slice(0, 1)}</span>
-        <span className="hidden truncate font-medium lg:inline">{p.name}</span>
+        <span className="hidden truncate font-medium sm:inline">{p.name}님</span>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content align="end" sideOffset={6} className="z-50 w-60 rounded-lg border border-[var(--line)] bg-white p-1.5 shadow-[0_12px_32px_rgb(0_0_0/0.12)]">
@@ -125,9 +128,14 @@ function UserMenu() {
           <DropdownMenu.Separator className="my-1 h-px bg-[var(--line)]" />
           <DropdownMenu.Item asChild className={item}><Link to="/settings"><Settings2 className="size-4" />내 설정</Link></DropdownMenu.Item>
           <DropdownMenu.Item asChild className={item}><Link to="/start"><BookOpen className="size-4" />사이트 안내</Link></DropdownMenu.Item>
+          <DropdownMenu.Separator className="my-1 h-px bg-[var(--line)]" />
+          <DropdownMenu.Item className={item} onSelect={() => setOut(true)}><LogOut className="size-4" />로그아웃</DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+    <button type="button" onClick={() => setOut(true)} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--line-strong)] bg-white px-2.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-[var(--fill-soft)]"><LogOut className="size-3.5" aria-hidden="true" />로그아웃</button>
+    <LogoutDialog open={out} onOpenChange={setOut} />
+    </span>
   );
 }
 
