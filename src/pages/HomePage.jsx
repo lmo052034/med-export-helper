@@ -67,6 +67,7 @@ function Today() {
 
 /* 2. 제품: 사진과 설명 */
 function Product() {
+  const { deal } = useDeal();
   const p = PACK.product, h = PACK.hero;
   const facts = p.facts.slice(0, 5);
   return (
@@ -85,7 +86,7 @@ function Product() {
         )}
         <div className="min-w-0">
           <p className="text-[13px] text-[#6e6e73]">{PACK.review?.device?.name || "치료 장비"}</p>
-          <p className="mt-0.5 text-[22px] font-semibold tracking-tight">{PACK.review?.device?.model || PACK.brand}</p>
+          <p className="mt-0.5 text-[22px] font-semibold tracking-tight">{PACK.review?.device?.model || deal.exp.items[0]?.model || "본체"}</p>
           <p className="mt-2 text-[15px] leading-relaxed text-[#424245]">{p.title}. {p.lead}</p>
           <table className="mt-4 w-full text-[14px]">
             <tbody>

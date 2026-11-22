@@ -21,7 +21,7 @@ export const PACK = {
     note: "제품 사진과 단가, 거래처 정보는 거래처 공유본에서만 보여 줍니다.",
     image: null, imageAlt: "", imageCredit: "",
   },
-  product: { title: "제품 구성", lead: "제품 사진, 단가, 거래처 정보는 거래처 공유본에만 싣고 여기서는 구성만 보여 줍니다.", handpieces: [], facts: [{ k: "제안 구성", v: "본체 1세트", src: "거래 조건" }], claims: [], caution: "" },
+  product: { title: "본체 1세트와 교체형 핸드피스로 공급합니다", lead: "제품 사진, 단가, 거래처 정보는 거래처 공유본에만 싣습니다.", handpieces: [], facts: [{ k: "제안 구성", v: "본체 1세트", src: "거래 조건" }], claims: [], caution: "" },
   country: { title: "진출 국가", lead: "국가별 등록 현황은 실제 제품을 정한 뒤 같은 기준으로 조회해 채웁니다.", scope: "", rows: [], compare: null, gap: [] },
   structure: {
     title: "제조사는 파트너에게 팔고, 파트너가 병원에 팝니다", lead: "수출 거래와 현지 거래를 나눠 봅니다.", label: "현재 거래 구조",
