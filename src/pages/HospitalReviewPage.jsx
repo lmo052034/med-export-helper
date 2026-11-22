@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Popover } from "radix-ui";
 import { toast } from "sonner";
 import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Copy, ExternalLink, FileText, Info, KeyRound, Loader2, MessageCircleQuestion, Plus, Printer, RotateCcw, Sparkles, Square, Trash2 } from "lucide-react";
-import { review, sensitivity, profitCurve } from "../lib/review/calc.js";
+import { review, sensitivity, profitCurve, n as toNum } from "../lib/review/calc.js";
 import { BASIS, DEVICE, BENCHMARKS, SOURCES, PACK_LABEL, defaults, newCase, loadCases, saveCases, getVal, setVal, metaOf, fixedMeta, caseId } from "../lib/review/model.js";
 import { rp, krShort, rpShort, headline, missingId, proposalId, proposalKo, QUESTIONS, answer, aiContext } from "../lib/review/proposal.js";
 import { generate, getKey, setKey, errorText, MODEL } from "../lib/review/ai.js";
@@ -202,8 +202,8 @@ function CashTab({ c, r }) {
       </div>
       <div>
         <h3 className="text-[17px]">시술량별 월 손익</h3>
-        <p className="mb-3 text-[13px] text-[#6e6e73]">{h.financed ? "할부 기간 중 현금 기준" : "운영 현금 기준 (장비 대금은 이미 냈다고 보고, 오른쪽 결과의 손익분기는 장비비 배분 포함)"}</p>
-        <LineChart data={curve} label="시술량별 월 손익" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={krShort} markers={[{ x: Math.round(r.S || 0), y: review(c, { sessions: Math.round(r.S || 0) }).cashProfitDuring, label: `계획 ${fmt(r.S, 1)}회` }, r.bepOperating !== null && { x: r.bepOperating, label: `운영비 손익분기 ${r.bepOperating}회`, color: "#86868b" }].filter(Boolean)} />
+        <p className="mb-3 text-[13px] text-[#6e6e73]">오른쪽 결과와 같은 기준 ({h.basisKo})</p>
+        <LineChart data={curve} label="시술량별 월 손익" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={krShort} markers={[{ x: Math.round(r.S || 0), y: headline(review(c, { sessions: Math.round(r.S || 0) })).profit, label: `계획 ${fmt(r.S, 1)}회` }, h.bep !== null && { x: h.bep, y: 0, label: `손익분기 ${h.bep}회`, color: "#86868b" }].filter(Boolean)} />
       </div>
     </div>
   );
@@ -276,39 +276,36 @@ function useAi() {
 
 function copy(text) { navigator.clipboard?.writeText(text).then(() => toast.success("복사했어요."), () => toast.error("복사하지 못했어요.")); }
 
-function printDoc(title, text) {
+function printDoc(title, text, lang = "ko") {
   const w = window.open("", "_blank");
   if (!w) { toast.error("팝업이 막혀 인쇄 창을 열지 못했어요."); return; }
   const esc = (s) => s.replace(/[&<>]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[ch]));
-  w.document.write(`<!doctype html><html lang="id"><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font:14px/1.6 -apple-system,"Pretendard",Arial,sans-serif;color:#1d1d1f;max-width:720px;margin:40px auto;padding:0 24px}pre{white-space:pre-wrap;font:inherit}h1{font-size:13px;color:#6e6e73;font-weight:500;letter-spacing:.02em}</style></head><body><h1>${esc(title)}</h1><pre>${esc(text)}</pre></body></html>`);
+  w.document.write(`<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font:14px/1.6 -apple-system,"Pretendard",Arial,sans-serif;color:#1d1d1f;max-width:720px;margin:40px auto;padding:0 24px}pre{white-space:pre-wrap;font:inherit}h1{font-size:13px;color:#6e6e73;font-weight:500;letter-spacing:.02em}</style></head><body><h1>${esc(title)}</h1><pre>${esc(text)}</pre></body></html>`);
   w.document.close(); w.focus(); w.print();
 }
 
 function ProposalTab({ c, r, sens, metaFor }) {
+  const [pl, setPl] = useState("ko");
   const ai = useAi();
-  const base = proposalId(c, r);
+  const base = pl === "ko" ? proposalKo(c, r) : proposalId(c, r);
   const text = ai.text || base;
+  const title = pl === "ko" ? `${DEVICE.model ? `${DEVICE.model} ` : ""}도입 검토 결과, ${c.name || "검토 병원"}` : `Simulasi investasi ${DEVICE.model || ""} untuk ${c.name || "Rumah Sakit"}`;
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-      <div className="min-w-0">
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] font-semibold", ai.text ? "bg-primary/10 text-primary" : "bg-[var(--fill)] text-[#424245]")}>{ai.text ? (ai.busy ? "AI 작성 중" : "AI가 다듬은 문안") : "계산값으로 만든 기본 문안"}</span>
-          <span className="ml-auto flex flex-wrap gap-2">
-            {ai.busy ? <button type="button" onClick={ai.stop} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Square className="size-3.5" />멈추기</button>
-              : <button type="button" onClick={() => ai.run({ task: "proposal", context: aiContext(c, r, sens, metaFor) })} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3.5 text-[13px] font-semibold text-white"><Sparkles className="size-3.5" />AI로 다듬기</button>}
-            {ai.text && !ai.busy && <button type="button" onClick={ai.clear} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><RotateCcw className="size-3.5" />기본 문안</button>}
-            <button type="button" onClick={() => copy(text)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Copy className="size-3.5" />복사</button>
-            <button type="button" onClick={() => printDoc(`Simulasi investasi ${DEVICE.model || ""} untuk ${c.name || "Rumah Sakit"}`, text)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Printer className="size-3.5" />인쇄·PDF</button>
-          </span>
-        </div>
-        {ai.error && <p className="mb-3 rounded-[12px] bg-amber-50 px-3.5 py-2.5 text-[13px] text-amber-800">{ai.error} 기본 문안은 그대로 쓸 수 있어요.</p>}
-        <pre lang="id" className="whitespace-pre-wrap rounded-[16px] border border-[var(--line)] bg-[var(--surface-2)] p-5 font-sans text-[14px] leading-[1.7] text-[#1d1d1f] sm:p-6" data-testid="proposal">{text}{ai.busy && <Loader2 className="ml-1 inline size-4 animate-spin text-primary" />}</pre>
+    <div className="min-w-0">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Seg size="sm" label="제안서 언어" value={pl} onChange={(v) => { setPl(v); ai.clear(); }} options={[["ko", "한국어"], ["id", "인도네시아어"]]} />
+        <span className={cn("rounded-full px-2.5 py-0.5 text-[12px] font-semibold", ai.text ? "bg-primary/10 text-primary" : "bg-[var(--fill)] text-[#424245]")}>{ai.text ? (ai.busy ? "AI 작성 중" : "AI가 다듬은 문안") : "계산값으로 만든 기본 문안"}</span>
+        <span className="ml-auto flex flex-wrap gap-2">
+          {ai.busy ? <button type="button" onClick={ai.stop} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Square className="size-3.5" />멈추기</button>
+            : <button type="button" onClick={() => ai.run({ task: "proposal", lang: pl, context: aiContext(c, r, sens, metaFor) })} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3.5 text-[13px] font-semibold text-white"><Sparkles className="size-3.5" />AI로 다듬기</button>}
+          {ai.text && !ai.busy && <button type="button" onClick={ai.clear} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><RotateCcw className="size-3.5" />기본 문안</button>}
+          <button type="button" onClick={() => copy(text)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Copy className="size-3.5" />복사</button>
+          <button type="button" onClick={() => printDoc(title, text, pl)} className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3.5 text-[13px] font-semibold"><Printer className="size-3.5" />인쇄, PDF</button>
+        </span>
       </div>
-      <div>
-        <h3 className="text-[15px]">한국어 요약</h3>
-        <pre className="mt-2 whitespace-pre-wrap font-sans text-[13px] leading-relaxed text-[#424245]">{proposalKo(c, r)}</pre>
-        <p className="mt-4 text-[12px] leading-relaxed text-[#86868b]">기본 문안은 화면의 숫자만으로 만들어요. AI도 같은 숫자와 출처만 받아서 쓰고, 빠진 값은 '확인 필요'로 적게 했어요. 보내기 전에 숫자를 한 번 더 보세요.</p>
-      </div>
+      {ai.error && <p className="mb-3 rounded-[12px] bg-amber-50 px-3.5 py-2.5 text-[13px] text-amber-800">{ai.error} 기본 문안은 그대로 쓸 수 있어요.</p>}
+      <pre lang={pl} className="max-w-[820px] whitespace-pre-wrap rounded-[16px] border border-[var(--line)] bg-[var(--surface-2)] p-5 font-sans text-[15px] leading-[1.75] text-[#1d1d1f] sm:p-7" data-testid="proposal">{text}{ai.busy && <Loader2 className="ml-1 inline size-4 animate-spin text-primary" />}</pre>
+      <p className="mt-3 max-w-[820px] text-[12px] leading-relaxed text-[#86868b]">기본 문안은 화면의 숫자만으로 만들어요. AI도 같은 숫자와 출처만 받아 쓰고, 빠진 값은 '확인 필요'로 적게 했어요. 병원에 보낼 때는 인도네시아어 버전을 쓰고, 보내기 전에 숫자를 한 번 더 보세요.</p>
     </div>
   );
 }
@@ -323,23 +320,23 @@ function QaTab({ c, r, sens, metaFor }) {
       <ul className="space-y-1.5" role="listbox" aria-label="자주 묻는 질문">
         {QUESTIONS.map((x) => (
           <li key={x.key}><button type="button" role="option" aria-selected={open === x.key} onClick={() => { setOpen(x.key); ai.clear(); }} className={cn("w-full rounded-[12px] px-3.5 py-2.5 text-left transition-colors", open === x.key ? "bg-[#1d1d1f] text-white" : "hover:bg-[var(--fill-soft)]")}>
-            <span className="block text-[14px] font-medium leading-snug" lang="id">{x.id}</span>
-            <span className={cn("block text-[12px]", open === x.key ? "text-white/60" : "text-[#86868b]")}>{x.ko}</span>
+            <span className="block text-[14px] font-medium leading-snug">{x.ko}</span>
+            <span lang="id" className={cn("block text-[12px]", open === x.key ? "text-white/60" : "text-[#86868b]")}>{x.id}</span>
           </button></li>
         ))}
       </ul>
       <div className="min-w-0 space-y-4">
         {!ai.text && !ai.busy && (
           <article className="rounded-[16px] border border-[var(--line)] p-5" data-testid="answer">
-            <p className="text-[15px] leading-[1.7]" lang="id">{ans.id}</p>
-            <p className="mt-3 border-t border-[var(--line)] pt-3 text-[13px] leading-relaxed text-[#6e6e73]">{ans.ko}</p>
-            <div className="mt-3 flex gap-2"><button type="button" onClick={() => copy(`${ans.id}`)} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3 text-[12px] font-semibold"><Copy className="size-3" />인도네시아어 복사</button></div>
+            <p className="text-[16px] leading-[1.7]">{ans.ko}</p>
+            <p lang="id" className="mt-3 border-t border-[var(--line)] pt-3 text-[13px] leading-relaxed text-[#6e6e73]"><span className="mr-1.5 rounded bg-[var(--fill)] px-1.5 py-0.5 text-[11px] font-semibold text-[#424245]">인도네시아어</span>{ans.id}</p>
+            <div className="mt-3 flex gap-2"><button type="button" onClick={() => copy(ans.ko)} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3 text-[12px] font-semibold"><Copy className="size-3" />한국어 복사</button><button type="button" onClick={() => copy(ans.id)} className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[var(--fill)] px-3 text-[12px] font-semibold"><Copy className="size-3" />인도네시아어 복사</button></div>
           </article>
         )}
-        <form className="rounded-[16px] bg-[var(--surface-2)] p-4" onSubmit={(e) => { e.preventDefault(); if (q.trim()) ai.run({ task: "qa", question: q.trim(), context: aiContext(c, r, sens, metaFor) }); }}>
+        <form className="rounded-[16px] bg-[var(--surface-2)] p-4" onSubmit={(e) => { e.preventDefault(); if (q.trim()) ai.run({ task: "qa", lang: "ko", question: q.trim(), context: aiContext(c, r, sens, metaFor) }); }}>
           <label htmlFor="qa-free" className="text-[13px] font-medium text-[#424245]">원장이 다른 걸 물으면 (AI 연결 필요)</label>
           <div className="mt-2 flex gap-2">
-            <input id="qa-free" value={q} onChange={(e) => setQ(e.target.value)} placeholder="예: Kalau kami pakai 2 terapis, berapa titik impasnya?" className={cn(CTRL, "h-11")} />
+            <input id="qa-free" value={q} onChange={(e) => setQ(e.target.value)} placeholder="예: 치료사를 2명 쓰면 손익분기는 몇 회인가요?" className={cn(CTRL, "h-11")} />
             {ai.busy ? <button type="button" onClick={ai.stop} className="h-11 shrink-0 rounded-full bg-[var(--fill)] px-4 text-[13px] font-semibold">멈추기</button>
               : <button type="submit" className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary px-4 text-[13px] font-semibold text-white"><MessageCircleQuestion className="size-4" />답 만들기</button>}
           </div>
@@ -378,7 +375,7 @@ function SourcesTab({ c, r }) {
                 <td className="px-4 py-2.5 text-[#424245]">{m.url ? <a href={m.url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{m.src}</a> : m.src}{m.asOf ? ` (${m.asOf})` : ""}{m.note && <span className="block text-[12px] text-[#86868b]">{m.note}</span>}</td></tr>
             ); })}
             {c.fixed.map((row) => { const m = fixedMeta(c, row); return (
-              <tr key={row.id} className="border-t border-[var(--line)] align-top"><td className="px-4 py-2.5 font-medium">월 고정비: {row.label}</td><td className="px-4 py-2.5 text-right tabular-nums">{rp(Number(row.amount) || null)}</td><td className="px-4 py-2.5"><Badge basis={m.basis} /></td><td className="px-4 py-2.5 text-[#424245]">{m.url ? <a href={m.url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{m.src}</a> : m.src}{m.note && <span className="block text-[12px] text-[#86868b]">{m.note}</span>}</td></tr>
+              <tr key={row.id} className="border-t border-[var(--line)] align-top"><td className="px-4 py-2.5 font-medium">월 고정비: {row.label}</td><td className="px-4 py-2.5 text-right tabular-nums">{rp(toNum(row.amount))}</td><td className="px-4 py-2.5"><Badge basis={m.basis} /></td><td className="px-4 py-2.5 text-[#424245]">{m.url ? <a href={m.url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{m.src}</a> : m.src}{m.note && <span className="block text-[12px] text-[#86868b]">{m.note}</span>}</td></tr>
             ); })}
             <tr className="border-t border-[var(--line)] align-top"><td className="px-4 py-2.5 font-medium">기준금리 참고</td><td className="px-4 py-2.5 text-right tabular-nums">6.00%</td><td className="px-4 py-2.5"><Badge basis="official" /></td><td className="px-4 py-2.5"><a href={SOURCES["pay.biRate"].url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{SOURCES["pay.biRate"].src}</a></td></tr>
           </tbody>
@@ -415,7 +412,7 @@ export default function HospitalReviewPage() {
   const P = c.pay;
   const h = headline(r);
 
-  const TABS = [["cash", "현금 흐름"], ["sens", "민감도"], ["proposal", "제안서 (Bahasa)"], ["qa", "원장 질문"], ["src", "근거와 가정"]];
+  const TABS = [["cash", "현금 흐름"], ["sens", "민감도"], ["proposal", "제안서"], ["qa", "원장 질문"], ["src", "근거와 가정"]];
 
   return (
     <div className="rv bg-[var(--surface-2)]">
@@ -456,7 +453,7 @@ export default function HospitalReviewPage() {
             </div>
             <div className="mt-5">
               <p className="mb-2 text-[13px] font-medium text-[#424245]">결제 방법</p>
-              <Seg label="결제 방법" value={P.mode} onChange={(v) => set("pay.mode", v)} options={[["cash", "일시불", "계약금 + 검수 후 잔금"], ["partner", "파트너 분할", "유통사가 할부 제공"], ["loan", "할부·리스", "금융사, 은행"]]} />
+              <Seg label="결제 방법" value={P.mode} onChange={(v) => set("pay.mode", v)} options={[["cash", "일시불", "계약금 + 검수 후 잔금"], ["partner", "파트너 분할", "유통사가 할부 제공"], ["loan", "할부, 리스", "금융사, 은행"]]} />
             </div>
             {P.mode === "cash" ? (
               <div className="mt-4 grid gap-4 sm:grid-cols-2"><Num c={c} set={set} path="pay.depositPct" label="계약금" unit="%" hint={`잔금 ${fmt(100 - (Number(P.depositPct) || 0))}%는 설치, 검수 후`} /></div>

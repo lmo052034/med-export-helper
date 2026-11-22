@@ -17,7 +17,7 @@ export function annuity(principal, annualPct, months) {
   return (principal * r) / (1 - (1 + r) ** -months);
 }
 
-/* 인도네시아 리스·할부 견적에 흔한 '플랫 금리' (원금 × 연이율 × 기간을 균등 분할) */
+/* 인도네시아 리스, 할부 견적에 흔한 '플랫 금리' (원금 × 연이율 × 기간을 균등 분할) */
 export function flatPayment(principal, annualPct, months) {
   if (principal === null || months === null || months <= 0 || annualPct === null) return null;
   return (principal * (1 + (annualPct / 100) * (months / 12))) / months;
@@ -92,7 +92,7 @@ export function financing(I) {
     ok: true, upfront: down + admin, payment: pay, months: m, principal,
     interest: pay * m - principal + admin,
     effRate: I.rateType === "flat" ? effectiveRate(principal - admin, pay, m) : I.rate,
-    label: I.mode === "partner" ? "파트너 분할" : "금융사 할부·리스",
+    label: I.mode === "partner" ? "파트너 분할" : "금융사 할부, 리스",
   };
 }
 
@@ -178,9 +178,11 @@ export function review(c, over = {}) {
   };
 }
 
-/* 머리 숫자 기준: 할부면 월 납입금 포함, 일시불이면 장비비를 배분 기간으로 나눠 포함 (덱 12쪽과 같은 기준) */
-export const headProfit = (r) => (r.I.mode !== "cash" && r.fin.payment > 0 ? r.cashProfitDuring : r.acctProfit);
-export const headBep = (r) => (r.I.mode !== "cash" && r.fin.payment > 0 ? r.bepFinancing : r.bepAccounting);
+/* 머리 숫자 기준: 할부면 월 납입금 포함, 일시불이면 장비비를 배분 기간으로 나눠 포함 (덱 12쪽과 같은 기준).
+   배분 기간이 비어 있으면 운영비만 기준으로 대신 보여 줍니다 */
+export const isFinanced = (r) => r.I.mode !== "cash" && r.fin.payment > 0;
+export const headProfit = (r) => (isFinanced(r) ? r.cashProfitDuring : r.acctProfit ?? r.opProfit);
+export const headBep = (r) => (isFinanced(r) ? r.bepFinancing : r.dep !== null ? r.bepAccounting : r.bepOperating);
 
 /* 민감도: 값 하나씩 바꿨을 때 머리 숫자(월 손익, 손익분기) 변화 */
 export function sensitivity(c) {
@@ -201,10 +203,10 @@ export function sensitivity(c) {
   });
 }
 
-/* 시술량별 월 현금 손익 (그래프) */
+/* 시술량별 월 손익 (그래프). 머리 숫자와 같은 기준 */
 export function profitCurve(c, maxN) {
   const out = [];
   const step = Math.max(1, Math.round(maxN / 40));
-  for (let s = 0; s <= maxN; s += step) { const r = review(c, { sessions: s }); out.push({ x: s, y: r.cashProfitDuring }); }
+  for (let s = 0; s <= maxN; s += step) { const r = review(c, { sessions: s }); out.push({ x: s, y: headProfit(r) }); }
   return out;
 }

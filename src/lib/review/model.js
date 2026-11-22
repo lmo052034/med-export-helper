@@ -1,5 +1,5 @@
 /* 병원 검토 건(case) 구조, 기본값, 출처. 장비별 값은 콘텐츠 팩(PACK.review)이 덮어씁니다.
-   출처 구분: official 공식·공개자료 / company 회사 자료 / team 팀 가정 / hospital 병원 입력 */
+   출처 구분: official 공식, 공개자료 / company 회사 자료 / team 팀 가정 / hospital 병원 입력 */
 import { PACK } from "@pack";
 
 export const BASIS = {
@@ -12,15 +12,15 @@ export const BASIS = {
 
 /* 장비와 상관없는 인도네시아 공통 근거 (공개 저장소에 둬도 되는 것만) */
 export const COMMON_SOURCES = {
-  "pay.rate": { basis: "official", src: "OJK: 은행 평균 대출금리 8.76% (2026.3)", url: "https://finance.detik.com/moneter/d-8480188/ojk-catat-bunga-kredit-bank-turun-jadi-8-76", asOf: "2026.3", note: "이후 BI 기준금리가 6.00%로 올라(2026.11.18) 실제 금리는 더 높을 수 있음. 금융사 견적으로 바꿔 넣을 것" },
+  "pay.rate": { basis: "official", src: "BI: 은행 신규 대출 평균금리 9.49% (2026.6)", url: "https://www.bi.go.id/id/publikasi/ruang-media/news-release/Documents/sp_2814226-Lampiran-3__Asesmen-Transparansi-SBDK.pdf", asOf: "2026.6", note: "그 뒤 BI 기준금리가 5.25%에서 6.00%로 올라(2026.11.18) 실제 견적은 더 높을 수 있음. 리스사(multifinance)는 은행보다 높은 편. 금융사 견적으로 바꿔 넣을 것" },
   "pay.biRate": { basis: "official", src: "Bank Indonesia: BI-Rate 6.00% (RDG 2026.11.17–18)", url: "https://www.bi.go.id/en/iru/highlight-news/Pages/BI-Rate-Raised-25-bps-to-6.00-percent-Strengthening-Stability,-Supporting-Economic-Growth.aspx", asOf: "2026-11-18" },
-  "pay.rateType": { basis: "team", src: "리스·할부 견적이 '플랫(bunga flat)'인지 '실효(efektif)'인지 꼭 확인", note: "같은 숫자라도 플랫 금리는 실효 금리보다 부담이 큽니다. 화면에 실효 금리로 환산해 보여 줍니다" },
-  "vc.tariff": { basis: "official", src: "PLN 비즈니스 B-2 (6,600 VA–200 kVA) Rp1,444.70/kWh", url: "https://ekonomi.bisnis.com/read/20251231/44/1940840/breaking-pemerintah-putuskan-tarif-listrik-2026-tidak-naik", asOf: "2026 (요금 동결 발표 2025.12.31)", note: "병원 계약 전력 등급(B-2, B-3, S)에 따라 다름. 분기마다 고시 확인" },
+  "pay.rateType": { basis: "team", src: "리스, 할부 견적이 '플랫(bunga flat)'인지 '실효(efektif)'인지 꼭 확인", note: "같은 숫자라도 플랫 금리는 실효 금리보다 부담이 큽니다. 화면에 실효 금리로 환산해 보여 줍니다" },
+  "vc.tariff": { basis: "official", src: "PLN 비즈니스 B-2 (6,600 VA–200 kVA) Rp1,444.70/kWh, 2026년 4분기(10–12월) 고시", url: "https://economy.okezone.com/read/2026/11/03/320/3251766/tarif-listrik-pln-terbaru-di-november-2026?page=all", asOf: "2026 4분기", note: "200 kVA 넘는 큰 병원(B-3)은 Rp1,114.74. 분기마다 조정 (Permen ESDM 7/2024)" },
   "device.price": { basis: "official", src: "의료서비스는 부가세(PPN) 면제라 병원은 장비 매입 부가세를 공제받지 못함 (PP 49/2022)", note: "그래서 도입가는 부가세 포함 금액으로 넣습니다" },
-  "rev.bpjs": { basis: "official", src: "Kepmenkes HK.01.07/MENKES/1366/2024: JKN 환자 본인 차액(selisih biaya)은 병실 등급 상향 때의 규정", url: "https://kemkes.go.id/eng/launching-pedoman-selisih-biaya-kesehatan", asOf: "2024-09-11", note: "BPJS 환자는 INA-CBG 묶음 수가라 시술 1회 단가가 따로 들어오지 않음. 이 계산은 자비·민간보험 환자만 셉니다" },
+  "rev.bpjs": { basis: "official", src: "Kepmenkes HK.01.07/MENKES/1366/2024: JKN 환자 본인 차액(selisih biaya)은 병실 등급 상향 때의 규정", url: "https://kemkes.go.id/eng/launching-pedoman-selisih-biaya-kesehatan", asOf: "2024-09-11", note: "BPJS 환자는 INA-CBG 묶음 수가라 시술 1회 단가가 따로 들어오지 않음. 이 계산은 자비, 민간보험 환자만 셉니다" },
   "rev.feePct": { basis: "team", src: "카드, QRIS 수수료와 민간보험 청구 할인", note: "병원 결제 계약서의 수수료율로 바꿔 넣을 것" },
   "rev.discountPct": { basis: "team", src: "코스(패키지) 판매 할인", note: "현금 시술 클리닉은 코스로 팔면서 회당 단가를 낮추는 경우가 많음 (재활 장비 현금 시술 가이드, 2025)" },
-  "ops.slotMin": { basis: "team", src: "예약 1칸 = 시술 + 준비·기록 시간", note: "병원 실제 예약표로 확인" },
+  "ops.slotMin": { basis: "team", src: "예약 1칸 = 시술 + 준비, 기록 시간", note: "병원 실제 예약표로 확인" },
   "ops.hours": { basis: "team", src: "장비를 쓰는 하루 시간", note: "외래 운영 시간 기준" },
   "ops.workDays": { basis: "team", src: "월 진료일", note: "토요일 진료 포함 여부에 따라 다름" },
   "fixed.therapist": { basis: "official", src: "물리치료사 대도시 민간 월 Rp6–12백만 (UNPRI, 2026.4.27)", note: "전담이 아니라 기존 인력이 맡으면 해당 비율만 넣기" },
@@ -32,7 +32,7 @@ export const COMMON_SOURCES = {
 const BASE = {
   name: "", city: "",
   device: { price: "", lifeMonths: "48" },
-  pay: { mode: "cash", depositPct: "30", downPct: "20", months: "36", rate: "8.76", rateType: "efektif", adminPct: "1" },
+  pay: { mode: "cash", depositPct: "30", downPct: "20", months: "36", rate: "9.49", rateType: "efektif", adminPct: "1" },
   rev: { price: "", discountPct: "0", feePct: "0" },
   demand: { mode: "sessions", sessions: "40", newPatients: "12", course: "3", completionPct: "100", rampMonths: "0" },
   ops: { slotMin: "30", hours: "8", workDays: "24" },

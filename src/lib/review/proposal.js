@@ -1,8 +1,11 @@
 /* 계산 결과 → 병원에 보여 줄 문안 (인도네시아어, 한국어). AI 없이도 같은 숫자로 만들어집니다.
    원칙: 계산에 쓴 숫자만 쓰고, 가정은 가정이라고 적고, 치료 효과나 수익을 보장하지 않습니다. */
 import { DEVICE, FACTS, FAQ_FACTS } from "./model.js";
+import { isFinanced, headBep, headProfit } from "./calc.js";
 
 export const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${Math.round(v).toLocaleString("id-ID")}`);
+/* 한국어 문장용: Rp509,000 (쉼표) */
+export const rpK = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${Math.round(v).toLocaleString("en-US")}`);
 export const rpShort = (v) => {
   if (v === null || v === undefined || !Number.isFinite(v)) return "—";
   const a = Math.abs(v), s = v < 0 ? "−" : "";
@@ -27,20 +30,21 @@ export function missingId(list) {
 
 /* 머리 숫자: 장비비를 포함한 손익분기 (할부면 월 납입금, 일시불이면 내용연수로 나눈 금액) */
 export function headline(r) {
-  const financed = r.I.mode !== "cash" && r.fin.payment > 0;
+  const financed = isFinanced(r);
+  const spread = r.dep !== null;
   return {
     financed,
-    bep: financed ? r.bepFinancing : r.bepAccounting,
-    profit: financed ? r.cashProfitDuring : r.acctProfit,
-    basisKo: financed ? `월 납입금 ${krShort(r.fin.payment)} 포함` : `장비비를 ${num(r.I.lifeMonths)}개월로 나눠 포함`,
-    basisId: financed ? `termasuk cicilan ${rp(r.fin.payment)}/bulan` : `termasuk biaya alat dibagi ${num(r.I.lifeMonths)} bulan`,
+    bep: headBep(r),
+    profit: headProfit(r),
+    basisKo: financed ? `월 납입금 ${krShort(r.fin.payment)} 포함` : spread ? `장비비를 ${num(r.I.lifeMonths)}개월로 나눠 포함` : "운영비만, 장비비 제외",
+    basisId: financed ? `termasuk cicilan ${rp(r.fin.payment)}/bulan` : spread ? `termasuk biaya alat dibagi ${num(r.I.lifeMonths)} bulan` : "biaya operasional saja, tanpa biaya alat",
   };
 }
 
 export function payTermsId(r) {
   const I = r.I;
   if (I.mode === "cash") return `Pembayaran tunai: uang muka ${num(I.depositPct)}% saat kontrak, sisa ${num(100 - (I.depositPct ?? 0))}% setelah instalasi dan serah terima.`;
-  const kind = I.mode === "partner" ? "Cicilan melalui distributor" : "Pembiayaan/leasing melalui perusahaan pembiayaan";
+  const kind = I.mode === "partner" ? "Cicilan melalui distributor" : "Pembiayaan atau leasing melalui perusahaan pembiayaan";
   return `${kind}: DP ${num(I.downPct)}%, tenor ${num(I.months)} bulan, bunga ${num(I.rate, 2)}% per tahun (${I.rateType === "flat" ? "flat" : "efektif"}${I.rateType === "flat" && r.fin.effRate ? `, setara efektif ±${num(r.fin.effRate, 1)}%` : ""}), cicilan ${rp(r.fin.payment)}/bulan.`;
 }
 
@@ -71,7 +75,7 @@ export function proposalId(c, r) {
   lines.push(`- Titik impas: ${num(h.bep)} tindakan berbayar per bulan (${h.basisId}), atau sekitar ${num(r.perDay(h.bep), 1)} tindakan per hari kerja.`);
   if (r.bepPatients(h.bep) !== null) lines.push(`- Setara dengan ±${num(r.bepPatients(h.bep), 1)} pasien baru per bulan bila satu paket terapi ${num(r.I.course)} sesi.`);
   lines.push(`- Pada ${num(r.S, 1)} tindakan per bulan: hasil bersih ${rp(h.profit)} per bulan${h.financed ? " selama masa cicilan" : ""}.`);
-  lines.push(`- Setiap tindakan di atas titik impas menambah ${rp(r.ps.contribution)} per bulan (harga bersih dikurangi biaya variabel).`);
+  lines.push(`- Setiap tindakan di atas titik impas menambah hasil bersih ${rp(r.ps.contribution)} (harga bersih dikurangi biaya variabel per tindakan).`);
   if (r.payback !== null) lines.push(`- Arus kas kumulatif kembali positif pada bulan ke-${mon(r.payback)}.`);
   else lines.push(`- Dalam ${r.horizon} bulan, arus kas kumulatif belum kembali positif pada kondisi ini.`);
   if (r.capacity) lines.push(`- Kapasitas alat: ±${num(r.capacity)} tindakan per bulan (${num(r.I.slotMin)} menit per slot, ${num(r.I.hours)} jam per hari, ${num(r.I.workDays)} hari). Rencana saat ini memakai ${num((r.utilization ?? 0) * 100)}%.`);
@@ -98,19 +102,52 @@ export function proposalId(c, r) {
   return lines.join("\n");
 }
 
-/* 한국어 요약 (발표, 팀 검토용) */
+export function payTermsKo(r) {
+  const I = r.I;
+  if (I.mode === "cash") return `일시불: 계약 때 계약금 ${num(I.depositPct)}%, 설치와 검수 후 잔금 ${num(100 - (I.depositPct ?? 0))}%`;
+  const kind = I.mode === "partner" ? "파트너(유통사) 분할 납부" : "금융사 할부 또는 리스";
+  return `${kind}: 선납금 ${num(I.downPct)}%, ${num(I.months)}개월, 연 ${num(I.rate, 2)}% (${I.rateType === "flat" ? `플랫 금리${r.fin.effRate ? `, 실효 금리로 약 ${num(r.fin.effRate, 1)}%` : ""}` : "실효 금리"}), 월 납입금 ${rpK(r.fin.payment)}`;
+}
+
+/* 한국어 제안서 (기본). 발표와 팀 검토, 병원 설명 자료의 원문 */
 export function proposalKo(c, r) {
   const h = headline(r);
-  return [
-    `${c.name || "검토 병원"} 도입 검토 요약`,
-    `- 손익분기: 월 유료 시술 ${num(h.bep)}회 (${h.basisKo}), 진료일 하루 약 ${num(r.perDay(h.bep), 1)}회`,
-    r.bepPatients(h.bep) !== null ? `- 코스 ${num(r.I.course)}회 기준 신규 환자 월 약 ${num(r.bepPatients(h.bep), 1)}명` : null,
-    `- 월 ${num(r.S, 1)}회일 때 월 손익 ${krShort(h.profit)}${h.financed ? " (할부 기간 중)" : ""}`,
-    `- 손익분기를 넘는 시술 1회마다 월 이익 +${rp(r.ps.contribution)}`,
-    r.payback !== null ? `- 누적 현금 회수 ${mon(r.payback)}개월째` : `- ${r.horizon}개월 안에 누적 현금 회수 안 됨`,
-    r.missing.length ? `- 빠진 항목: ${r.missing.join(", ")}` : null,
-    `- 세전, 월 조건 일정 가정. 수익 보장 아님`,
-  ].filter(Boolean).join("\n");
+  const name = c.name || "검토 병원";
+  const L = [];
+  L.push(`${DEVICE.model ? `${DEVICE.model} ` : ""}도입 검토 결과`);
+  L.push(`${name}${c.city ? ` (${c.city})` : ""}`);
+  L.push("");
+  L.push(`${name} 원장님께`);
+  L.push("");
+  L.push("함께 확인한 조건으로 도입 후 손익을 계산한 결과입니다. 모든 숫자는 병원 자료로 바꿔 다시 계산할 수 있습니다.");
+  L.push("");
+  L.push("1. 핵심 결과");
+  L.push(`- 손익분기: 월 유료 시술 ${num(h.bep)}회 (${h.basisKo}), 진료일 하루 약 ${num(r.perDay(h.bep), 1)}회`);
+  if (r.bepPatients(h.bep) !== null) L.push(`- 환자 1명이 코스 ${num(r.I.course)}회를 받는다면 신규 환자 월 약 ${num(r.bepPatients(h.bep), 1)}명`);
+  L.push(`- 월 ${num(r.S, 1)}회 시술 시 월 손익 ${rpK(h.profit)}${h.financed ? " (할부 기간 중)" : ""}`);
+  L.push(`- 손익분기를 넘는 시술 1회마다 월 손익 +${rpK(r.ps.contribution)} (순수납에서 회당 변동비를 뺀 금액)`);
+  L.push(r.payback !== null ? `- 누적 현금 회수: ${Math.ceil(r.payback)}개월째` : `- ${r.horizon}개월 안에는 누적 현금이 회수되지 않는 조건`);
+  if (r.capacity) L.push(`- 장비 처리 한도 월 약 ${num(r.capacity)}회 (예약 1칸 ${num(r.I.slotMin)}분, 하루 ${num(r.I.hours)}시간, 월 ${num(r.I.workDays)}일), 계획은 한도의 ${num((r.utilization ?? 0) * 100)}%`);
+  L.push("");
+  L.push("2. 결제 조건");
+  L.push(`- ${payTermsKo(r)}`);
+  if (r.fin.interest > 0) L.push(`- 총이자와 수수료 ${rpK(r.fin.interest)}`);
+  L.push("");
+  L.push("3. 병원에서 확인할 가정");
+  L.push(`- 회당 시술가 ${rpK(r.I.listPrice)}${r.I.discountPct ? `, 코스 할인 ${num(r.I.discountPct)}%` : ""}${r.I.feePct ? `, 카드와 QRIS 등 차감 ${num(r.I.feePct, 1)}%` : ""}`);
+  L.push("- 자비와 민간보험 환자만 계산 (BPJS 환자는 INA-CBG 묶음 수가라 제외)");
+  L.push(`- 회당 변동비 ${rpK(r.ps.variable)}: 의사 수당 ${rpK(r.ps.doctor)}, 소모품 ${rpK(r.ps.consumable)}, 전기료 ${rpK(r.ps.power)}${r.ps.handpiece !== null ? `, 핸드피스 교체 ${rpK(r.ps.handpiece)}` : ""}`);
+  L.push(`- 월 고정비 ${rpK(r.fixed)}: ${r.I.fixedRows.map((x) => `${x.label} ${rpK(x.v)}`).join(", ")}`);
+  if (r.missing.length) L.push(`- 아직 빠진 값: ${r.missing.join(", ")}`);
+  if (FACTS.length) { L.push(""); L.push("4. 등록 현황"); for (const f of FACTS) L.push(`- ${f.ko}`); }
+  L.push("");
+  L.push(`${FACTS.length ? 5 : 4}. 다음 단계`);
+  L.push("- 병원 내 시연과 시범 사용");
+  L.push("- 공식 견적가, 납기, 보증, A/S 조건을 계약서로 확정");
+  L.push("- 병원의 실제 환자 수와 시술가로 이 계산을 다시 확인");
+  L.push("");
+  L.push("참고: 입력한 숫자로 계산한 세전 추정이며 수익을 보장하지 않습니다. 적응증과 임상 사용은 허가 범위와 의사 판단을 따릅니다.");
+  return L.join("\n");
 }
 
 /* 원장 질문 (자주 묻는 것) → 계산값으로 바로 답 */
@@ -130,7 +167,7 @@ export function answer(key, c, r, sens) {
   switch (key) {
     case "bep": return {
       id: `Dengan harga ${rp(I.listPrice)} per tindakan, titik impas adalah ${num(h.bep)} tindakan berbayar per bulan (${h.basisId}). Itu sekitar ${num(r.perDay(h.bep), 1)} tindakan per hari kerja${r.bepPatients(h.bep) !== null ? `, atau ±${num(r.bepPatients(h.bep), 1)} pasien baru per bulan dengan paket ${num(I.course)} sesi` : ""}. Tanpa biaya alat, biaya operasional saja tertutup pada ${num(r.bepOperating)} tindakan.`,
-      ko: `회당 ${rp(I.listPrice)}이면 손익분기는 월 ${num(h.bep)}회예요 (${h.basisKo}). 진료일 하루 약 ${num(r.perDay(h.bep), 1)}회${r.bepPatients(h.bep) !== null ? `, 코스 ${num(I.course)}회면 신규 환자 월 약 ${num(r.bepPatients(h.bep), 1)}명` : ""}이에요. 장비비를 빼면 운영비만은 ${num(r.bepOperating)}회에서 메워져요.`,
+      ko: `회당 ${rpK(I.listPrice)}이면 손익분기는 월 ${num(h.bep)}회예요 (${h.basisKo}). 진료일 하루 약 ${num(r.perDay(h.bep), 1)}회${r.bepPatients(h.bep) !== null ? `, 코스 ${num(I.course)}회면 신규 환자 월 약 ${num(r.bepPatients(h.bep), 1)}명` : ""}이에요. 장비비를 빼면 운영비만은 ${num(r.bepOperating)}회에서 메워져요.`,
     };
     case "lower": {
       const p = sens.find((s) => s.key === "price"), v = sens.find((s) => s.key === "volume");
@@ -153,7 +190,7 @@ export function answer(key, c, r, sens) {
     case "izin": return FAQ_FACTS.izin || { id: "Status izin edar (AKL) akan kami sampaikan bersama dokumen resmi.", ko: "등록(AKL) 정보는 공식 서류와 함께 전달합니다." };
     case "biaya": return {
       id: `Per tindakan: listrik ${rp(r.ps.power)} (${num(I.va)} VA × ${num(I.powerMin)} menit × tarif PLN ${rp(I.tariff)}/kWh), bahan habis pakai ${rp(r.ps.consumable)}${r.ps.handpiece !== null ? `, penggantian handpiece ${rp(r.ps.handpiece)}` : ", penggantian handpiece belum dihitung (menunggu data pabrikan)"}. Biaya tetap per bulan ${rp(r.fixed)}: ${r.I.fixedRows.map((x) => `${x.labelId || x.label} ${rp(x.v)}`).join(", ")}.`,
-      ko: `회당 전기 ${rp(r.ps.power)} (${num(I.va)} VA × ${num(I.powerMin)}분 × PLN ${rp(I.tariff)}/kWh), 소모품 ${rp(r.ps.consumable)}${r.ps.handpiece !== null ? `, 핸드피스 교체 ${rp(r.ps.handpiece)}` : ", 핸드피스 교체비는 제조사 자료가 없어 빠져 있어요"}. 월 고정비 ${krShort(r.fixed)}예요.`,
+      ko: `회당 전기 ${rpK(r.ps.power)} (${num(I.va)} VA × ${num(I.powerMin)}분 × PLN ${rpK(I.tariff)}/kWh), 소모품 ${rpK(r.ps.consumable)}${r.ps.handpiece !== null ? `, 핸드피스 교체 ${rpK(r.ps.handpiece)}` : ", 핸드피스 교체비는 제조사 자료가 없어 빠져 있어요"}. 월 고정비 ${krShort(r.fixed)}예요.`,
     };
     case "servis": return FAQ_FACTS.servis || { id: "Instalasi, pelatihan, dan servis ditangani distributor resmi; masa garansi diatur dalam kontrak.", ko: "설치, 교육, A/S는 현지 공식 유통사가 맡고, 보증 기간은 계약에서 정합니다." };
     default: return { id: "", ko: "" };
