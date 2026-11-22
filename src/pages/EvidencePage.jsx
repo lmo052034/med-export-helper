@@ -14,8 +14,8 @@ const FORMULAS = [
   ["단순 투자 회수 예상", "초기 도입비 ÷ 월 운영 현금잉여. 잉여가 0 이하이면 산출하지 않음"],
   ["누적 현금흐름", "−초기 도입비 + 경과 개월 × 월 운영 현금잉여 (할인율, 세금 미반영)"],
   ["병원 초기 도입비", "현지 견적 공급가 + 부가세 (병원은 매입 부가세를 공제받지 못한다고 가정) 또는 직접 입력"],
-  ["파트너 거래 손익 (세전)", "현지 공급가(부가세 제외) − 수출 대금 × 환율 − 포함한 비용 − 관세. 수입 부가세, PPh 22는 공제·선납이라 제외"],
-  ["관세", "과세가격(CIF: 수출 금액 + CIF 포함 표시한 운임·보험) × 환율 × 관세율"],
+  ["파트너 거래 손익 (세전)", "현지 공급가(부가세 제외) − 수출 대금 × 환율 − 포함한 비용 − 관세. 수입 부가세, PPh 22는 공제, 선납이라 제외"],
+  ["관세", "과세가격(CIF: 수출 금액 + CIF 포함 표시한 운임, 보험) × 환율 × 관세율"],
   ["일시 필요 자금", "결제 단계 순서대로 더한 파트너 현금의 최저점 (처음 현금 0 가정)"],
 ];
 
@@ -28,12 +28,13 @@ export default function EvidencePage() {
   return (
     <div className="mx-auto max-w-[1080px] px-4 pb-20 sm:px-6">
       <div className="pt-10 pb-8">
-        <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">근거자료</h1>
-        <p className="mt-2 max-w-[680px] text-[15px] text-[#424245]">화면의 값이 어디서 왔는지 구분해요. 회사 자료와 공개자료는 원문 기준일을, 내부 설정값은 계약 전에 거래처와 확정할 값으로 표시해요. 현재 거래: <b>{deal.name}</b></p>
+        <p className="text-[13px] text-[#6e6e73]">자료실 / 지금 열린 거래</p>
+        <h1 className="mt-1 text-[28px] font-bold tracking-tight">근거자료</h1>
+        <p className="mt-2 max-w-[680px] text-[15px] text-[#424245]">화면의 값이 어디서 왔는지 구분해요. 회사 자료와 공개자료는 원문 기준일을, 내부 설정값은 계약 전에 거래처와 확정할 값으로 표시해요. 현재 거래: <b>{deal.meta.name || "이름 없는 거래"}</b></p>
         {P.note && <p className="mt-2 max-w-[680px] text-[13px] text-[#6e6e73]">{P.note}</p>}
       </div>
 
-      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-[22px] bg-[var(--line)] sm:grid-cols-5">
+      <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--line)] sm:grid-cols-5">
         {groups.map(([k, l, list]) => (
           <a key={k} href={`#ev-${k}`} onClick={(e) => { e.preventDefault(); document.getElementById(`ev-${k}`)?.scrollIntoView({ block: "start" }); }} className="block bg-white p-4 hover:bg-[var(--surface-2)]">
             <dt className="text-[13px] text-[#6e6e73]">{l}</dt><dd className="mt-1 text-[24px] font-semibold tabular-nums">{list.length}</dd>
@@ -41,13 +42,13 @@ export default function EvidencePage() {
         ))}
       </dl>
       <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" onClick={() => setPanel("*")} className="inline-flex h-9 items-center rounded-full bg-primary px-4 text-[14px] font-medium text-white">근거 편집하기</button>
-        <Link to="/review" className="inline-flex h-9 items-center rounded-full border border-[var(--line-strong)] px-4 text-[14px] font-medium">검토 결과 보기</Link>
+        <button type="button" onClick={() => setPanel("*")} className="inline-flex h-9 items-center rounded-lg bg-primary px-4 text-[14px] font-medium text-white hover:brightness-110">근거 편집하기</button>
+        <Link to="/review" className="inline-flex h-9 items-center rounded-lg border border-[var(--line-strong)] px-4 text-[14px] font-medium hover:bg-[var(--fill-soft)]">검토 결과 보기</Link>
       </div>
 
       {groups.filter(([, , list]) => list.length).map(([k, l, list]) => (
         <section key={k} id={`ev-${k}`} className="scroll-mt-16 pt-12">
-          <h2 className="text-[22px]">{l} <span className="text-[15px] font-normal text-[#86868b]">{list.length}건</span></h2>
+          <h2 className="text-[19px] font-semibold">{l} <span className="text-[15px] font-normal text-[#86868b]">{list.length}건</span></h2>
           <ul className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)]">
             {list.map((e) => (
               <li key={e.id} className="grid gap-1 py-3 sm:grid-cols-[150px_minmax(0,1fr)_120px] sm:gap-4">

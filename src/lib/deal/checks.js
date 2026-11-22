@@ -1,4 +1,4 @@
-/* 검토 규칙: 입력 누락, 계산, 서류 간 일치, 중량·포장, 조건 변경.
+/* 검토 규칙: 입력 누락, 계산, 서류 간 일치, 중량, 포장, 조건 변경.
    모두 입력값과 계산식으로만 판단합니다. 법적 적합성, 통관 승인, 판매 가능 여부는 판단하지 않습니다 */
 import { parseNum, parseDate, daysBetween, fmtMoney, digitsOf } from "./money.js";
 import { calcExport, calcLocal, weights, partyOf, invoiceTerms } from "./calc.js";
@@ -10,7 +10,7 @@ export const LEVELS = {
   ok: { label: "입력값 일치", desc: "이 도구가 검사한 범위 안에서 문제가 없어요." },
 };
 export const SECTIONS = {
-  basic: "기본 거래정보", parties: "당사자", items: "제품·가격", terms: "결제·운송", packing: "포장·중량", service: "설치·서비스", local: "현지 판매", docs: "서류·메일",
+  basic: "기본 거래정보", parties: "당사자", items: "제품, 가격", terms: "결제, 운송", packing: "포장, 중량", service: "설치, 서비스", local: "현지 판매", docs: "서류, 메일",
 };
 const SEA_ONLY = ["FAS", "FOB", "CFR", "CIF"];
 export const INCOTERMS = ["EXW", "FCA", "CPT", "CIP", "DAP", "DPU", "DDP", "FAS", "FOB", "CFR", "CIF"];
@@ -30,7 +30,7 @@ export function runChecks(d) {
 
   /* --- 당사자 --- */
   const seller = partyOf(d, "exportSeller"), buyer = partyOf(d, "exportBuyer");
-  if (blank(seller.name)) add("fix", "parties", `parties.${d.roles.exportSeller}.name`, "수출 판매자 이름", "비어 있음", "견적서·인보이스의 발행자 칸이 비어요.", "판매자(제조사) 회사명을 공식 영문 표기로 적으세요.", ["quote", "invoice"]);
+  if (blank(seller.name)) add("fix", "parties", `parties.${d.roles.exportSeller}.name`, "수출 판매자 이름", "비어 있음", "견적서, 인보이스의 발행자 칸이 비어요.", "판매자(제조사) 회사명을 공식 영문 표기로 적으세요.", ["quote", "invoice"]);
   if (blank(buyer.name)) add("fix", "parties", `parties.${d.roles.exportBuyer}.name`, "수출 구매자 이름", "비어 있음", "견적서 수신처와 인보이스 Buyer 칸이 비어요.", "현지 파트너(수입자) 회사명을 적으세요.", ["quote", "invoice"]);
   if (d.roles.exportSeller === d.roles.exportBuyer) add("fix", "parties", "roles.exportBuyer", "수출 계약 당사자", "판매자와 구매자가 같음", "같은 회사가 사고팔 수는 없어요.", "수출 계약의 구매자를 다시 고르세요.");
   if (inv) {
@@ -41,7 +41,7 @@ export function runChecks(d) {
     if (d.roles.consignee === "hospital" && d.local.enabled) add("confirm", "parties", "roles.consignee", "수하인", "병원", "수입자(구매자)와 화물 수령처가 다르면 수입 신고 주체를 다시 확인해야 해요.", "현지 파트너와 수입 신고 주체를 확인한 뒤 수하인을 정하세요.", ["invoice"]);
   }
 
-  /* --- 제품·가격 --- */
+  /* --- 제품, 가격 --- */
   if (!E.items.length) add("fix", "items", "exp.items", "제품 구성", "품목 없음", "서류에 들어갈 품목이 없어요.", "본체를 한 줄 이상 추가하세요.");
   E.items.forEach((it, i) => {
     const name = it.model || it.desc || `${i + 1}번 품목`;
@@ -51,7 +51,7 @@ export function runChecks(d) {
     else if (it.q.state === "invalid") add("fix", "items", f("qty"), `${name} 수량`, `"${it.qty}"`, "숫자가 아니에요.", "숫자만 적으세요.");
     else if (it.q.value < 0) add("fix", "items", f("qty"), `${name} 수량`, it.qty, "수량은 음수일 수 없어요.", "0보다 큰 수로 고치세요.");
     else if (it.q.value === 0) add("fix", "items", f("qty"), `${name} 수량`, "0", "수량이 0이면 서류에 넣을 이유가 없어요.", "수량을 고치거나 이 줄을 지우세요.");
-    else if (!Number.isInteger(it.q.value)) add("confirm", "items", f("qty"), `${name} 수량`, it.qty, "세트·개 단위인데 소수예요.", "단위가 kg·m처럼 소수가 맞는지 확인하세요.");
+    else if (!Number.isInteger(it.q.value)) add("confirm", "items", f("qty"), `${name} 수량`, it.qty, "세트, 개 단위인데 소수예요.", "단위가 kg, m처럼 소수가 맞는지 확인하세요.");
     if (it.p.state === "blank") {
       if (it.kind !== "main") add("fix", "items", f("price"), `${name} 단가`, "비어 있음", "추가 구성의 가격 확인이 필요해요. 가격 근거 없이 금액을 계산하지 않았어요.", "가격표나 파트너와 합의한 단가를 적고, 본체 가격에 포함이면 0과 근거를 적으세요.", ["quote", "invoice"]);
       else add("fix", "items", f("price"), `${name} 단가`, "비어 있음", "총액을 계산할 수 없어요.", "단가를 적으세요.", ["quote", "invoice"]);
@@ -61,7 +61,7 @@ export function runChecks(d) {
       const dec = (String(it.price).split(".")[1] || "").length;
       if (dec > digitsOf(cur)) add("confirm", "items", f("price"), `${name} 단가`, it.price, `${cur}는 소수 ${digitsOf(cur)}자리까지 표시해요. 금액은 반올림해 계산했어요.`, "단가를 표시 자릿수에 맞게 고치세요.");
       if (it.p.value === 0) add("confirm", "items", f("price"), `${name} 단가`, "0", "무상 품목인지 본체 가격 포함인지 서류만 봐서는 몰라요.", "가격 근거 칸에 '본체 가격에 포함' 등 이유를 적으세요.");
-      if (blank(it.priceSource)) add("confirm", "items", f("priceSource"), `${name} 가격 근거`, "비어 있음", it.kind === "main" ? "단가의 출처가 없으면 견적 근거를 설명하기 어려워요." : "추가 구성의 가격 근거가 없어요.", "가격표 이름·기준일이나 '파트너와 합의(날짜)'를 적으세요.");
+      if (blank(it.priceSource)) add("confirm", "items", f("priceSource"), `${name} 가격 근거`, "비어 있음", it.kind === "main" ? "단가의 출처가 없으면 견적 근거를 설명하기 어려워요." : "추가 구성의 가격 근거가 없어요.", "가격표 이름, 기준일이나 '파트너와 합의(날짜)'를 적으세요.");
     }
     if (it.minor !== null) add("ok", "items", f("qty"), `${name} 금액`, fmtMoney(it.minor, cur), "수량 × 단가로 계산했고 서류 세 곳에 같은 값이 들어가요.", "");
   });
@@ -72,15 +72,15 @@ export function runChecks(d) {
   });
   if (E.total !== null) add("ok", "items", "exp.items", "수출 총액", fmtMoney(E.total, cur), "품목 금액" + (E.extrasMinor ? "과 포함 비용" : "") + "의 합계예요. 줄마다 반올림한 뒤 더했어요.", "");
 
-  /* --- 결제·운송 --- */
+  /* --- 결제, 운송 --- */
   const inc = d.exp.incoterm;
   if (blank(inc)) add("fix", "terms", "exp.incoterm", "인도조건", "비어 있음", "누가 어디까지 비용과 위험을 지는지 서류에 없어요.", "Incoterms 규칙을 고르세요.", ["quote", "invoice"]);
   if (blank(d.exp.place)) add("fix", "terms", "exp.place", "인도 지정 장소", "비어 있음", "Incoterms는 규칙 이름과 지정 장소를 함께 써야 뜻이 정해져요.", "예: EXW Seoul, FCA Incheon Airport처럼 장소를 적으세요.", ["quote", "invoice"]);
-  if (inc && SEA_ONLY.includes(inc) && d.exp.transport && d.exp.transport !== "sea") add("confirm", "terms", "exp.incoterm", "인도조건과 운송 방식", `${inc} · ${d.exp.transport === "air" ? "항공" : d.exp.transport}`, `ICC Incoterms 2020은 ${inc}를 해상·내수로 운송용으로 안내해요.`, "항공·복합운송이면 FCA·CPT·CIP 같은 규칙이 맞는지 파트너와 확인하세요.", ["quote", "invoice"]);
+  if (inc && SEA_ONLY.includes(inc) && d.exp.transport && d.exp.transport !== "sea") add("confirm", "terms", "exp.incoterm", "인도조건과 운송 방식", `${inc}, ${d.exp.transport === "air" ? "항공" : d.exp.transport}`, `ICC Incoterms 2020은 ${inc}를 해상, 내수로 운송용으로 안내해요.`, "항공, 복합운송이면 FCA, CPT, CIP 같은 규칙이 맞는지 파트너와 확인하세요.", ["quote", "invoice"]);
   if (inc === "EXW" && blank(d.exp.exportClearance)) add("confirm", "terms", "exp.exportClearance", "EXW 수출통관 담당", "비어 있음", "EXW는 원칙적으로 구매자가 수출통관을 맡아요. 한국 수출신고를 누가 할지 서류에 없어요.", "판매자가 대행한다면 그 내용을 적으세요.", ["quote"]);
   if (NEEDS_FREIGHT.includes(inc) && !E.extras.some((x) => /freight|운임/i.test(x.label))) add("confirm", "terms", "exp.extras", `${inc} 운임`, "운임 줄 없음", `${inc}는 판매자가 운임을 부담하는 조건이에요.`, "운임을 단가에 넣었는지, 별도 줄이 필요한지 확인하세요.");
   if (NEEDS_INS.includes(inc) && !E.extras.some((x) => /insur|보험/i.test(x.label))) add("confirm", "terms", "exp.extras", `${inc} 보험`, "보험 줄 없음", `${inc}는 판매자가 보험을 들어야 하는 조건이에요.`, "보험료 처리 방법을 확인하세요.");
-  if (blank(d.exp.transport)) add("confirm", "terms", "exp.transport", "운송 방식", "비어 있음", "인도조건이 운송 방식에 맞는지 확인할 수 없어요.", "항공·해상 등 운송 방식을 고르세요.");
+  if (blank(d.exp.transport)) add("confirm", "terms", "exp.transport", "운송 방식", "비어 있음", "인도조건이 운송 방식에 맞는지 확인할 수 없어요.", "항공, 해상 등 운송 방식을 고르세요.");
 
   const pay = E.pay;
   if (!d.exp.payment.length || d.exp.payment.every((p) => blank(p.pct) && blank(p.amount) && blank(p.label))) add("fix", "terms", "exp.payment", "결제조건", "비어 있음", "언제 얼마를 받는지 서류에 없어요.", "결제 회차와 비율 또는 금액을 적으세요.", ["quote", "invoice"]);
@@ -90,7 +90,7 @@ export function runChecks(d) {
   if (v.state === "blank") add("fix", "terms", "exp.validityDays", "견적 유효기간", "비어 있음", "가격이 언제까지 유효한지 없어요.", "일 수를 적으세요. 예: 30");
   else if (v.state === "invalid" || v.value <= 0 || !Number.isInteger(v.value)) add("fix", "terms", "exp.validityDays", "견적 유효기간", d.exp.validityDays, "1 이상의 정수가 아니에요.", "일 수를 정수로 적으세요.");
 
-  /* --- 날짜·번호 --- */
+  /* --- 날짜, 번호 --- */
   const qd = parseDate(d.exp.quoteDate), id = parseDate(d.exp.invoiceDate);
   if (blank(d.exp.quoteNo)) add("fix", "docs", "exp.quoteNo", "견적서 번호", "비어 있음", "인보이스가 어느 견적을 따르는지 연결할 수 없어요.", "견적 번호를 정하세요.", ["quote", "invoice"]);
   if (qd.state === "blank") add("fix", "docs", "exp.quoteDate", "견적일", "비어 있음", "유효기간의 시작일이 없어요.", "견적일을 고르세요.", ["quote"]);
@@ -104,7 +104,7 @@ export function runChecks(d) {
       if (gap < 0) add("fix", "docs", "exp.invoiceDate", "인보이스 날짜", d.exp.invoiceDate, "견적일보다 앞서요.", "날짜 순서를 고치세요.", ["invoice"]);
       else if (v.state === "ok" && gap > v.value) add("confirm", "docs", "exp.invoiceDate", "견적 유효기간 경과", `견적일 + ${gap}일`, `견적 유효기간(${v.value}일) 뒤에 인보이스를 발행해요.`, "유효기간 안에 주문받았는지, 가격을 다시 확인했는지 보세요.");
     }
-    if (blank(d.exp.destination)) add("confirm", "docs", "exp.destination", "도착 국가", "비어 있음", "인보이스의 도착지가 비어요.", "도착 국가·도시를 적으세요.", ["invoice"]);
+    if (blank(d.exp.destination)) add("confirm", "docs", "exp.destination", "도착 국가", "비어 있음", "인보이스의 도착지가 비어요.", "도착 국가, 도시를 적으세요.", ["invoice"]);
   }
 
   /* --- 서류 간 일치 (같은 기준정보에서 만든 서류) --- */
@@ -116,13 +116,13 @@ export function runChecks(d) {
     if (diff.length && blank(d.exp.invoiceOverride.reason)) add("fix", "docs", "exp.invoiceOverride.reason", "인보이스만 다른 조건", diff.join(", "), "견적서와 인보이스 조건이 다른데 이유가 없어요.", "변경 사유를 적거나 '인보이스만 다르게'를 끄세요.", ["quote", "invoice"]);
     else if (diff.length) add("confirm", "docs", "exp.invoiceOverride.reason", "인보이스만 다른 조건", `${diff.join(", ")} (사유: ${d.exp.invoiceOverride.reason})`, "견적서와 인보이스의 인도조건이 달라요.", "파트너와 합의한 변경인지 확인하세요.", ["quote", "invoice"]);
     else add("ok", "docs", "exp.invoiceOverride.on", "인보이스 별도 조건", "견적서와 같음", "별도 값을 켰지만 견적서와 같아요.", "");
-  } else if (d.exp.incoterm && d.exp.place) add("ok", "docs", "exp.incoterm", "견적서·인보이스 인도조건", `${d.exp.incoterm} ${d.exp.place}`, "두 서류가 같은 기준정보에서 만들어져요 (기준정보로 동기화됨).", "");
-  if (E.total !== null && buyer.name) add("ok", "docs", "exp.items", "견적서·인보이스·메일 품목과 금액", `${E.items.length}개 품목 · ${new Intl.NumberFormat("en-US").format(E.total / 10 ** digitsOf(cur))} ${cur}`, "모델·수량·단위·단가·통화·총액·구매자를 같은 기준정보로 만들어요 (기준정보로 동기화됨). 이 도구 밖의 문서와는 대조하지 않았어요.", "");
+  } else if (d.exp.incoterm && d.exp.place) add("ok", "docs", "exp.incoterm", "견적서, 인보이스 인도조건", `${d.exp.incoterm} ${d.exp.place}`, "두 서류가 같은 기준정보에서 만들어져요 (기준정보로 동기화됨).", "");
+  if (E.total !== null && buyer.name) add("ok", "docs", "exp.items", "견적서, 인보이스, 메일 품목과 금액", `${E.items.length}개 품목, ${new Intl.NumberFormat("en-US").format(E.total / 10 ** digitsOf(cur))} ${cur}`, "모델, 수량, 단위, 단가, 통화, 총액, 구매자를 같은 기준정보로 만들어요 (기준정보로 동기화됨). 이 도구 밖의 문서와는 대조하지 않았어요.", "");
 
-  /* --- 포장·중량 --- */
+  /* --- 포장, 중량 --- */
   const W = weights(d);
   const wl = inv ? "fix" : "confirm";
-  if (W.pk.state === "blank") add(wl, "packing", "exp.packages", "포장 수량", "비어 있음", "인보이스·패킹리스트의 포장 개수가 비어요.", "포장 개수를 적으세요. 제품 수량과 같을 필요는 없어요.", ["invoice"]);
+  if (W.pk.state === "blank") add(wl, "packing", "exp.packages", "포장 수량", "비어 있음", "인보이스, 패킹리스트의 포장 개수가 비어요.", "포장 개수를 적으세요. 제품 수량과 같을 필요는 없어요.", ["invoice"]);
   else if (W.pk.state === "invalid" || W.pk.value <= 0 || !Number.isInteger(W.pk.value)) add("fix", "packing", "exp.packages", "포장 수량", d.exp.packages, "1 이상의 정수가 아니에요.", "포장 개수를 정수로 적으세요.");
   ["nw", "gw"].forEach((k) => {
     const p = W[k], lab = k === "nw" ? "순중량(N.W.)" : "총중량(G.W.)";
@@ -131,14 +131,14 @@ export function runChecks(d) {
     else if (p.value <= 0) add("fix", "packing", `exp.${k}`, lab, d.exp[k], "0 이하예요.", "실측값으로 고치세요.");
   });
   if (W.nw.state === "ok" && W.gw.state === "ok" && W.nw.value > 0 && W.gw.value > 0) {
-    if (d.exp.nwUnit !== d.exp.gwUnit) add("fix", "packing", "exp.gwUnit", "중량 단위", `N.W. ${d.exp.nwUnit} · G.W. ${d.exp.gwUnit}`, "순중량과 총중량 단위가 달라 비교할 수 없어요.", "같은 단위로 맞추세요.", ["invoice"]);
-    else if (W.gw.value < W.nw.value) add("fix", "packing", "exp.gw", "총중량 < 순중량", `G.W. ${d.exp.gw} < N.W. ${d.exp.nw} ${d.exp.gwUnit}`, "총중량은 포장재를 포함하므로 순중량보다 작을 수 없어요.", "두 값을 바꿔 적지 않았는지, 개당·전체를 섞지 않았는지 확인하세요.", ["invoice"]);
-    else add("ok", "packing", "exp.gw", "순중량·총중량", `N.W. ${W.nwTotal ?? "—"} / G.W. ${W.gwTotal ?? "—"} ${d.exp.gwUnit}${W.per ? " (포장 1개당 × 개수)" : ""}`, "총중량이 순중량 이상이고 단위가 같아요.", "");
+    if (d.exp.nwUnit !== d.exp.gwUnit) add("fix", "packing", "exp.gwUnit", "중량 단위", `N.W. ${d.exp.nwUnit}, G.W. ${d.exp.gwUnit}`, "순중량과 총중량 단위가 달라 비교할 수 없어요.", "같은 단위로 맞추세요.", ["invoice"]);
+    else if (W.gw.value < W.nw.value) add("fix", "packing", "exp.gw", "총중량 < 순중량", `G.W. ${d.exp.gw} < N.W. ${d.exp.nw} ${d.exp.gwUnit}`, "총중량은 포장재를 포함하므로 순중량보다 작을 수 없어요.", "두 값을 바꿔 적지 않았는지, 개당, 전체를 섞지 않았는지 확인하세요.", ["invoice"]);
+    else add("ok", "packing", "exp.gw", "순중량, 총중량", `N.W. ${W.nwTotal ?? "—"} / G.W. ${W.gwTotal ?? "—"} ${d.exp.gwUnit}${W.per ? " (포장 1개당 × 개수)" : ""}`, "총중량이 순중량 이상이고 단위가 같아요.", "");
     if (W.per && W.pk.state !== "ok") add("fix", "packing", "exp.packages", "포장 1개당 중량", "포장 수량 없음", "포장 1개당 중량으로 적었는데 포장 수량이 없어 전체 중량을 계산할 수 없어요.", "포장 수량을 적거나 '화물 전체'로 바꾸세요.", ["invoice"]);
     if (W.per) add("confirm", "packing", "exp.weightBasis", "중량 기준", "포장 1개당", "모든 포장이 같은 무게라고 가정해 전체 중량을 곱했어요.", "포장마다 무게가 다르면 '화물 전체'로 바꿔 합계를 적으세요.", ["invoice"]);
   }
 
-  /* --- 설치·서비스 --- */
+  /* --- 설치, 서비스 --- */
   if (d.local.enabled) {
     if (blank(d.service.installBy)) add("confirm", "service", "service.installBy", "설치 담당", "비어 있음", "병원에 누가 설치하는지 정해지지 않았어요.", "합의한 담당 회사를 적으세요.");
     if (blank(d.service.asBy)) add("confirm", "service", "service.asBy", "A/S 담당", "비어 있음", "판매 후 수리 책임자가 서류에 없어요.", "합의한 담당 회사를 적으세요.");
@@ -169,11 +169,11 @@ export function runChecks(d) {
   const em = d.email;
   if (blank(em.senderName)) add("fix", "docs", "email.senderName", "메일 서명: 발신자 이름", "비어 있음", "메일 끝에 보낸 사람이 없어요.", "실제 보내는 사람의 이름을 적으세요.", ["email"]);
   if (blank(em.senderEmail) && blank(em.senderPhone)) add("fix", "docs", "email.senderEmail", "메일 서명: 연락처", "비어 있음", "받는 사람이 답장할 연락처가 서명에 없어요.", "회사 이메일이나 전화번호를 적으세요.", ["email"]);
-  if (blank(em.senderTitle) || blank(em.senderOrg)) add("confirm", "docs", blank(em.senderTitle) ? "email.senderTitle" : "email.senderOrg", "메일 서명: 직함·소속", "일부 비어 있음", "서명에 직함이나 회사명이 없어요.", "직함과 회사명을 적으세요.", ["email"]);
+  if (blank(em.senderTitle) || blank(em.senderOrg)) add("confirm", "docs", blank(em.senderTitle) ? "email.senderTitle" : "email.senderOrg", "메일 서명: 직함, 소속", "일부 비어 있음", "서명에 직함이나 회사명이 없어요.", "직함과 회사명을 적으세요.", ["email"]);
   if (blank(em.toName) && blank(em.toEmail)) add("confirm", "docs", "email.toName", "메일 받는 사람", "비어 있음", "메일 인사말과 수신 주소가 비어요.", "파트너 담당자 이름 또는 이메일을 적으세요.", ["email"]);
 
   /* --- 조건 변경 --- */
-  if (d.review.hash && d.review.hash !== hashOf(keyTerms(d))) add("confirm", "basic", "meta.name", "검토 후 조건 변경", `검토 표시 ${d.review.at ? d.review.at.slice(0, 16).replace("T", " ") : ""} 이후 바뀜`, "검토를 표시한 뒤 품목·수량·단가·결제·중량 등 핵심 조건이 바뀌었어요.", "변경 기록을 보고 서류를 다시 확인한 뒤 검토를 다시 표시하세요.");
+  if (d.review.hash && d.review.hash !== hashOf(keyTerms(d))) add("confirm", "basic", "meta.name", "검토 후 조건 변경", `검토 표시 ${d.review.at ? d.review.at.slice(0, 16).replace("T", " ") : ""} 이후 바뀜`, "검토를 표시한 뒤 품목, 수량, 단가, 결제, 중량 등 핵심 조건이 바뀌었어요.", "변경 기록을 보고 서류를 다시 확인한 뒤 검토를 다시 표시하세요.");
 
   /* --- 근거자료 --- */
   const unconfirmed = d.evidence.filter((e) => e.ref && !e.confirmed && e.status !== "mock");

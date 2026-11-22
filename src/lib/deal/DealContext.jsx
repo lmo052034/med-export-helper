@@ -1,4 +1,4 @@
-/* 거래 상태: 불러오기·저장·변경 기록·검토 표시를 한곳에서 관리합니다 */
+/* 거래 상태: 불러오기, 저장, 변경 기록, 검토 표시를 한곳에서 관리합니다 */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { loadAll, saveAll, importDeal, exportDeal } from "./storage.js";
 import { blankDeal, mockDeal, keyTerms, hashOf } from "./model.js";
@@ -65,7 +65,7 @@ export function DealProvider({ children }) {
       if (hit) return { ...s, active: hit.id };
       const d = sampleDeal(); return { active: d.id, list: { ...s.list, [d.id]: d } };
     }),
-    /* 기준값으로 되돌리기: 이 거래의 가격·구성·결제·병원 운영 입력만 기준안으로 */
+    /* 기준값으로 되돌리기: 이 거래의 가격, 구성, 결제, 병원 운영 입력만 기준안으로 */
     resetToBaseline: (path) => mutate((d) => {
       if (!d.baseline) return d;
       if (path) return setPath(d, path, getPath(d.baseline, path));

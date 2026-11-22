@@ -1,4 +1,4 @@
-/* 거래 기준정보: 견적서·인보이스·메일·현지 견적이 모두 이 한 덩어리에서 만들어집니다.
+/* 거래 기준정보: 견적서, 인보이스, 메일, 현지 견적이 모두 이 한 덩어리에서 만들어집니다.
    숫자는 입력한 문자열 그대로 저장해 빈칸과 0을 구분합니다 */
 
 export const SCHEMA = 3;
@@ -47,7 +47,7 @@ export function blankDeal() {
     evidence: [],
     review: { at: null, hash: null },
     changes: [],
-    baseline: null, // 기준안: 대표 사례를 처음 만들 때의 가격·병원 운영 입력값 (비교와 되돌리기에 사용)
+    baseline: null, // 기준안: 대표 사례를 처음 만들 때의 가격, 병원 운영 입력값 (비교와 되돌리기에 사용)
   };
 }
 
@@ -56,7 +56,7 @@ export function blankEcon() {
   return {
     fx: { rate: "", date: "", source: "" }, // 현지 통화 / 수출 통화 (예: IDR per USD)
     dutyPct: "", dutyBasis: "", importVatPct: "", pph22Pct: "",
-    costs: [], // 파트너가 부담하는 수입·현지 비용 (운임, 보험, 설치·교육, 금융비 등)
+    costs: [], // 파트너가 부담하는 수입, 현지 비용 (운임, 보험, 설치, 교육, 금융비 등)
     hospital: {
       investMode: "local", investCustom: "", // local = 현지 견적 총액(부가세 포함)을 초기 도입비로 사용
       price: "", priceKind: "", priceSource: "",
@@ -67,7 +67,7 @@ export function blankEcon() {
   };
 }
 
-/* 화면 시연용 모의 거래. 회사·주소·담당자·중량은 만들지 않고 빈칸으로 둡니다 */
+/* 화면 시연용 모의 거래. 회사, 주소, 담당자, 중량은 만들지 않고 빈칸으로 둡니다 */
 export function mockDeal() {
   const d = blankDeal();
   d.kind = "mock";
@@ -98,7 +98,7 @@ export function mockDeal() {
   return d;
 }
 
-/* ---------- 저장 데이터 검사·복구 ---------- */
+/* ---------- 저장 데이터 검사, 복구 ---------- */
 const isObj = (o) => o && typeof o === "object" && !Array.isArray(o);
 const str = (v) => (v === null || v === undefined ? "" : typeof v === "string" ? v : typeof v === "number" ? String(v) : "");
 
@@ -153,12 +153,12 @@ export function sanitize(raw) {
   return d;
 }
 
-/* ---------- 이전 버전(07 견적서·인보이스 화면, 저장 키 deal) → 새 구조 ---------- */
+/* ---------- 이전 버전(07 견적서, 인보이스 화면, 저장 키 deal) → 새 구조 ---------- */
 export function migrateV1(old) {
   if (!isObj(old)) return null;
   const d = blankDeal();
   d.caseLabel = "이전 버전에서 옮긴 거래";
-  d.meta.name = "이전 견적서·인보이스 입력값";
+  d.meta.name = "이전 견적서, 인보이스 입력값";
   const s = isObj(old.seller) ? old.seller : {}, b = isObj(old.buyer) ? old.buyer : {};
   d.parties.maker = { name: str(s.co), address: str(s.addr), contact: "", email: str(s.email), phone: str(s.tel) };
   d.parties.partner = { name: str(b.co), address: str(b.addr), contact: [str(b.name), str(b.title)].filter(Boolean).join(", "), email: str(b.email), phone: "" };
@@ -191,7 +191,7 @@ export function logToEvidence(log) {
 }
 
 /* 검토 후 바뀌면 다시 확인해야 하는 핵심 조건 */
-/* 기준안 스냅숏: 가격·구성·결제·병원 운영 입력만 담아 비교와 되돌리기에 씁니다 */
+/* 기준안 스냅숏: 가격, 구성, 결제, 병원 운영 입력만 담아 비교와 되돌리기에 씁니다 */
 export function snapshot(d) {
   const c = (v) => JSON.parse(JSON.stringify(v));
   return { exp: { items: c(d.exp.items), extras: c(d.exp.extras), payment: c(d.exp.payment), currency: d.exp.currency }, local: { lines: c(d.local.lines), vatPct: d.local.vatPct, payment: c(d.local.payment) }, econ: c(d.econ) };

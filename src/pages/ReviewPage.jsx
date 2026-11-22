@@ -37,7 +37,7 @@ function Finding({ f }) {
     <li className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-[minmax(0,240px)_minmax(0,1fr)_auto]">
       <div className="min-w-0">
         <p className="text-[15px] font-semibold leading-snug">{f.label}</p>
-        <p className="text-[12px] text-[#6e6e73]">{SECTIONS[f.section]}{f.docs.length ? ` · ${f.docs.map((d) => DOC_NAME[d]).join(", ")}` : ""}</p>
+        <p className="text-[12px] text-[#6e6e73]">{SECTIONS[f.section]}{f.docs.length ? `, ${f.docs.map((d) => DOC_NAME[d]).join(", ")}` : ""}</p>
       </div>
       <div className="min-w-0 text-[14px] leading-relaxed">
         <p><span className="text-[#6e6e73]">현재 값 </span><span className={cn("tabular-nums", f.level === "fix" && "font-medium")}>{f.value}</span></p>
@@ -64,13 +64,13 @@ export default function ReviewPage() {
         <div>
           <h2 className="text-[24px] font-semibold tracking-tight">검토 결과</h2>
           <p className="mt-1 text-[14px] text-[#424245]">
-            {s.fix ? <><b className="text-amber-700">수정 필요 {s.fix}건</b>, </> : "수정할 항목은 없어요. "}확인 필요 {s.confirm}건, 입력값 일치 {s.ok}건 · {deal.meta.stage === "invoice" ? "출하·인보이스 단계 기준" : "견적 단계 기준"}
+            {s.fix ? <><b className="text-amber-700">수정 필요 {s.fix}건</b>, </> : "수정할 항목은 없어요. "}확인 필요 {s.confirm}건, 입력값 일치 {s.ok}건, {deal.meta.stage === "invoice" ? "출하, 인보이스 단계 기준" : "견적 단계 기준"}
           </p>
           <p className="mt-1 text-[12px] text-[#6e6e73]">입력값의 누락, 계산, 서류 간 일치를 규칙으로 확인한 결과예요. 법적 적합성, 통관 승인, 판매 가능 여부는 판단하지 않고, 이 도구 밖의 문서와 대조하지 않아요.</p>
         </div>
         <div className="text-right">
           <button type="button" onClick={actions.markReviewed} disabled={s.fix > 0} className="inline-flex h-9 items-center rounded-md bg-primary px-3.5 text-[14px] font-medium text-white disabled:cursor-not-allowed disabled:opacity-40">이 조건으로 검토 완료 표시</button>
-          <p className="mt-1 text-[12px] text-[#6e6e73]">{s.fix > 0 ? "수정 필요 항목을 먼저 고치세요." : deal.review.at ? `${when(deal.review.at)}에 검토 완료${stale ? " · 이후 주요 조건이 바뀜" : ""}` : "아직 검토 완료 표시가 없어요."}</p>
+          <p className="mt-1 text-[12px] text-[#6e6e73]">{s.fix > 0 ? "수정 필요 항목을 먼저 고치세요." : deal.review.at ? `${when(deal.review.at)}에 검토 완료${stale ? ", 이후 주요 조건이 바뀜" : ""}` : "아직 검토 완료 표시가 없어요."}</p>
         </div>
       </div>
 
@@ -92,7 +92,7 @@ export default function ReviewPage() {
           <ul className="mt-2 divide-y divide-[var(--line)] border-t border-[var(--line)] text-[14px]">
             {ev.map((e) => (
               <li key={e.id} className="flex items-baseline justify-between gap-3 py-2.5">
-                <span className="min-w-0"><span className="block truncate">{e.title || e.ref || "제목 없음"}</span><span className="text-[12px] text-[#6e6e73]">{EV_NAME[e.status] || e.status}{e.checkedAt ? ` · 확인일 ${e.checkedAt}` : ""}</span></span>
+                <span className="min-w-0"><span className="block truncate">{e.title || e.ref || "제목 없음"}</span><span className="text-[12px] text-[#6e6e73]">{EV_NAME[e.status] || e.status}{e.checkedAt ? `, 확인일 ${e.checkedAt}` : ""}</span></span>
                 <span className={cn("shrink-0 text-[12px] font-medium", e.confirmed ? "text-primary" : e.ref ? "text-amber-700" : "text-[#6e6e73]")}>{e.confirmed ? "내용 확인함" : e.ref ? "출처만 있음" : "출처 없음"}</span>
               </li>
             ))}
@@ -101,7 +101,7 @@ export default function ReviewPage() {
         </div>
         <div>
           <h3 className="text-[17px] font-semibold">변경 기록</h3>
-          <p className="text-[13px] text-[#6e6e73]">가격, 수량, 조건, 중량처럼 서류 금액·조건을 바꾸는 값만 남겨요 (최근 50건).</p>
+          <p className="text-[13px] text-[#6e6e73]">가격, 수량, 조건, 중량처럼 서류 금액, 조건을 바꾸는 값만 남겨요 (최근 50건).</p>
           <ul className="mt-2 divide-y divide-[var(--line)] border-t border-[var(--line)] text-[13px]">
             {[...deal.changes].reverse().slice(0, 12).map((c, i) => (
               <li key={i} className="grid grid-cols-[72px_minmax(0,1fr)] gap-2 py-2">

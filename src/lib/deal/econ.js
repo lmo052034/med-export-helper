@@ -1,6 +1,6 @@
 /* 가격과 수익성 계산. 모든 화면이 이 함수만 씁니다 (화면마다 계산식을 따로 두지 않음).
    - 병원 운영: 현금흐름 기준. 초기 도입비는 투자액으로 한 번만 넣고, 월 비용에 감가상각을 다시 넣지 않습니다.
-   - 파트너 거래 손익: 입력한 비용만 더하고, 빠진 항목은 범위로 알려 줍니다. 수입 부가세·PPh 22는 공제·선납이라 손익에서 제외합니다.
+   - 파트너 거래 손익: 입력한 비용만 더하고, 빠진 항목은 범위로 알려 줍니다. 수입 부가세, PPh 22는 공제, 선납이라 손익에서 제외합니다.
    - 제조사 이익: 제조원가 자료가 없어 계산하지 않습니다. */
 import { parseNum, toMinor, fromMinor } from "./money.js";
 import { calcExport, calcLocal } from "./calc.js";
@@ -124,7 +124,7 @@ export function cashFlow(d) {
   if (P.exportLocal !== null) {
     const freight = P.included.filter((x) => !["export", "duty"].includes(x.key) && d.econ.costs.find((c) => c.id === x.key)?.when === "before-ship").reduce((s, x) => s + x.local, 0);
     steps.push({ step: "출하 전", who: "partner→maker", label: "수출 대금 (제조사 지급)", amount: -Math.round(P.exportLocal) });
-    if (freight) steps.push({ step: "출하 전", who: "partner→carrier", label: "운임·보험 등 출하 전 비용", amount: -Math.round(freight) });
+    if (freight) steps.push({ step: "출하 전", who: "partner→carrier", label: "운임, 보험 등 출하 전 비용", amount: -Math.round(freight) });
   }
   if (P.cifLocal !== null && P.dutyLocal !== null) {
     const base = P.cifLocal + P.dutyLocal;
@@ -132,7 +132,7 @@ export function cashFlow(d) {
     steps.push({ step: "수입 신고", who: "partner→customs", label: `관세${vat.state === "ok" ? " + 수입 부가세" : ""}${pph.state === "ok" ? " + PPh 22" : ""} (현금 지출)`, amount: -Math.round(taxes) });
   }
   const after = P.included.filter((x) => d.econ.costs.find((c) => c.id === x.key)?.when && d.econ.costs.find((c) => c.id === x.key).when !== "before-ship").reduce((s, x) => s + x.local, 0);
-  if (after) steps.push({ step: "설치·운영", who: "partner→local", label: "현지 비용 (설치·교육·금융 등)", amount: -Math.round(after) });
+  if (after) steps.push({ step: "설치, 운영", who: "partner→local", label: "현지 비용 (설치, 교육, 금융 등)", amount: -Math.round(after) });
   for (const r of rest) if (r.minor !== null) steps.push({ step: "검수 후", who: "hospital→partner", label: `병원 잔금${r.pct ? ` ${r.pct}%` : ""}${r.label ? ` (${r.label})` : ""}`, amount: r.minor });
   let acc = 0, low = 0;
   const rows = steps.map((s) => { acc += s.amount; low = Math.min(low, acc); return { ...s, acc }; });

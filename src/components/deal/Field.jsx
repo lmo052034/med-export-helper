@@ -54,7 +54,7 @@ export function DealField({ path, label, type = "text", options, placeholder, hi
       <div className="flex items-center gap-1.5">{ctrl}{suffix && <span className="shrink-0 text-[13px] text-[#6e6e73]">{suffix}</span>}</div>
       {(issues.length > 0 || hint) && (
         <div id={hid} className="mt-1 space-y-0.5">
-          {issues.slice(0, 2).map((i) => <p key={i.id} className={cn("text-[12px] leading-snug", i.level === "fix" ? "text-amber-700" : "text-[#6e6e73]")}>{i.level === "fix" ? "수정 필요 · " : "확인 · "}{i.why}</p>)}
+          {issues.slice(0, 2).map((i) => <p key={i.id} className={cn("text-[12px] leading-snug", i.level === "fix" ? "text-amber-700" : "text-[#6e6e73]")}>{i.level === "fix" ? "수정 필요, " : "확인, "}{i.why}</p>)}
           {!issues.length && hint && <p className="text-[12px] text-[#86868b]">{hint}</p>}
         </div>
       )}
@@ -62,7 +62,7 @@ export function DealField({ path, label, type = "text", options, placeholder, hi
   );
 }
 
-/* 표 안의 작은 입력칸 (품목·결제 회차) */
+/* 표 안의 작은 입력칸 (품목, 결제 회차) */
 export function CellInput({ path, label, type = "text", className, placeholder, options }) {
   const { deal, update } = useDeal();
   const issues = useIssues(path);

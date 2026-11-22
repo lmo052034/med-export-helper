@@ -1,5 +1,5 @@
 /* C. 서류 미리보기: 수출 견적서, 상업송장 초안, 메일 초안, (현지 판매가 켜져 있으면) 현지 견적.
-   인쇄·PDF에는 앱 메뉴 없이 서류만 나가고, 초안·모의 표시는 그대로 남습니다 */
+   인쇄와 PDF에는 앱 메뉴 없이 서류만 나가고, 초안, 모의 표시는 그대로 남습니다 */
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Copy, Printer } from "lucide-react";
@@ -49,7 +49,7 @@ export default function DocsPage() {
         <div className="flex flex-wrap gap-2">
           {doc === "email" && <button type="button" onClick={copyMail} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-[var(--line-strong)] px-3 text-[14px] hover:bg-[var(--fill)]"><Copy className="size-4" />메일 복사</button>}
           <button type="button" onClick={() => print("one")} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-[var(--line-strong)] px-3 text-[14px] hover:bg-[var(--fill)]"><Printer className="size-4" />이 서류 인쇄</button>
-          <button type="button" onClick={() => print("all")} className="inline-flex h-9 items-center rounded-md bg-primary px-3 text-[14px] font-medium text-white">전체 인쇄·PDF</button>
+          <button type="button" onClick={() => print("all")} className="inline-flex h-9 items-center rounded-md bg-primary px-3 text-[14px] font-medium text-white">전체 인쇄와 PDF</button>
         </div>
       </div>
       <div role="tablist" aria-label="서류" className="seg no-print mb-5">

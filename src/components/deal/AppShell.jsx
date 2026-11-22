@@ -1,4 +1,4 @@
-/* 화면 틀: 위쪽에 거래명·저장 상태·주요 작업, 그 아래 메뉴 세 개(거래조건·검토 결과·서류 미리보기) */
+/* 화면 틀: 위쪽에 거래명, 저장 상태, 주요 작업, 그 아래 메뉴 세 개(거래조건, 검토 결과, 서류 미리보기) */
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { DropdownMenu } from "radix-ui";
@@ -91,7 +91,7 @@ function DealBar({ showTabs }) {
         <div className="flex items-center gap-2">
           <span className="hidden md:inline"><SaveStatus /></span>
           <DealMenu />
-          {showTabs && <button type="button" onClick={() => nav("/docs?print=1")} className="inline-flex h-8 items-center rounded-full bg-primary px-3.5 text-[13px] font-medium text-white hover:brightness-110">인쇄·PDF</button>}
+          {showTabs && <button type="button" onClick={() => nav("/docs?print=1")} className="inline-flex h-8 items-center rounded-md bg-primary px-3.5 text-[13px] font-medium text-white hover:brightness-110">인쇄와 PDF</button>}
         </div>
       </div>
       {showTabs && (

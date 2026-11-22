@@ -1,4 +1,4 @@
-/* 기본 콘텐츠 팩 (공개 저장소용). 특정 회사·제품 정보 없이 화면 구조만 보여 줍니다.
+/* 기본 콘텐츠 팩 (공개 저장소용). 특정 회사, 제품 정보 없이 화면 구조만 보여 줍니다.
    실제 제안 콘텐츠는 프로젝트 폴더의 팩을 PACK_DIR로 지정해 빌드합니다 (README 참고). */
 import { mockDeal, snapshot, sanitize, newId as id } from "@/lib/deal/model.js";
 
@@ -66,7 +66,7 @@ export function sampleDeal() {
   d.econ = {
     ...d.econ,
     fx: { rate: "16000", date: "", source: "모의 값" }, dutyPct: "0", importVatPct: "", pph22Pct: "",
-    costs: [{ id: id(), label: "운임·보험 (모의)", amount: "500", currency: "USD", basis: "team", included: true, inCif: true, when: "before-ship", note: "모의 값" }],
+    costs: [{ id: id(), label: "운임, 보험 (모의)", amount: "500", currency: "USD", basis: "team", included: true, inCif: true, when: "before-ship", note: "모의 값" }],
     hospital: { investMode: "local", investCustom: "", price: "300000", priceKind: "mock", priceSource: "모의 값", sessions: "40", workDays: "24", horizon: "60", variable: [hv("소모품", "10000")], fixed: [hv("인건비", "5000000")] },
     scenarios: [{ id: id(), label: "보수", price: "250000", sessions: "30", note: "모의" }, { id: id(), label: "기준", price: "300000", sessions: "40", note: "모의" }, { id: id(), label: "낙관", price: "350000", sessions: "50", note: "모의" }],
   };
