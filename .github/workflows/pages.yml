@@ -21,11 +21,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # 빌드와 배포를 나눈 GitHub 기본 구성. 한 작업 안에서 올리자마자 배포하면
+  # 방금 올린 github-pages 아티팩트를 못 찾는 실패가 간헐적으로 생겨 분리함
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -38,5 +37,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v4
         with:
           path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
