@@ -2,6 +2,7 @@
    병원이 시술가, 환자 수, 결제 조건을 넣으면 손익분기와 월 손익이 바로 바뀌고,
    같은 숫자로 인도네시아어 제안서와 원장 질문 답변을 만듭니다 (AI 연결 시 문장을 다듬음). */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { currentProfile } from "../lib/profile.js";
 import { Popover } from "radix-ui";
 import { toast } from "sonner";
 import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Copy, ExternalLink, FileText, Info, KeyRound, Loader2, MessageCircleQuestion, Plus, Printer, RotateCcw, Sparkles, Square, Trash2 } from "lucide-react";
@@ -285,7 +286,7 @@ function printDoc(title, text, lang = "ko") {
 }
 
 function ProposalTab({ c, r, sens, metaFor }) {
-  const [pl, setPl] = useState("ko");
+  const [pl, setPl] = useState(() => currentProfile()?.docLang || "ko");
   const ai = useAi();
   const base = pl === "ko" ? proposalKo(c, r) : proposalId(c, r);
   const text = ai.text || base;
@@ -395,7 +396,7 @@ function SourcesTab({ c, r }) {
 /* ---------- 페이지 ---------- */
 export default function HospitalReviewPage() {
   const [store, setStore] = useState(loadCases);
-  const [lang, setLang] = useState("ko");
+  const [lang, setLang] = useState(() => currentProfile()?.docLang || "ko");
   const [tab, setTab] = useState("cash");
   const c = store.list.find((x) => x.id === store.active) || store.list[0];
   useEffect(() => { saveCases(store); }, [store]);

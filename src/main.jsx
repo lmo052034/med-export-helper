@@ -12,6 +12,21 @@ import HomePage from "./pages/HomePage.jsx";
 import PricePage from "./pages/PricePage.jsx";
 import EvidencePage from "./pages/EvidencePage.jsx";
 import HospitalReviewPage from "./pages/HospitalReviewPage.jsx";
+import StartPage from "./pages/StartPage.jsx";
+import SetupPage from "./pages/SetupPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
+import WorkspacePage from "./pages/WorkspacePage.jsx";
+import { useProfile } from "./lib/profile.js";
+
+/* 설정한 사용자는 홈(또는 고른 시작 화면), 처음 온 사람은 사이트 안내 */
+function HomeGate() {
+  const p = useProfile();
+  if (!p) return <StartPage />;
+  let first = false;
+  try { first = !sessionStorage.getItem("mdk:started"); sessionStorage.setItem("mdk:started", "1"); } catch { /* 세션 저장 불가 */ }
+  if (first && p.start && p.start !== "/") return <Navigate to={p.start} replace />;
+  return <WorkspacePage />;
+}
 
 // 이전 메뉴 주소(공유된 링크, 즐겨찾기)는 오류 없이 거래서류 화면으로 보냅니다
 const OLD = ["/readiness", "/readiness/:id", "/programs", "/market", "/compliance", "/promo", "/buyer", "/log", "/cases", "/cases/:id"];
@@ -23,7 +38,11 @@ createRoot(document.getElementById("root")).render(
       <DealProvider>
         <AppShell>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomeGate />} />
+            <Route path="/start" element={<StartPage />} />
+            <Route path="/setup" element={<SetupPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/overview" element={<HomePage />} />
             <Route path="/desk" element={<div className="min-h-[60vh] bg-[var(--surface-2)]"><Desk /></div>} />
             <Route path="/price" element={<PricePage />} />
             <Route path="/evidence" element={<EvidencePage />} />

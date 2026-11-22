@@ -6,7 +6,7 @@ const reviewTab = (page) => page.getByRole('navigation', { name: '거래서류 �
 
 test('시연 흐름: 구성 변경 → 금액 갱신 → 중량·서명 누락 이동 → 입력 후 해소 → 인쇄', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
+  await page.goto('/#/overview');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '거래와 서류' }).click();
   await expect(page).toHaveURL(/#\/deal$/);
@@ -135,7 +135,7 @@ test('이전 메뉴 주소는 오류 없이 거래서류로, 모르는 주소는
 
 test('모바일 390px: 입력·미리보기 전환, 가로 넘침 없음', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const p of ['/#/', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/price?tab=cash', '/#/deal', '/#/review', '/#/docs', '/#/evidence']) {
+  for (const p of ['/#/', '/#/setup', '/#/overview', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/price?tab=cash', '/#/deal', '/#/review', '/#/docs', '/#/evidence']) {
     await page.goto(p);
     const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(over, p).toBeLessThanOrEqual(0);
@@ -233,4 +233,32 @@ test('대표 모의 거래 다시 열기는 내 거래를 덮어쓰지 않음', 
   const names = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('mdk:deals')).list).map((d) => [d.kind, d.meta.name]));
   expect(names.some(([, n]) => n === '내 거래 보존')).toBe(true);
   expect(names.filter(([k]) => k === 'sample').length).toBe(1);
+});
+
+test('처음 온 사람: 사이트 안내 → 3단계 설정 → 이름 인사 홈, 설정 저장', async ({ page }) => {
+  const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
+  await page.getByRole('button', { name: '사용자 설정 시작' }).click();
+  await expect(page.getByText('1/3단계')).toBeVisible();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page.getByRole('alert')).toContainText('이름을 입력');
+  await page.getByLabel('이름').fill('테스트');
+  await page.getByRole('button', { name: '다음' }).click();
+  await page.getByRole('radio', { name: /현지 파트너|PT/ }).first().check();
+  await page.getByRole('radio', { name: /현지 영업/ }).check();
+  await page.getByRole('button', { name: '다음' }).click();
+  await expect(page.getByText('3/3단계')).toBeVisible();
+  await page.getByRole('button', { name: '설정 완료' }).click();
+  await expect(page.getByRole('heading', { name: '테스트님, 안녕하세요' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /내 할 일, 현지 영업/ })).toBeVisible();
+  await page.getByRole('link', { name: '수익성' }).first().click();
+  await page.goto('/#/settings');
+  await page.getByLabel('직함').fill('영업 과장');
+  await expect(page.getByText('저장하지 않은 변경 사항')).toBeVisible();
+  await page.getByRole('button', { name: '저장', exact: true }).click();
+  await page.goto('/');
+  await expect(page.getByText('영업 과장')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '최근 연 화면' })).toBeVisible();
+  expect(errors).toEqual([]);
 });
