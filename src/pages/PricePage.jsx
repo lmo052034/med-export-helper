@@ -1,4 +1,4 @@
-/* 가격·수익성: 거래 가격 / 병원 운영 / 결제 흐름. 모두 같은 거래 데이터와 econ.js 계산 함수를 씁니다 */
+/* 가격과 수익성: 거래 가격 / 병원 운영 / 결제 흐름. 모두 같은 거래 데이터와 econ.js 계산 함수를 씁니다 */
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Plus, RotateCcw, Trash2 } from "lucide-react";
@@ -158,7 +158,7 @@ function Hospital({ onEv }) {
           <Stat testid="h-bep" k="운영 손익분기 시술량" v={H.bep !== null ? `월 ${H.bep}회` : "산출 불가"} tone={H.bep === null && H.bepNote ? "warn" : undefined} sub={H.bep !== null ? "고정비 ÷ 회당 공헌액, 올림" : H.bepNote} delta={B && H.bep !== null && B.bep !== null && H.bep !== B.bep ? `기준안 월 ${B.bep}회` : null} />
           <Stat testid="h-payback" k="단순 투자 회수 예상" v={H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"} tone={H.payback === null && H.paybackNote ? "warn" : undefined} sub={H.payback !== null ? `도입비 ${rp(H.invest)} ÷ 월 현금잉여` : H.paybackNote} delta={B && H.payback !== null && B.payback !== null && Math.abs(H.payback - B.payback) > 0.05 ? `기준안 ${fmt(B.payback, 1)}개월` : null} />
         </dl>
-        <p className="mt-2 text-[12px] text-[#86868b]">월 조건이 일정하다는 전제의 모의 분석이에요. 수요 예측이나 성공 가능성이 아니에요.</p>
+        <p className="mt-2 text-[12px] text-[#86868b]">월 조건이 일정하다는 전제의 계산이에요. 수요 예측이나 성공 가능성이 아니에요.</p>
 
         <div className="mt-8">
           <h3 className="text-[15px] font-semibold">시술량별 월 운영 현금잉여</h3>
@@ -280,13 +280,13 @@ function DealPrice({ onEv }) {
 
         <fieldset>
           <legend className="mb-1 flex w-full items-center text-[15px] font-semibold">현지 판매가 (파트너 → 병원, {lc})<span className="ml-auto"><EvidenceButton path="local.lines" onOpen={onEv} /></span></legend>
-          <p className="mb-3 text-[12px] text-[#6e6e73]">수출가에 환율을 곱해 정하지 않아요. 파트너가 제시한 값이나 팀이 정한 모의 값만 써요.</p>
+          <p className="mb-3 text-[12px] text-[#6e6e73]">수출가에 환율을 곱해 정하지 않아요. 파트너가 제시한 값이나 팀이 정한 내부 설정값만 써요.</p>
           {deal.local.lines.map((l, i) => (
             <div key={l.id} className="mb-2"><NumField path={`local.lines.${l.id}.price`} label={`${l.desc ? l.desc.slice(0, 40) + (l.desc.length > 40 ? "…" : "") : `현지 품목 ${i + 1}`} 공급가`} unit={lc} slider={{ min: 300000000, max: 700000000, step: 1000000 }} hint={`수량 ${l.qty || "—"} ${l.unit}`} /></div>
           ))}
           <div className="grid grid-cols-2 gap-4">
             <NumField path="local.vatPct" label="부가세율" unit="%" hint="현지 견적에 표시" />
-            <SelectField path="local.priceBasis" label="현지 가격의 출처" options={[["", "선택"], ["partner", "파트너 제시"], ["mock", "팀 모의 설정"]]} />
+            <SelectField path="local.priceBasis" label="현지 가격의 출처" options={[["", "선택"], ["partner", "파트너 제시"], ["mock", "내부 설정값"]]} />
           </div>
           <p className="mt-2 text-[14px]">병원 도입가 <b className="tabular-nums">{rp(total)}</b> <span className="text-[12px] text-[#6e6e73]">부가세 포함. 현지 견적과 병원 운영의 초기 도입비에 함께 반영돼요.</span></p>
         </fieldset>
@@ -373,14 +373,14 @@ export default function PricePage() {
     <div className="mx-auto max-w-[1200px] px-4 pb-28 sm:px-6 lg:pb-20">
       <div className="flex flex-wrap items-end justify-between gap-4 pt-10 pb-6">
         <div>
-          <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">가격·수익성</h1>
+          <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">가격과 수익성</h1>
           <p className="mt-1 max-w-[640px] text-[15px] text-[#424245]">같은 거래 데이터로 계산해요. 병원 판매가를 바꾸면 현지 견적과 병원 도입비가, 시술량을 바꾸면 병원 손익만 바뀌어요.</p>
         </div>
         {deal.baseline && (
           <button type="button" onClick={() => actions.resetToBaseline()} disabled={!anyChanged} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--line-strong)] px-4 text-[14px] font-medium disabled:opacity-40"><RotateCcw className="size-4" />기준값으로 되돌리기</button>
         )}
       </div>
-      <div role="tablist" aria-label="가격·수익성 보기" className="seg mb-8">
+      <div role="tablist" aria-label="가격과 수익성 보기" className="seg mb-8">
         {TABS.map(([k, l]) => <button key={k} role="tab" type="button" aria-selected={tab === k} onClick={() => setParams({ tab: k })} className="seg-btn">{l}</button>)}
       </div>
       {tab === "hospital" && <Hospital onEv={setEv} />}

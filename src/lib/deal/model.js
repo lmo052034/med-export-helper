@@ -51,7 +51,7 @@ export function blankDeal() {
   };
 }
 
-/* 가격·수익성 입력. 출처 구분 basis: company 회사 자료, public 공개자료, team 팀 설정(모의), user 사용자 입력 */
+/* 가격과 수익성 입력. 출처 구분 basis: company 회사 자료, public 공개자료, team 팀 설정(모의), user 사용자 입력 */
 export function blankEcon() {
   return {
     fx: { rate: "", date: "", source: "" }, // 현지 통화 / 수출 통화 (예: IDR per USD)

@@ -11,7 +11,7 @@ import { summarize } from "../../lib/deal/checks.js";
 import { Toaster } from "../ui/sonner.jsx";
 import { cn } from "@/lib/utils";
 
-export const KIND = { user: "내 거래", mock: "모의 거래", case: "불러온 사례", sample: "대표 모의 거래" };
+export const KIND = { user: "내 거래", mock: "연습용 거래", case: "불러온 사례", sample: "진행 중 거래" };
 
 function SaveStatus() {
   const { status } = useDeal();
@@ -54,9 +54,9 @@ function DealMenu() {
               ))}
             </DropdownMenu.RadioGroup>
             <DropdownMenu.Separator className="my-1 h-px bg-[var(--line)]" />
-            <DropdownMenu.Item className={item} onSelect={actions.openSample}><Star className="size-4" />대표 모의 거래 열기</DropdownMenu.Item>
+            <DropdownMenu.Item className={item} onSelect={actions.openSample}><Star className="size-4" />진행 중 거래 열기</DropdownMenu.Item>
             <DropdownMenu.Item className={item} onSelect={actions.newBlank}><FilePlus2 className="size-4" />새 거래 (빈칸)</DropdownMenu.Item>
-            <DropdownMenu.Item className={item} onSelect={actions.openMock}><FlaskConical className="size-4" />모의 거래 열기</DropdownMenu.Item>
+            <DropdownMenu.Item className={item} onSelect={actions.openMock}><FlaskConical className="size-4" />연습용 거래 열기</DropdownMenu.Item>
             <DropdownMenu.Item className={item} onSelect={() => file.current?.click()}><FileUp className="size-4" />사례 파일 불러오기 (JSON)</DropdownMenu.Item>
             <DropdownMenu.Item className={item} onSelect={download}><FileDown className="size-4" />이 거래를 파일로 내보내기</DropdownMenu.Item>
             <DropdownMenu.Separator className="my-1 h-px bg-[var(--line)]" />
@@ -68,7 +68,7 @@ function DealMenu() {
   );
 }
 
-const MENU = [["/", "수출 제안"], ["/price", "가격·수익성"], ["/hospital", "병원 도입 검토"], ["/deal", "거래서류"], ["/evidence", "근거자료"]];
+const MENU = [["/", "운영 현황"], ["/price", "가격과 수익성"], ["/hospital", "병원 도입 검토"], ["/deal", "거래서류"], ["/evidence", "근거자료"]];
 const DOC_GROUP = ["/deal", "/review", "/docs"];
 const SUBTABS = [["/deal", "거래조건 입력"], ["/review", "검토 결과"], ["/docs", "서류 미리보기"]];
 const isActive = (p, pathname) => (p === "/deal" ? DOC_GROUP.includes(pathname) : p === pathname);
@@ -156,8 +156,9 @@ export function AppShell({ children }) {
         <div className="mx-auto grid max-w-[1200px] gap-4 px-4 sm:grid-cols-[1fr_auto] sm:px-6">
           <div className="space-y-1">
             <p className="font-medium text-[#424245]">{PACK.footer.project}</p>
-            <p>대표 사례는 팀이 설정한 모의 거래예요. 회사 자료, 공개자료, 팀 설정값을 근거자료에서 구분해 보여 줘요. {PACK.asOf}.</p>
-            <p>입력한 값은 이 브라우저(localStorage)에만 저장돼요. 계산과 검토는 입력값과 규칙으로만 하며, 법적 적합성이나 통관 승인, 판매 가능 여부를 판단하지 않아요.</p>
+            {(PACK.footer.lines || []).map((t, i) => <p key={i}>{t}</p>)}
+            <p>숫자마다 출처(회사 자료, 공개자료, 내부 설정값)를 근거자료에 남겨 둡니다. {PACK.asOf}.</p>
+            <p>작업 내용은 지금 쓰는 브라우저에 저장돼요. 계산과 서류 점검은 입력값과 규칙으로 하며, 통관과 판매 허가는 담당 기관 확인을 거쳐 진행합니다.</p>
           </div>
           <Link to="/evidence" className="self-start text-[13px] font-medium text-primary">근거자료 보기</Link>
         </div>

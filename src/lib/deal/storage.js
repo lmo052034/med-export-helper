@@ -33,7 +33,7 @@ export function loadAll(makeSample = mockDeal) {
       const sample = makeSample();
       if (!Object.values(list).some((d) => d.sampleKey && d.sampleKey === sample.sampleKey)) {
         list[sample.id] = sample;
-        notes.push({ type: "sample", text: "대표 모의 거래를 목록에 추가했어요. 기존 거래는 그대로예요." });
+        notes.push({ type: "sample", text: "진행 중 거래를 목록에 추가했어요. 기존 거래는 그대로예요." });
       }
     }
   } else if (cur.raw !== null) {

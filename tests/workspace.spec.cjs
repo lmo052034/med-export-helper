@@ -228,7 +228,7 @@ test('대표 모의 거래 다시 열기는 내 거래를 덮어쓰지 않음', 
   await page.locator('#f-meta-name').fill('내 거래 보존');
   await page.waitForTimeout(400);
   await page.getByRole('button', { name: '거래', exact: true }).click();
-  await page.getByRole('menuitem', { name: '대표 모의 거래 열기' }).click();
+  await page.getByRole('menuitem', { name: '진행 중 거래 열기' }).click();
   await expect(page.getByTestId('deal-name')).not.toHaveText('내 거래 보존');
   const names = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('mdk:deals')).list).map((d) => [d.kind, d.meta.name]));
   expect(names.some(([, n]) => n === '내 거래 보존')).toBe(true);
