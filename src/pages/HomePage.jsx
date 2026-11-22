@@ -1,4 +1,4 @@
-/* 수출 제안: 제품 → 국가 → 거래 구조 → 조건 바꿔보기 → 서류·근거.
+/* 운영 현황: 제품 → 국가 → 거래 구조 → 조건 바꿔보기 → 서류·근거.
    글은 콘텐츠 팩(@pack)에서, 숫자는 대표 모의 거래의 계산 함수에서 가져옵니다 */
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -36,10 +36,20 @@ function Hero() {
           <h1 id="hero-t" className="mt-3 text-[40px] leading-[1.08] font-bold tracking-[-0.035em] sm:text-[60px] whitespace-pre-line">{h.title}</h1>
           <p className="mt-5 max-w-[520px] text-[18px] leading-relaxed text-[#424245] sm:text-[21px]">{h.lead}</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#product" className="inline-flex h-11 items-center rounded-full bg-primary px-6 text-[16px] font-medium text-white hover:brightness-110">수출 제안 살펴보기</a>
-            <Link to="/price?tab=hospital" className="inline-flex h-11 items-center gap-1 rounded-full px-5 text-[16px] font-medium text-primary hover:bg-white">거래조건 바꿔보기<ChevronRight className="size-4" /></Link>
+            <a href="#product" className="inline-flex h-11 items-center rounded-full bg-primary px-6 text-[16px] font-medium text-white hover:brightness-110">{h.cta || "진행 현황 보기"}</a>
+            <Link to="/price?tab=hospital" className="inline-flex h-11 items-center gap-1 rounded-full px-5 text-[16px] font-medium text-primary hover:bg-white">병원 수익성 검토<ChevronRight className="size-4" /></Link>
           </div>
-          <p className="mt-8 text-[13px] text-[#6e6e73]">대표 사례는 팀이 설정한 모의 거래예요. 실제 계약 조건이 아니에요.</p>
+          {h.status?.length > 0 && (
+            <dl className="mt-10 grid max-w-[560px] grid-cols-1 gap-px overflow-hidden rounded-2xl bg-[var(--line)] sm:grid-cols-3">
+              {h.status.map((s) => (
+                <div key={s.k} className="bg-white px-4 py-3">
+                  <dt className="flex items-center gap-1.5 text-[12px] text-[#6e6e73]">{s.live && <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />}{s.k}</dt>
+                  <dd className="mt-0.5 text-[14px] font-semibold leading-snug text-[#1d1d1f]">{s.v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {h.note && <p className="mt-4 text-[13px] text-[#6e6e73]">{h.note}</p>}
         </div>
         {h.image && (
           <figure className="relative mx-auto w-full max-w-[360px] md:max-w-none">
@@ -55,7 +65,7 @@ function Hero() {
 function Product() {
   const p = PACK.product;
   return (
-    <Section id="product" kicker={p.kicker || "왜 이 제품인가"} title={p.title} lead={p.lead}>
+    <Section id="product" kicker={p.kicker || "취급 제품"} title={p.title} lead={p.lead}>
       {p.handpieces.length > 0 && (
         <div className="grid gap-6 sm:grid-cols-2">
           {p.handpieces.map((hp) => (
@@ -95,7 +105,7 @@ function Country() {
   const c = PACK.country;
   if (!c.rows.length) return null;
   return (
-    <Section id="country" kicker="왜 인도네시아인가" title={c.title} lead={c.lead} tone="gray">
+    <Section id="country" kicker="진출 시장" title={c.title} lead={c.lead} tone="gray">
       <ol className="grid gap-4 md:grid-cols-3">
         {c.rows.map((r) => (
           <li key={r.country} className={cn("rounded-[24px] bg-white p-6", r.primary && "ring-2 ring-primary")}>
@@ -138,7 +148,7 @@ function Structure() {
   const idx = Object.fromEntries(s.actors.map((a, i) => [a.key, i]));
   const linkBetween = (a, b) => m.links.find((l) => (idx[l.from] === a && idx[l.to] === b) || (idx[l.from] === b && idx[l.to] === a));
   return (
-    <Section id="structure" kicker="어떻게 거래하는가" title={s.title} lead={s.lead}>
+    <Section id="structure" kicker="거래 구조" title={s.title} lead={s.lead}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div role="tablist" aria-label="보기" className="seg">
           {modes.map(([k, v]) => <button key={k} type="button" role="tab" aria-selected={mode === k} onClick={() => setMode(k)} className="seg-btn">{v.label}</button>)}
@@ -179,12 +189,12 @@ function TryIt() {
   const E = calcExport(sample), L = calcLocal(sample), H = hospitalCalc(sample);
   const kpis = [
     ["수출 단가", E.total !== null ? fmtMoney(E.total, E.cur) : "가격 확인 필요", `${sample.exp.incoterm} ${sample.exp.place}`.trim()],
-    ["병원 도입비", L.total !== null ? idr(L.total) : "—", "현지 판매가 + 부가세, 팀 모의값"],
+    ["병원 도입비", L.total !== null ? idr(L.total) : "—", "현지 판매가 + 부가세, 내부 설정값"],
     [`월 ${H.sessions ?? "—"}회 시술 시 운영 현금잉여`, idr(H.surplus), "월 조건이 일정하다는 전제"],
     ["단순 회수 예상", H.payback ? `약 ${Math.ceil(H.payback)}개월` : "산출 불가", `운영 손익분기 월 ${H.bep ?? "—"}회`],
   ];
   return (
-    <Section id="try" kicker="조건을 바꿔보기" title="판매가와 시술량을 바꾸면 병원 손익이 어떻게 달라질까요" lead="판매가와 시술량을 바꾸면 병원 손익과 회수 전망이 어떻게 달라지는지 확인할 수 있습니다." tone="gray">
+    <Section id="try" kicker="병원 수익성" title="병원 판매가와 월 시술량으로 보는 도입 손익" lead="거래처 병원과 협의 중인 판매가와 시술량을 넣으면 월 손익과 회수 기간이 바로 다시 계산됩니다." tone="gray">
       <dl className="grid gap-px overflow-hidden rounded-[24px] bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map(([k, v, n]) => (
           <div key={k} className="bg-white p-6">
@@ -194,9 +204,9 @@ function TryIt() {
           </div>
         ))}
       </dl>
-      <p className="mt-4 text-[12px] text-[#86868b]">대표 모의 거래 기준. 회당 수납액과 비용 항목의 출처는 근거자료에서 볼 수 있어요.</p>
+      <p className="mt-4 text-[12px] text-[#86868b]">진행 중 거래 기준. 회당 수납액과 비용 항목의 출처는 근거자료에서 볼 수 있어요.</p>
       <div className="mt-8 flex flex-wrap gap-3">
-        <button type="button" onClick={() => nav("/price?tab=hospital")} className="inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-6 text-[16px] font-medium text-white hover:brightness-110">가격·수익성 검토<ArrowRight className="size-4" /></button>
+        <button type="button" onClick={() => nav("/price?tab=hospital")} className="inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-6 text-[16px] font-medium text-white hover:brightness-110">가격과 수익성 검토<ArrowRight className="size-4" /></button>
       </div>
     </Section>
   );
@@ -208,10 +218,10 @@ function DocsLinks() {
   const items = [
     ["/docs", "견적서와 인보이스", "입력한 거래조건이 수출 견적서, 상업송장, 현지 견적, 메일 서명에 함께 반영돼요."],
     ["/review", "누락과 불일치 검토", s.fix ? `지금 거래에 수정 필요 ${s.fix}건, 확인 필요 ${s.confirm}건이 있어요. 누르면 해당 입력칸으로 가요.` : "총중량, 서명, 결제 합계, 인도조건을 규칙으로 확인해요."],
-    ["/evidence", "계산 근거와 자료 출처", "회사 자료, 공개자료, 팀 설정값을 나눠 보여 주고 계산식을 공개해요."],
+    ["/evidence", "계산 근거와 자료 출처", "회사 자료, 공개자료, 내부 설정값을 나눠 보여 주고 계산식을 공개해요."],
   ];
   return (
-    <Section id="docs" kicker="거래서류와 근거" title="조건이 정리되면 서류로 이어집니다">
+    <Section id="docs" kicker="서류와 근거" title="확정한 조건은 견적서와 인보이스로 바로 이어집니다">
       <ul className="divide-y divide-[var(--line)] border-y border-[var(--line)]">
         {items.map(([to, t, d]) => (
           <li key={to}>

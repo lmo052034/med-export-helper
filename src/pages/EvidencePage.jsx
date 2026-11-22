@@ -29,7 +29,7 @@ export default function EvidencePage() {
     <div className="mx-auto max-w-[1080px] px-4 pb-20 sm:px-6">
       <div className="pt-10 pb-8">
         <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">근거자료</h1>
-        <p className="mt-2 max-w-[680px] text-[15px] text-[#424245]">화면의 값이 어디서 왔는지 구분해요. 회사 자료와 공개자료는 원문 기준일을, 팀 설정과 모의 입력은 실제 거래 전에 바꿔야 할 값임을 표시해요. 현재 거래: <b>{deal.name}</b></p>
+        <p className="mt-2 max-w-[680px] text-[15px] text-[#424245]">화면의 값이 어디서 왔는지 구분해요. 회사 자료와 공개자료는 원문 기준일을, 내부 설정값은 계약 전에 거래처와 확정할 값으로 표시해요. 현재 거래: <b>{deal.name}</b></p>
         {P.note && <p className="mt-2 max-w-[680px] text-[13px] text-[#6e6e73]">{P.note}</p>}
       </div>
 
@@ -66,7 +66,7 @@ export default function EvidencePage() {
 
       <section className="pt-14">
         <h2 className="text-[22px]">계산식</h2>
-        <p className="mt-1 text-[13px] text-[#6e6e73]">모든 화면은 같은 계산 함수를 써요. 월 조건이 일정하다는 전제의 모의 분석이며, 세금과 할인율은 위에 적은 범위만 반영해요.</p>
+        <p className="mt-1 text-[13px] text-[#6e6e73]">모든 화면은 같은 계산 함수를 써요. 월 조건이 일정하다는 전제의 계산이며, 세금과 할인율은 위에 적은 범위만 반영해요.</p>
         <dl className="mt-4 divide-y divide-[var(--line)] border-y border-[var(--line)]">
           {FORMULAS.map(([k, v]) => <div key={k} className="grid gap-1 py-3 sm:grid-cols-[200px_minmax(0,1fr)] sm:gap-4"><dt className="text-[14px] font-medium">{k}</dt><dd className="text-[14px] text-[#424245]">{v}</dd></div>)}
         </dl>

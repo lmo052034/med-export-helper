@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 test('조건을 바꾸면 손익분기와 월 손익이 바로 바뀌고 저장됨', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('/#/hospital');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('몇 회부터');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('도입 수익성');
   const bep0 = await page.getByTestId('bep').innerText();
   await page.getByLabel('회당 시술가', { exact: true }).fill('250000');
   await expect(page.getByTestId('bep')).not.toHaveText(bep0);

@@ -4,7 +4,7 @@ import { useDeal } from "../../lib/deal/DealContext.jsx";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "../ui/sheet.jsx";
 import { cn } from "@/lib/utils";
 
-export const EV_STATUS = [["company", "회사 자료"], ["official", "공식·공개자료"], ["team", "팀 설정·제안"], ["mock", "모의 입력"], ["user", "사용자 입력"]];
+export const EV_STATUS = [["company", "회사 자료"], ["official", "공식·공개자료"], ["team", "팀 설정·제안"], ["mock", "내부 설정값"], ["user", "사용자 입력"]];
 export const FIELD_NAMES = {
   "": "거래 전체", "exp.items": "제품·가격", "exp.incoterm": "인도조건", "exp.payment": "결제조건", "exp.nw": "순중량", "exp.gw": "총중량",
   "exp.items.hs": "HS 코드", "product": "제품", "market": "시장", "econ.fx": "환율", "econ.hospital.price": "회당 수납액", "econ.hospital.fixed": "병원 고정비", "econ.hospital.variable": "병원 변동비", "parties.partner": "현지 파트너", "parties.maker": "제조사", "local.lines": "현지 가격", "registration": "등록·인증", "tariff": "관세·세금", "structure": "거래 구조",

@@ -420,8 +420,8 @@ export default function HospitalReviewPage() {
       <div className="border-b border-[var(--line)] bg-white">
         <div className="mx-auto max-w-[1200px] px-4 pt-8 pb-6 sm:px-6 sm:pt-12">
           <p className="text-[13px] font-semibold text-primary">병원 도입 검토 <span className="font-normal text-[#86868b]">{DEVICE.model ? `${DEVICE.model}, ` : ""}{PACK_LABEL}</span></p>
-          <h1 className="mt-2 text-[32px] sm:text-[44px]">이 병원 조건이면, 몇 회부터 남을까요?</h1>
-          <p className="mt-3 max-w-[680px] text-[17px] leading-relaxed text-[#424245]">원장이 말하는 시술가, 환자 수, 결제 조건을 그 자리에서 넣으면 손익분기와 월 손익이 바로 바뀌어요. 같은 숫자로 인도네시아어 제안서와 질문 답변을 만들어요.</p>
+          <h1 className="mt-2 text-[32px] sm:text-[44px]">병원별 도입 수익성 검토</h1>
+          <p className="mt-3 max-w-[680px] text-[17px] leading-relaxed text-[#424245]">원장이 말하는 시술가, 환자 수, 결제 조건을 그 자리에서 넣으면 손익분기와 월 손익이 바로 바뀌어요. 같은 숫자로 제안서(한국어, 인도네시아어)와 원장 질문 답변을 만들어요.</p>
           <div className="mt-6 flex flex-wrap items-end gap-3">
             <div className="min-w-[200px] flex-1 sm:max-w-[280px]">
               <label htmlFor="case-pick" className="mb-1 block text-[12px] text-[#6e6e73]">검토 중인 병원 ({store.list.length}곳 저장)</label>

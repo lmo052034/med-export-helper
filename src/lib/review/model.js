@@ -54,7 +54,7 @@ export const SOURCES = { ...COMMON_SOURCES, ...(R.sources || {}) };
 export const FACTS = R.facts || [];
 export const BENCHMARKS = R.benchmarks || [];
 export const FAQ_FACTS = R.faq || {};
-export const PACK_LABEL = R.label || "예시 조건 (공개판)";
+export const PACK_LABEL = R.label || "기본 검토 조건";
 
 let seq = 0;
 export const caseId = () => `h${Date.now().toString(36)}${(seq++).toString(36)}`;

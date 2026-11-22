@@ -284,7 +284,7 @@ export default function TermsPage() {
               <p className="mb-3 text-[13px] text-[#6e6e73]">현지 판매는 수출 거래와 별개의 계약이에요. 현지 가격은 수출가에 환율을 곱해 만들지 않고, 파트너가 준 값이나 팀이 정한 모의 값만 써요.</p>
               <Grid cols={3}>
                 <DealField path="local.currency" label="현지 통화" type="select" options={CUR} />
-                <DealField path="local.priceBasis" label="현지 가격의 출처" type="select" options={[["", "선택"], ["partner", "파트너 제공"], ["mock", "팀 모의 설정"]]} evidence="local.lines" onEvidence={setEv} />
+                <DealField path="local.priceBasis" label="현지 가격의 출처" type="select" options={[["", "선택"], ["partner", "파트너 제공"], ["mock", "내부 설정값"]]} evidence="local.lines" onEvidence={setEv} />
                 <DealField path="local.vatPct" label="부가세율" type="number" suffix="%" />
               </Grid>
               <Sub>현지 견적 품목</Sub>
