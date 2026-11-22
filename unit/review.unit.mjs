@@ -62,3 +62,11 @@ test("빈칸은 0으로 치지 않음: 시술가가 비면 결과 미완성", ()
   assert.equal(r.complete, false);
   assert.equal(r.ps.contribution, null);
 });
+
+test("배분 기간이 비면 머리 손익분기는 운영비만 기준으로 대신 표시", async () => {
+  const { headBep, headProfit } = await import("../src/lib/review/calc.js");
+  const c = base(); c.device.lifeMonths = "";
+  const r = review(c);
+  assert.equal(headBep(r), r.bepOperating);
+  assert.equal(headProfit(r), r.opProfit);
+});

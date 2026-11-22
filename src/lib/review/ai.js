@@ -23,15 +23,15 @@ Rules:
 - Call every assumption an assumption ("asumsi") and say which numbers the hospital should replace with its own.
 - Do not promise revenue or treatment results. Clinical use follows the product registration and the doctor's judgment.
 - BPJS: do not claim BPJS pays separately for this procedure; the calculation counts self-pay and private-insurance patients only.
-- Write Rupiah as Rp1.234.567. Be concise and concrete, in a polite business tone suitable for a hospital director.
-- After the Indonesian text, add a line "---" and a short Korean summary (3-5 lines) for the Korean team. In the Korean part, do not use the middle dot character as a separator.`;
+- Write Rupiah as Rp1.234.567 in Indonesian text and Rp1,234,567 in Korean text. Be concise and concrete, in a polite business tone suitable for a hospital director.
+- Korean text: plain, polite business Korean. Never use the middle dot character as a separator; use commas, parentheses or line breaks.`;
 
-export async function generate({ apiKey, task, context, question, lang = "id", onText, signal }) {
+export async function generate({ apiKey, task, context, question, lang = "ko", onText, signal }) {
   const Anthropic = await sdk();
   const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
   const ask = task === "proposal"
-    ? `Write a one-page proposal letter in Bahasa Indonesia from the distributor to the hospital director: subject line, greeting, the result in 3-4 bullet points, the payment scheme, the assumptions to confirm, and next steps (demo, official quotation, contract terms).`
-    : `The hospital director asks: "${question}". Answer in ${lang === "ko" ? "Korean first, then Bahasa Indonesia" : "Bahasa Indonesia"}, in 3-6 sentences, using the context numbers. If the context cannot answer it, say what data is needed and who can provide it.`;
+    ? `Write a one-page proposal letter ${lang === "id" ? "in Bahasa Indonesia" : "in Korean"} from the distributor to the hospital director: title, greeting, the result in 3-4 bullet points, the payment scheme, the assumptions to confirm, and next steps (demo, official quotation, contract terms).`
+    : `The hospital director asks: "${question}". Answer in Korean in 3-6 sentences using the context numbers, then add one line "인도네시아어:" followed by the same answer in Bahasa Indonesia. If the context cannot answer it, say what data is needed and who can provide it.`;
   const stream = client.beta.messages.stream({
     model: MODEL,
     max_tokens: 4000,
