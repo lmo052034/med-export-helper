@@ -73,8 +73,8 @@ export default function Desk() {
                 </thead>
                 <tbody>
                   {D.hospitals.map((h) => (
-                    <tr key={h.name} className="border-b border-[var(--line)] last:border-0">
-                      <td className="py-2.5 pl-5 sm:pl-6"><span className="font-medium text-[#1d1d1f]">{h.name}</span><span className="block text-[12px] text-[#86868b]">{h.city}</span></td>
+                    <tr key={h.id} className="border-b border-[var(--line)] last:border-0">
+                      <td className="py-2.5 pl-5 sm:pl-6"><Link to={`/desk/h/${h.id}`} className="font-medium text-primary hover:underline">{h.name}</Link><span className="block text-[12px] text-[#86868b]">{h.city}</span></td>
                       <td className="py-2.5"><span className="rounded-full bg-[var(--fill-soft)] px-2 py-0.5 text-[12px] whitespace-nowrap">{h.stage}</span></td>
                       <td className="py-2.5 whitespace-nowrap text-[#424245]">{h.owner}</td>
                       <td className="py-2.5 text-[#424245]">{h.next}</td>
@@ -96,8 +96,8 @@ export default function Desk() {
                 const K = KINDS[t.kind] || KINDS.doc;
                 const I = K.icon;
                 return (
-                  <li key={t.title}>
-                    <Link to={K.to} className="flex gap-3 py-3 hover:bg-[var(--fill-soft)] -mx-2 px-2 rounded-lg">
+                  <li key={t.id}>
+                    <Link to={`/desk/t/${t.id}`} className="flex gap-3 py-3 hover:bg-[var(--fill-soft)] -mx-2 px-2 rounded-lg">
                       <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-[var(--fill-soft)] text-primary"><I className="size-4" aria-hidden="true" /></span>
                       <span className="min-w-0 flex-1">
                         <span className="block text-[14px] font-medium leading-snug text-[#1d1d1f]">{t.title}</span>

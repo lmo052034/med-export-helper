@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { TaskDetailPage, HospitalDetailPage } from "./pages/TaskPage.jsx";
 import "./index.css";
 import { DealProvider } from "./lib/deal/DealContext.jsx";
 import { AppShell } from "./components/deal/AppShell.jsx";
@@ -44,6 +45,8 @@ createRoot(document.getElementById("root")).render(
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/overview" element={<HomePage />} />
             <Route path="/desk" element={<div className="min-h-[60vh] bg-[var(--surface-2)]"><Desk /></div>} />
+            <Route path="/desk/t/:id" element={<TaskDetailPage />} />
+            <Route path="/desk/h/:id" element={<HospitalDetailPage />} />
             <Route path="/price" element={<PricePage />} />
             <Route path="/evidence" element={<EvidencePage />} />
             <Route path="/hospital" element={<HospitalReviewPage />} />

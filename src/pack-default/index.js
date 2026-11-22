@@ -1,6 +1,7 @@
 /* 기본 콘텐츠 팩 (공개 저장소용). 특정 회사, 제품 정보 없이 화면 구조만 보여 줍니다.
    실제 제안 콘텐츠는 프로젝트 폴더의 팩을 PACK_DIR로 지정해 빌드합니다 (README 참고). */
 import { mockDeal, snapshot, sanitize, newId as id } from "@/lib/deal/model.js";
+import { makeDesk } from "./desk-details.js";
 
 export const PACK = {
   key: "default",
@@ -36,24 +37,12 @@ export const PACK = {
     title: "업무 현황",
     asOf: "11월 23일 (월) 기준",
     stages: ["문의", "시연", "견적 발송", "계약 협의", "설치, 교육"],
-    hospitals: [
-      { name: "민간병원 A", city: "자카르타 남부", stage: "시연", owner: "현지 영업", next: "원내 시연, 재활의학과 치료사 2명 참석", due: "11.27" },
-      { name: "재활클리닉 B", city: "반둥", stage: "견적 발송", owner: "현지 영업", next: "견적 회신 확인 (11.18 발송)", due: "11.25" },
-      { name: "종합병원 C 재활의학과", city: "탕그랑", stage: "계약 협의", owner: "본사 해외영업", next: "계약금 30%, 납기 조건 협의", due: "11.29" },
-      { name: "정형외과 병원 D", city: "수라바야", stage: "견적 발송", owner: "현지 영업", next: "할부 36개월 조건으로 수정 견적", due: "11.24" },
-      { name: "스포츠클리닉 E", city: "족자카르타", stage: "문의", owner: "현지 영업", next: "시연 일정 조율", due: "12.02" },
-      { name: "민간병원 F", city: "브카시", stage: "문의", owner: "현지 영업", next: "첫 방문, 담당 원장 면담", due: "12.04" },
-    ],
-    tasks: [
-      { kind: "quote", title: "정형외과 병원 D 수정 견적 발송", owner: "현지 영업", meta: "할부 36개월", due: "11.24", sort: 1 },
-      { kind: "follow", title: "민간병원 A 원장 질문 회신", owner: "본사 해외영업", meta: "BPJS 환자 적용 여부", due: "11.24", sort: 2 },
-      { kind: "quote", title: "재활클리닉 B 견적 회신 확인", owner: "현지 영업", meta: "2차 연락", due: "11.25", sort: 3 },
-      { kind: "as", title: "시연 장비 핸드피스 점검", owner: "현지 기술팀", meta: "시연 전 출력 확인", due: "11.25", sort: 4 },
-      { kind: "doc", title: "포장명세서에 실측 중량 반영", owner: "본사 해외영업", due: "11.26", sort: 5 },
-      { kind: "demo", title: "민간병원 A 원내 시연", owner: "현지 영업, 현지 기술팀", meta: "10:00", due: "11.27", sort: 6 },
-      { kind: "ship", title: "항공 운임 견적 2곳 비교 후 확정", owner: "본사 해외영업", due: "11.27", sort: 7 },
-      { kind: "doc", title: "원산지증명서 발급 신청", owner: "본사 해외영업", meta: "FTA 특혜 관세용", due: "11.28", sort: 8 },
-    ],
+    ...makeDesk({
+      hq: "본사 해외영업", sales: "현지 영업", tech: "현지 기술팀", demoTeam: "현지 영업, 현지 기술팀",
+      ptOrg: "현지 파트너", device: "치료 장비", hpA: "핸드피스 A", hpB: "핸드피스 B",
+      hpCompare: "시연 일정 조율", asTitle: "시연 장비 핸드피스 점검",
+      hpLifeNote: "핸드피스 교체 기준(사용 횟수)은 제조사 자료로 확인 필요",
+    }),
     note: "현황판의 병원과 일정은 화면 구성용 샘플 데이터입니다.",
   },
   footer: { project: "파트너 데스크, 본사 해외영업팀과 현지 파트너 공용", lines: ["본사 해외영업과 현지 파트너가 병원 영업, 견적, 선적 서류를 함께 보는 화면입니다."] },
