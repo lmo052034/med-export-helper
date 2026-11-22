@@ -65,7 +65,7 @@ function Today({ listOnly, className }) {
           {next.map((t) => (
             <tr key={t.title} className="border-b border-[var(--line)] last:border-0">
               <td className="w-14 py-2 align-top tabular-nums font-medium text-[#1d1d1f]">{t.due}</td>
-              <td className="py-2 align-top">{t.title}<span className="block text-[12px] text-[#86868b]">{t.owner}{t.meta ? `, ${t.meta}` : ""}</span></td>
+              <td className="py-2 align-top"><Link to={`/desk/t/${t.id}`} className="font-medium text-primary hover:underline">{t.title}</Link><span className="block text-[12px] text-[#86868b]">{t.owner}{t.meta ? `, ${t.meta}` : ""}</span></td>
             </tr>
           ))}
         </tbody>
@@ -89,7 +89,7 @@ function Today({ listOnly, className }) {
             {next.map((t) => (
               <tr key={t.title} className="border-b border-[var(--line)] last:border-0">
                 <td className="w-14 py-2 align-top tabular-nums font-medium text-[#1d1d1f]">{t.due}</td>
-                <td className="py-2 align-top">{t.title}<span className="block text-[12px] text-[#86868b]">{t.owner}{t.meta ? `, ${t.meta}` : ""}</span></td>
+                <td className="py-2 align-top"><Link to={`/desk/t/${t.id}`} className="font-medium text-primary hover:underline">{t.title}</Link><span className="block text-[12px] text-[#86868b]">{t.owner}{t.meta ? `, ${t.meta}` : ""}</span></td>
               </tr>
             ))}
           </tbody>

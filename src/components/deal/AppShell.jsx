@@ -138,7 +138,7 @@ export function AppShell({ children }) {
   const [menu, setMenu] = useState(false);
   const profile = useProfile();
   const { deal, actions } = useDeal();
-  useEffect(() => { touchRecent(pathname); }, [pathname]);
+  useEffect(() => { touchRecent(pathname); if (pathname.startsWith("/desk/")) window.scrollTo(0, 0); }, [pathname]);
   const fromOld = new URLSearchParams(search).get("from") === "old";
   const bare = pathname === "/setup" || ((pathname === "/" || pathname === "/start") && !profile);
   const work = !["/", "/desk", "/evidence", "/hospital", "/overview", "/start", "/setup", "/settings"].includes(pathname);

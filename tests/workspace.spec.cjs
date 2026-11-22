@@ -262,3 +262,25 @@ test('처음 온 사람: 사이트 안내 → 3단계 설정 → 이름 인사 �
   await expect(page.getByRole('heading', { name: '최근 연 화면' })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('할 일과 병원을 누르면 세부 화면: 상황, 처리 순서, 진행 기록, 참고 자료', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/#/desk');
+  await page.getByRole('link', { name: /원장 질문 회신/ }).first().click();
+  await expect(page).toHaveURL(/#\/desk\/t\/t-follow-a/);
+  await expect(page.getByRole('heading', { name: '무슨 일인가요' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '처리 순서' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '참고한 실무 자료' })).toBeVisible();
+  await expect(page.getByText('1/4 완료')).toBeVisible();
+  await page.getByText('2. 병원 BPJS 담당에게').click();
+  await expect(page.getByText('2/4 완료')).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('2/4 완료')).toBeVisible();
+  await page.getByRole('link', { name: '민간병원 A', exact: true }).click();
+  await expect(page).toHaveURL(/#\/desk\/h\/h-a/);
+  await expect(page.getByRole('heading', { name: '진행 기록' })).toBeVisible();
+  await page.goto('/#/desk/t/nope');
+  await expect(page).toHaveURL(/#\/desk$/);
+  expect(errors).toEqual([]);
+});

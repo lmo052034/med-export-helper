@@ -77,9 +77,9 @@ function MyWork({ p }) {
               <thead className="text-[12px] text-[#86868b]"><tr className="border-b border-[var(--line)]"><th className="w-16 py-2 pl-5 font-normal">기한</th><th className="py-2 font-normal">할 일</th><th className="hidden py-2 pr-5 font-normal sm:table-cell">담당</th></tr></thead>
               <tbody>
                 {list.map((t) => (
-                  <tr key={t.title} className="border-b border-[var(--line)] last:border-0">
+                  <tr key={t.id} className="border-b border-[var(--line)] last:border-0">
                     <td className="py-2.5 pl-5 align-top font-medium tabular-nums">{t.due}</td>
-                    <td className="py-2.5 pr-3 align-top">{t.title}{t.meta && <span className="block text-[12px] text-[#86868b]">{t.meta}</span>}</td>
+                    <td className="py-2.5 pr-3 align-top"><Link to={`/desk/t/${t.id}`} className="font-medium text-primary hover:underline">{t.title}</Link>{t.meta && <span className="block text-[12px] text-[#86868b]">{t.meta}</span>}</td>
                     <td className="hidden py-2.5 pr-5 align-top text-[13px] whitespace-nowrap text-[#6e6e73] sm:table-cell">{t.owner}</td>
                   </tr>
                 ))}
