@@ -68,7 +68,7 @@ function DealMenu() {
   );
 }
 
-const MENU = [["/", "운영 현황"], ["/price", "가격과 수익성"], ["/hospital", "병원 도입 검토"], ["/deal", "거래서류"], ["/evidence", "근거자료"]];
+const MENU = [["/", "업무 현황"], ["/price", "견적과 마진"], ["/hospital", "병원 제안"], ["/deal", "선적 서류"], ["/evidence", "자료실"]];
 const DOC_GROUP = ["/deal", "/review", "/docs"];
 const SUBTABS = [["/deal", "거래조건 입력"], ["/review", "검토 결과"], ["/docs", "서류 미리보기"]];
 const isActive = (p, pathname) => (p === "/deal" ? DOC_GROUP.includes(pathname) : p === pathname);

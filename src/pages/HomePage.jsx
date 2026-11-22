@@ -1,4 +1,4 @@
-/* 운영 현황: 제품 → 국가 → 거래 구조 → 조건 바꿔보기 → 서류·근거.
+/* 업무 현황: 업무 현황판 → 제품, 시장, 거래 구조 기준 → 서류와 근거.
    글은 콘텐츠 팩(@pack)에서, 숫자는 대표 모의 거래의 계산 함수에서 가져옵니다 */
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import { hospitalCalc } from "../lib/deal/econ.js";
 import { summarize } from "../lib/deal/checks.js";
 import { fmtMoney } from "../lib/deal/money.js";
 import { cn } from "@/lib/utils";
+import Desk from "../components/deal/Desk.jsx";
 
 const idr = (v) => (v === null || v === undefined ? "—" : `Rp ${Math.round(v).toLocaleString("en-US")}`);
 
@@ -239,11 +240,10 @@ function DocsLinks() {
 export default function HomePage() {
   return (
     <>
-      <Hero />
+      <Desk />
       <Product />
       <Country />
       <Structure />
-      <TryIt />
       <DocsLinks />
     </>
   );
