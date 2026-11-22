@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { PEOPLE, TIMEZONES, DOC_LANGS, START_PAGES, saveProfile, useProfile } from "../lib/profile.js";
 import { Row, Choice, Select } from "./SetupPage.jsx";
+import LogoutDialog from "../components/deal/LogoutDialog.jsx";
 
 const CTRL = "h-11 w-full rounded-lg border border-[var(--line-strong)] bg-white px-3 text-[15px] outline-none focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20";
 
@@ -24,6 +25,7 @@ export default function SettingsPage() {
   const profile = useProfile();
   const nav = useNavigate();
   const [p, setP] = useState(profile);
+  const [out, setOut] = useState(false);
   useEffect(() => { if (!profile) nav("/setup", { replace: true }); }, [profile, nav]);
   if (!profile || !p) return null;
   const set = (k) => (v) => setP((x) => ({ ...x, [k]: v }));
@@ -71,9 +73,10 @@ export default function SettingsPage() {
             <p className="text-[14px]"><Link to="/start" className="font-medium text-primary hover:underline">사이트 안내 다시 보기</Link></p>
           </Section>
 
-          <Section title="이 브라우저의 데이터" desc="사용자 정보와 거래는 따로 저장됩니다.">
-            <p className="text-[14px] leading-relaxed text-[#424245]">사용자 정보를 지워도 저장한 거래는 남습니다. 거래를 지우려면 화면 위 '거래' 메뉴를 쓰세요.</p>
-            <div><button type="button" onClick={() => { if (confirm("이 브라우저의 사용자 정보를 지울까요? 거래는 남습니다.")) { saveProfile(null); nav("/start", { replace: true }); } }} className="h-10 rounded-lg border border-[var(--line-strong)] px-4 text-[14px] font-medium text-amber-800 hover:bg-[var(--fill-soft)]">사용자 정보 지우기</button></div>
+          <Section title="로그아웃" desc="다른 사람이 이 컴퓨터를 쓰거나, 처음부터 다시 설정할 때.">
+            <p className="text-[14px] leading-relaxed text-[#424245]">사용자 정보만 지울지, 거래와 체크 내용까지 모두 지울지 고를 수 있습니다.</p>
+            <div><button type="button" onClick={() => setOut(true)} className="h-10 rounded-lg border border-[var(--line-strong)] px-4 text-[14px] font-medium hover:bg-[var(--fill-soft)]">로그아웃</button></div>
+            <LogoutDialog open={out} onOpenChange={setOut} />
           </Section>
         </div>
       </div>

@@ -284,3 +284,28 @@ test('할 일과 병원을 누르면 세부 화면: 상황, 처리 순서, 진�
   await expect(page).toHaveURL(/#\/desk$/);
   expect(errors).toEqual([]);
 });
+
+test('로그아웃: 사용자 정보만 지우면 거래는 남고 사이트 안내로', async ({ page }) => {
+  await page.goto('/#/setup');
+  await page.getByLabel('이름').fill('테스트');
+  await page.getByRole('button', { name: '다음' }).click();
+  await page.getByRole('button', { name: '다음' }).click();
+  await page.getByRole('button', { name: '설정 완료' }).click();
+  await expect(page.getByRole('heading', { name: '테스트님, 안녕하세요' })).toBeVisible();
+  await page.getByRole('button', { name: '로그아웃' }).click();
+  await expect(page.getByRole('dialog')).toContainText('사용자 정보만 지우기');
+  await page.getByRole('dialog').getByRole('button', { name: '로그아웃' }).click();
+  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('mdk:profile'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('mdk:deals'))).not.toBeNull();
+  await page.goto('/#/setup');
+  await page.getByLabel('이름').fill('둘째');
+  await page.getByRole('button', { name: '다음' }).click();
+  await page.getByRole('button', { name: '다음' }).click();
+  await page.getByRole('button', { name: '설정 완료' }).click();
+  await page.getByRole('button', { name: '로그아웃' }).click();
+  await page.getByRole('radio', { name: /모두 지우기/ }).check();
+  await page.getByRole('button', { name: '모두 지우고 로그아웃' }).click();
+  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
+  expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('mdk:') && k !== 'mdk:deals'))).toEqual([]);
+});
