@@ -7,6 +7,7 @@ import { AppShell } from "./components/deal/AppShell.jsx";
 import TermsPage from "./pages/TermsPage.jsx";
 import ReviewPage from "./pages/ReviewPage.jsx";
 import DocsPage from "./pages/DocsPage.jsx";
+import Desk from "./components/deal/Desk.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import PricePage from "./pages/PricePage.jsx";
 import EvidencePage from "./pages/EvidencePage.jsx";
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")).render(
         <AppShell>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/desk" element={<div className="min-h-[60vh] bg-[var(--surface-2)]"><Desk /></div>} />
             <Route path="/price" element={<PricePage />} />
             <Route path="/evidence" element={<EvidencePage />} />
             <Route path="/hospital" element={<HospitalReviewPage />} />
