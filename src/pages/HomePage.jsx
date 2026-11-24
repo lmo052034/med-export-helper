@@ -1,7 +1,7 @@
 /* 홈: 고정 사용자 인사 → 진행 중 수출 1건을 사업계획서 순서(세번 → 관세와 FTA → 판매 허가 → 거래 구조 → 병원 수익성 → 서류)로 한 화면에.
    발표 1분 시연 흐름: 위에서 아래로 훑고, 5단계 슬라이더 조작, 6단계 상업송장 열기.
    단계별 문구와 출처는 콘텐츠 팩의 PACK.flow, 금액과 손익분기는 지금 거래(useDeal)와 같은 계산 함수 */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowRight, Check, RefreshCw } from "lucide-react";
 import { PACK } from "@pack";
@@ -234,7 +234,11 @@ function Cases({ list }) {
 /* 견적 검토 결과를 메일 아래 답장 초안으로 표시: 수익성(견적 검토) 화면의 입력값을 그대로 사용 */
 function ReviewReply() {
   const { deal } = useDeal();
-  const [full, setFull] = useState(false);
+  const { search } = useLocation();
+  const openFull = new URLSearchParams(search).get("reply") === "open";
+  const [full, setFull] = useState(openFull);
+  const ref = useRef(null);
+  useEffect(() => { if (openFull) ref.current?.scrollIntoView({ block: "start" }); }, [openFull]);
   const [copied, setCopied] = useState(false);
   const C = PACK.consult;
   if (deal.preset !== C.id) return null;
@@ -251,7 +255,7 @@ function ReviewReply() {
     ["한 달 예상 손익", R.profit !== null ? manwon(R.profit) : "산출 불가"],
   ];
   return (
-    <article className="mt-3 rounded-2xl border border-primary/40 bg-white p-5 sm:p-6" data-testid="home-reply">
+    <article ref={ref} className="mt-3 scroll-mt-20 rounded-2xl border border-primary/40 bg-white p-5 sm:p-6" data-testid="home-reply">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-[15px] font-semibold">답장 초안, 견적 검토 결과 반영</h3>
         <span className="text-[12px] text-[#86868b]">받는 사람 {C.mail.from}, 보내기 전</span>

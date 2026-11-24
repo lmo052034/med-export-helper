@@ -117,6 +117,43 @@ export function investKind(h, C) {
   return Number(h.investCustom) === Number(C.invest) ? "baseline" : "custom";
 }
 
+/* 비용 구조와 기준안 대비 바꾼 조건 (수익성 화면에서 바꾼 값 그대로) */
+const num = (v) => { const x = parseNum(v); return x.state === "ok" ? x.value : null; };
+const sumRows = (rows) => rows.reduce((a, r) => a + (num(r.amount) ?? 0), 0);
+export function structureLines(deal, C, life, R) {
+  const h = deal.econ.hospital;
+  const out = ["", "7. 병원 비용 구조 (월 손익 계산에 사용)"];
+  out.push(`   - 회당 변동비 합계 ${rp(sumRows(h.variable))}: ${h.variable.map((r) => `${r.label || "항목"} ${rp(num(r.amount))}`).join(", ") || "없음"}`);
+  out.push(`   - 월 고정비 합계 ${rp(sumRows(h.fixed))}: ${h.fixed.map((r) => `${r.label || "항목"} ${rp(num(r.amount))}`).join(", ") || "없음"}`);
+  if (R.H.invest !== null) out.push(`   - 장비비 월 배분 ${rp(R.H.invest / life)} (도입비 ÷ ${life}개월)`);
+  const b = deal.baseline;
+  const ch = [];
+  if (b?.econ?.hospital) {
+    const o = b.econ.hospital;
+    const cmp = (name, a, z, f = rp) => { if (String(a ?? "") !== String(z ?? "")) ch.push(`   - ${name}: ${a === "" || a === undefined ? "없음" : f(num(a))} → ${z === "" ? "없음" : f(num(z))}`); };
+    cmp("시술 1회당 병원 수납액", o.price, h.price);
+    cmp("월 예상 유료 시술", o.sessions, h.sessions, (v) => `${v}회`);
+    const kind = (x) => (investKind(x, C) === "local" ? "현지 견적 총액" : investKind(x, C) === "custom" ? "직접 입력" : "발표 기준");
+    if (kind(o) !== kind(h) || (h.investMode === "custom" && String(o.investCustom) !== String(h.investCustom))) ch.push(`   - 장비 도입비 기준: ${kind(o)} → ${kind(h)}${h.investMode === "custom" ? ` ${rp(num(h.investCustom))}` : ""}`);
+    for (const [key, name] of [["variable", "회당 변동비"], ["fixed", "월 고정비"]]) {
+      const before = new Map(o[key].map((r) => [r.id, r])), now = new Map(h[key].map((r) => [r.id, r]));
+      for (const r of h[key]) {
+        const p = before.get(r.id);
+        if (!p) ch.push(`   - ${name} 추가: ${r.label || "항목"} ${rp(num(r.amount))}`);
+        else if (String(p.amount) !== String(r.amount) || p.label !== r.label) ch.push(`   - ${name} '${r.label || p.label}': ${rp(num(p.amount))} → ${rp(num(r.amount))}`);
+      }
+      for (const p of o[key]) if (!now.has(p.id)) ch.push(`   - ${name} 삭제: ${p.label || "항목"} ${rp(num(p.amount))}`);
+    }
+  }
+  if (b?.local) {
+    const lb = new Map(b.local.lines.map((l) => [l.id, l]));
+    for (const l of deal.local.lines) { const p = lb.get(l.id); if (p && String(p.price) !== String(l.price)) ch.push(`   - 현지 판매가 (세금 제외): ${rp(num(p.price))} → ${rp(num(l.price))}`); }
+    if (String(b.local.vatPct) !== String(deal.local.vatPct)) ch.push(`   - 부가세율: ${b.local.vatPct}% → ${deal.local.vatPct}%`);
+  }
+  out.push("", "8. 처음 기준안 대비 바꾼 조건", ...(ch.length ? ch : ["   - 없음 (발표 기준 그대로)"]));
+  return out;
+}
+
 export function replyText({ C, deal, L, R, life }) {
   const h = deal.econ.hospital;
   const pick = investKind(h, C);
@@ -137,6 +174,7 @@ export function replyText({ C, deal, L, R, life }) {
     `4. 시술 1회당 병원 수납액: ${rp(Number(h.price))} (${priceLabel(h, C)}${h.dropPrev ? `, 기준 ${rp(Number(h.dropPrev))} 대비` : ""}. 병원의 실제 수납액 아님)`,
     `5. 본전에 필요한 월 시술 횟수: ${R.bep !== null ? `월 ${R.bep}회` : "산출 불가"} (장비값 ${life}개월 배분 포함)`,
     `6. 한 달 예상 손익: ${R.profit !== null ? manwon(R.profit) : "산출 불가"}`,
+    ...structureLines(deal, C, life, R),
     "",
     "최종 제안 전에 병원의 최근 3개월 실제 회당 수납액과 월별 유료 시술 건수를 확인 부탁드립니다.",
     "",

@@ -369,8 +369,8 @@ export default function PricePage() {
       </div>
       {PACK.consult && deal.preset === PACK.consult.id && (
         <p className="mb-5 flex flex-wrap items-center gap-x-2 rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-[14px]" data-testid="sync-note">
-          <span>{PACK.consult.mail.hospital} 견적 요청 건. 여기서 바꾼 값은 홈 메일 아래 답장 초안에 바로 반영</span>
-          <Link to="/" className="font-medium text-primary hover:underline">홈 메일에서 보기</Link>
+          <span>{PACK.consult.mail.hospital} 견적 요청 건. 여기서 바꾼 값과 비용 구조는 홈 메일 아래 답장 초안에 바로 반영</span>
+          <Link to="/?reply=open" className="font-medium text-primary hover:underline">홈 메일에서 답장 전문 보기</Link>
         </p>
       )}
       <div role="tablist" aria-label="수익성 보기" className="seg mb-8">
