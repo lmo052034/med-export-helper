@@ -229,6 +229,31 @@ function Cases({ list }) {
   );
 }
 
+/* 받은 견적 요청 (시연용 메일, 콘텐츠 팩 PACK.consult.mail). 원본 메일 내용은 상담 입력과 무관하게 고정 */
+function MailCard() {
+  const m = PACK.consult.mail;
+  const row = (k, v) => (<div className="flex gap-3"><dt className="w-[68px] shrink-0 text-[#6e6e73]">{k}</dt><dd className="min-w-0">{v}</dd></div>);
+  return (
+    <section aria-labelledby="mail-t" className="mb-8" data-testid="mail">
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <h2 id="mail-t" className="text-[15px] font-semibold">받은 견적 요청 1건</h2>
+        <span className="text-[12px] text-[#86868b]">시연용 메일</span>
+      </div>
+      <article className="rounded-2xl border border-[var(--line)] bg-white p-5 sm:p-6">
+        <dl className="space-y-1 border-b border-[var(--line)] pb-3 text-[14px]">
+          {row("보낸 사람", `${m.from}, ${m.fromTeam}`)}
+          {row("받는 사람", `${m.to}, ${m.toTeam}`)}
+          {row("제목", <b className="font-semibold">{m.subject}</b>)}
+        </dl>
+        <div className="mt-3 space-y-2 text-[15px] leading-relaxed text-[#1d1d1f]">
+          {m.body.map((t) => <p key={t}>{t}</p>)}
+        </div>
+      </article>
+      <Link to="/price?tab=hospital&consult=1" className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[16px] font-semibold text-white hover:opacity-90 sm:w-auto sm:inline-flex">이 요청으로 견적 검토하기<ArrowRight className="size-5" aria-hidden="true" /></Link>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const { search } = useLocation();
   const { deal, findings } = useDeal();
@@ -255,7 +280,7 @@ export default function HomePage() {
           <p className="text-[13px] text-[#6e6e73]">{PACK.asOf}</p>
         </div>
 
-        <Cases key={search} list={F.cases} />
+        {PACK.consult?.mail && <MailCard />}
 
         <section aria-labelledby="deal-t" className="rounded-2xl bg-white px-5 sm:px-8">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-[var(--line)] py-5">
@@ -288,6 +313,11 @@ export default function HomePage() {
             </Step>
           </ol>
         </section>
+
+        <div className="mt-10">
+          <h2 className="mb-3 text-[15px] font-semibold text-[#424245]">다른 업무 사례</h2>
+          <Cases key={search} list={F.cases} />
+        </div>
       </div>
     </div>
   );
