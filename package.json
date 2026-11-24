@@ -10,10 +10,9 @@
     "collect": "node scripts/collect-notices.mjs",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:unit": "node --test unit/deal.unit.mjs unit/econ.unit.mjs unit/review.unit.mjs"
+    "test:unit": "node --test unit/deal.unit.mjs unit/econ.unit.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.12.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.545.0",

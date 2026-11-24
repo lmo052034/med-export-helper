@@ -1,7 +1,6 @@
 /* 기본 콘텐츠 팩 (공개 저장소용). 특정 회사, 제품 정보 없이 화면 구조만 보여 줍니다.
    실제 제안 콘텐츠는 프로젝트 폴더의 팩을 PACK_DIR로 지정해 빌드합니다 (README 참고). */
 import { mockDeal, snapshot, sanitize, newId as id } from "@/lib/deal/model.js";
-import { makeDesk } from "./desk-details.js";
 
 export const PACK = {
   key: "default",
@@ -32,18 +31,18 @@ export const PACK = {
       money: { label: "대금", links: [{ from: "partner", to: "maker", text: "수출 대금" }, { from: "hospital", to: "partner", text: "계약금, 잔금" }], note: "" },
     },
   },
-  desk: {
-    team: "해외영업팀, 현지 파트너 공용",
-    title: "업무 현황",
-    asOf: "11월 23일 (월) 기준",
-    stages: ["문의", "시연", "견적 발송", "계약 협의", "설치, 교육"],
-    ...makeDesk({
-      hq: "본사 해외영업", sales: "현지 영업", tech: "현지 기술팀", demoTeam: "현지 영업, 현지 기술팀",
-      ptOrg: "현지 파트너", device: "치료 장비", hpA: "핸드피스 A", hpB: "핸드피스 B",
-      hpCompare: "시연 일정 조율", asTitle: "시연 장비 핸드피스 점검",
-      hpLifeNote: "핸드피스 교체 기준(사용 횟수)은 제조사 자료로 확인 필요",
-    }),
-    note: "현황판의 병원과 일정은 화면 구성용 샘플 데이터입니다.",
+  user: { name: "김민영", team: "본사 해외영업팀" },
+  flow: {
+    lead: "진행 중 수출 1건, 세번부터 서류까지 한 화면 확인",
+    hs: { task: "수출입 신고 품목번호 확정", result: "9018.90", sub: "국제 공통 6단위", chain: [["국제 공통 6단위", "9018.90"], ["수입국 세부 단위", "수입국 세율표로 확인"]], note: "", src: "예시. 실제 제품의 수출 신고 세번과 수입국 세율표로 확정" },
+    tariff: { task: "수입 관세와 FTA 원산지 조건", result: "확인 필요", sub: "수입국 세율표와 협정별 원산지 기준", rows: [["기본 관세", "수입국 세율표"], ["협정 관세", "원산지 기준 충족 시"]], cond: "", src: "예시" },
+    license: { task: "수입국 의료기기 등록 조회", result: "조회 전", sub: "국가별 정부 등록 DB", src: "예시" },
+    structure: {
+      task: "제조사, 현지 파트너, 병원의 역할 구분", result: "파트너 재판매", sub: "수출 계약과 현지 판매 계약 분리",
+      nodes: [{ name: "제조사", role: "제조, 수출" }, { name: "현지 파트너", role: "수입, 등록, 병원 판매" }, { name: "병원", role: "도입, 대금 지급" }],
+      src: "예시",
+    },
+    profit: { src: "모의 값" },
   },
   footer: { project: "파트너 데스크, 본사 해외영업팀과 현지 파트너 공용", lines: ["본사 해외영업과 현지 파트너가 병원 영업, 견적, 선적 서류를 함께 보는 화면입니다."] },
 };

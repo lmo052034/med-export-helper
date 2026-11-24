@@ -4,9 +4,37 @@ const { test, expect } = require('@playwright/test');
 const open = (page, id) => page.getByRole('button', { name: new RegExp(id) }).first().click();
 const reviewTab = (page) => page.getByRole('navigation', { name: '거래서류 메뉴' }).getByRole('link', { name: /검토 결과/ });
 
+test('로그인 없이 바로 홈: 김민영 인사, 수출 업무 6단계, 슬라이더, 상업송장', async ({ page }) => {
+  const errors = []; page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('김민영님');
+  for (const t of ['HS 세번', '관세와 FTA', '판매 허가', '거래 구조', '병원 수익성', '견적과 선적 서류']) await expect(page.getByRole('heading', { level: 2, name: t })).toBeVisible();
+  await expect(page.getByRole('link', { name: '로그아웃' })).toHaveCount(0);
+  const sessions = page.getByLabel('월 유료 시술', { exact: true });
+  await sessions.fill('80');
+  await expect(sessions).toHaveValue('80');
+  await page.getByRole('link', { name: /상업송장 열기/ }).click();
+  await expect(page).toHaveURL(/#\/docs\?doc=invoice/);
+  expect(errors).toEqual([]);
+});
+
+test('예전 주소와 모르는 주소는 모두 홈으로, 메뉴는 세 개', async ({ page }) => {
+  for (const p of ['/#/start', '/#/setup', '/#/settings', '/#/desk', '/#/hospital', '/#/evidence', '/#/overview', '/#/unknown']) {
+    await page.goto(p);
+    await expect(page).toHaveURL(/#\/$/);
+  }
+  const top = page.getByRole('navigation', { name: '주요 메뉴' });
+  await expect(top.getByRole('link')).toHaveText(['홈', '수익성', '거래와 서류']);
+  await page.goto('/#/price?tab=deal');
+  await page.reload();
+  await expect(page.getByRole('tab', { name: '파트너 마진' })).toHaveAttribute('aria-selected', 'true');
+  await page.goto('/#/review');
+  await expect(top.getByRole('link', { name: '거래와 서류' })).toHaveAttribute('aria-current', 'page');
+});
+
 test('시연 흐름: 구성 변경 → 금액 갱신 → 중량, 서명 누락 이동 → 입력 후 해소 → 인쇄', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/#/overview');
+  await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '거래와 서류' }).click();
   await expect(page).toHaveURL(/#\/deal$/);
@@ -76,66 +104,9 @@ test('빈칸, 0, 음수, 문자 입력과 결제 합계', async ({ page }) => {
   await expect(page.locator('li', { hasText: '비율 합계' }).first()).toContainText('90%');
 });
 
-test('새로고침해도 입력값 복원, 모의, 내 거래 분리', async ({ page }) => {
-  await page.goto('/#/deal');
-  await page.locator('#f-meta-name').fill('복원 확인 거래');
-  await expect(page.getByRole('status').first()).toContainText('저장됨');
-  await page.waitForTimeout(500);
-  await page.reload();
-  await expect(page.locator('#f-meta-name')).toHaveValue('복원 확인 거래');
-  await page.getByRole('button', { name: '거래', exact: true }).click();
-  await page.getByRole('menuitem', { name: '새 거래 (빈칸)' }).click();
-  await expect(page.locator('#f-meta-name')).toHaveValue('');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('이름 없는 거래');
-});
-
-test('이전 버전 저장값(mdk:deal)을 새 거래로 옮기고 원본은 남김', async ({ page }) => {
-  const old = { seller: { co: 'Old Maker' }, buyer: { co: 'Old Buyer' }, items: [{ model: 'X1', qty: '3', unit: '200' }], inco: 'FOB', place: 'Busan', sender: 'Lee' };
-  await page.addInitScript((v) => { if (!localStorage.getItem('mdk:deals')) localStorage.setItem('mdk:deal', JSON.stringify(v)); }, old);
-  await page.goto('/#/deal');
-  await expect(page.getByText('이전 버전의 견적서, 인보이스 입력값을 새 거래로 옮겼어요')).toBeVisible();
-  await open(page, '당사자');
-  await expect(page.locator('#f-parties-maker-name')).toHaveValue('Old Maker');
-  await expect(page.locator('[data-doc="quote"] tfoot')).toContainText('600.00');
-  expect(await page.evaluate(() => localStorage.getItem('mdk:deal'))).toContain('Old Maker');
-});
-
-test('깨진 저장값은 백업하고 새로 시작', async ({ page }) => {
-  await page.addInitScript(() => { if (!sessionStorage.getItem('done')) { localStorage.setItem('mdk:deals', '{broken'); sessionStorage.setItem('done', '1'); } });
-  await page.goto('/#/deal');
-  await expect(page.getByText('저장된 거래 데이터를 읽지 못했어요')).toBeVisible();
-  const keys = await page.evaluate(() => Object.keys(localStorage));
-  expect(keys.some((k) => k.startsWith('mdk:deals.backup-'))).toBeTruthy();
-});
-
-test('사례 파일 불러오기는 기존 거래를 덮어쓰지 않음', async ({ page }) => {
-  await page.goto('/#/deal');
-  await page.locator('#f-meta-name').fill('내 기존 거래');
-  const before = await page.evaluate(() => Object.keys(JSON.parse(localStorage.getItem('mdk:deals') || '{"list":{}}').list).length);
-  const caseJson = JSON.stringify({ deal: { kind: 'case', caseLabel: '시험 사례', meta: { name: '불러온 사례 거래', stage: 'quote' } } });
-  await page.locator('input[type=file]').setInputFiles({ name: 'case.json', mimeType: 'application/json', buffer: Buffer.from(caseJson) });
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('불러온 사례 거래');
-  await page.waitForTimeout(500);
-  const list = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('mdk:deals')).list).map((d) => d.meta.name));
-  expect(list).toContain('내 기존 거래');
-  expect(list.length).toBe(before + 1);
-});
-
-test('이전 메뉴 주소는 오류 없이 거래서류로, 모르는 주소는 첫 화면으로', async ({ page }) => {
-  await page.goto('/#/unknown');
-  await expect(page).toHaveURL(/#\/$/);
-  for (const p of ['/#/promo', '/#/cases/kotra-1', '/#/readiness/3']) {
-    await page.goto(p);
-    await expect(page).toHaveURL(/#\/deal/);
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  }
-  await page.goto('/#/market');
-  await expect(page.getByText('이전 메뉴(준비 진단')).toBeVisible();
-});
-
 test('모바일 390px: 입력, 미리보기 전환, 가로 넘침 없음', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const p of ['/#/', '/#/setup', '/#/overview', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/price?tab=cash', '/#/deal', '/#/review', '/#/docs', '/#/evidence']) {
+  for (const p of ['/#/', '/#/price?tab=deal', '/#/price?tab=hospital', '/#/deal', '/#/review', '/#/docs']) {
     await page.goto(p);
     const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(over, p).toBeLessThanOrEqual(0);
@@ -161,23 +132,6 @@ test('모든 입력칸에 이름표가 있고 키보드로 이동 가능', async
   await page.getByRole('button', { name: /당사자/ }).focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#f-parties-maker-name')).toBeVisible();
-});
-
-test('메뉴와 주소: 직접 열기, 뒤로 가기, 새로고침이 같은 화면', async ({ page }) => {
-  const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/#/price?tab=cash');
-  await expect(page.getByRole('tab', { name: '자금 흐름' })).toHaveAttribute('aria-selected', 'true');
-  await page.reload();
-  await expect(page.getByRole('tab', { name: '자금 흐름' })).toHaveAttribute('aria-selected', 'true');
-  const top = page.getByRole('navigation', { name: '주요 메뉴' });
-  await top.getByRole('link', { name: '자료실' }).click();
-  await expect(page).toHaveURL(/#\/evidence$/);
-  await expect(top.getByRole('link', { name: '자료실' })).toHaveAttribute('aria-current', 'page');
-  await page.goBack();
-  await expect(page).toHaveURL(/tab=cash/);
-  await page.goto('/#/review');
-  await expect(top.getByRole('link', { name: '거래와 서류' })).toHaveAttribute('aria-current', 'page');
-  expect(errors).toEqual([]);
 });
 
 test('병원 운영: 시술 건수 변경은 병원 손익만, 판매가 변경은 견적과 도입비까지', async ({ page }) => {
@@ -221,91 +175,3 @@ test('병원 운영: 0과 음수, 잉여 0 이하에서는 산출 불가로 표�
   await expect(page.getByTestId('h-bep')).toContainText('산출 불가');
 });
 
-test('대표 모의 거래 다시 열기는 내 거래를 덮어쓰지 않음', async ({ page }) => {
-  await page.goto('/#/deal');
-  await page.getByRole('button', { name: '거래', exact: true }).click();
-  await page.getByRole('menuitem', { name: '새 거래 (빈칸)' }).click();
-  await page.locator('#f-meta-name').fill('내 거래 보존');
-  await page.waitForTimeout(400);
-  await page.getByRole('button', { name: '거래', exact: true }).click();
-  await page.getByRole('menuitem', { name: '진행 중 거래 열기' }).click();
-  await expect(page.getByTestId('deal-name')).not.toHaveText('내 거래 보존');
-  const names = await page.evaluate(() => Object.values(JSON.parse(localStorage.getItem('mdk:deals')).list).map((d) => [d.kind, d.meta.name]));
-  expect(names.some(([, n]) => n === '내 거래 보존')).toBe(true);
-  expect(names.filter(([k]) => k === 'sample').length).toBe(1);
-});
-
-test('처음 온 사람: 사이트 안내 → 3단계 설정 → 이름 인사 홈, 설정 저장', async ({ page }) => {
-  const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
-  await page.getByRole('button', { name: '사용자 설정 시작' }).click();
-  await expect(page.getByText('1/3단계')).toBeVisible();
-  await page.getByRole('button', { name: '다음' }).click();
-  await expect(page.getByRole('alert')).toContainText('이름을 입력');
-  await page.getByLabel('이름').fill('테스트');
-  await page.getByRole('button', { name: '다음' }).click();
-  await page.getByRole('radio', { name: /현지 파트너|PT/ }).first().check();
-  await page.getByRole('radio', { name: /현지 영업/ }).check();
-  await page.getByRole('button', { name: '다음' }).click();
-  await expect(page.getByText('3/3단계')).toBeVisible();
-  await page.getByRole('button', { name: '설정 완료' }).click();
-  await expect(page.getByRole('heading', { name: '테스트님, 안녕하세요' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: /내 할 일, 현지 영업/ })).toBeVisible();
-  await page.getByRole('link', { name: '수익성' }).first().click();
-  await page.goto('/#/settings');
-  await page.getByLabel('직함').fill('영업 과장');
-  await expect(page.getByText('저장하지 않은 변경 사항')).toBeVisible();
-  await page.getByRole('button', { name: '저장', exact: true }).click();
-  await page.goto('/');
-  await expect(page.getByText('영업 과장')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '최근 연 화면' })).toBeVisible();
-  expect(errors).toEqual([]);
-});
-
-test('할 일과 병원을 누르면 세부 화면: 상황, 처리 순서, 진행 기록, 참고 자료', async ({ page }) => {
-  const errors = [];
-  page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/#/desk');
-  await page.getByRole('link', { name: /원장 질문 회신/ }).first().click();
-  await expect(page).toHaveURL(/#\/desk\/t\/t-follow-a/);
-  await expect(page.getByRole('heading', { name: '무슨 일인가요' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '처리 순서' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '참고한 실무 자료' })).toBeVisible();
-  await expect(page.getByText('1/4 완료')).toBeVisible();
-  await page.getByText('2. 병원 BPJS 담당에게').click();
-  await expect(page.getByText('2/4 완료')).toBeVisible();
-  await page.reload();
-  await expect(page.getByText('2/4 완료')).toBeVisible();
-  await page.getByRole('link', { name: '민간병원 A', exact: true }).click();
-  await expect(page).toHaveURL(/#\/desk\/h\/h-a/);
-  await expect(page.getByRole('heading', { name: '진행 기록' })).toBeVisible();
-  await page.goto('/#/desk/t/nope');
-  await expect(page).toHaveURL(/#\/desk$/);
-  expect(errors).toEqual([]);
-});
-
-test('로그아웃: 사용자 정보만 지우면 거래는 남고 사이트 안내로', async ({ page }) => {
-  await page.goto('/#/setup');
-  await page.getByLabel('이름').fill('테스트');
-  await page.getByRole('button', { name: '다음' }).click();
-  await page.getByRole('button', { name: '다음' }).click();
-  await page.getByRole('button', { name: '설정 완료' }).click();
-  await expect(page.getByRole('heading', { name: '테스트님, 안녕하세요' })).toBeVisible();
-  await page.getByRole('button', { name: '로그아웃' }).click();
-  await expect(page.getByRole('dialog')).toContainText('사용자 정보만 지우기');
-  await page.getByRole('dialog').getByRole('button', { name: '로그아웃' }).click();
-  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('mdk:profile'))).toBeNull();
-  expect(await page.evaluate(() => localStorage.getItem('mdk:deals'))).not.toBeNull();
-  await page.goto('/#/setup');
-  await page.getByLabel('이름').fill('둘째');
-  await page.getByRole('button', { name: '다음' }).click();
-  await page.getByRole('button', { name: '다음' }).click();
-  await page.getByRole('button', { name: '설정 완료' }).click();
-  await page.getByRole('button', { name: '로그아웃' }).click();
-  await page.getByRole('radio', { name: /모두 지우기/ }).check();
-  await page.getByRole('button', { name: '모두 지우고 로그아웃' }).click();
-  await expect(page.getByRole('heading', { name: '처음 쓰시나요?' })).toBeVisible();
-  expect(await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('mdk:') && k !== 'mdk:deals'))).toEqual([]);
-});
