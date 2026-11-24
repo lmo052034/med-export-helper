@@ -168,6 +168,28 @@ function DocThumbs() {
   );
 }
 
+/* 도구 적용 효과: 콘텐츠 팩 PACK.flow.impact. 실제 운영 실적이 아닌 기능과 시연 기준 수치만, 근거 함께 */
+function Impact({ data }) {
+  if (!data?.items?.length) return null;
+  return (
+    <section aria-labelledby="impact-t" className="mb-5 rounded-2xl bg-white px-5 py-5 sm:px-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+        <h2 id="impact-t" className="text-[13px] font-semibold text-[#6e6e73]">{data.title}</h2>
+        {data.note && <p className="text-[12px] text-[#86868b]">{data.note}</p>}
+      </div>
+      <dl className="mt-3 grid gap-y-4 sm:grid-cols-3">
+        {data.items.map((x, i) => (
+          <div key={x.k} className={cn("min-w-0 sm:px-6", i === 0 ? "sm:pl-0" : "sm:border-l sm:border-[var(--line)]")}>
+            <dt className="text-[14px] text-[#424245]">{x.k}</dt>
+            <dd className="mt-0.5 text-[28px] font-semibold tracking-tight tabular-nums">{x.v}</dd>
+            <dd className="text-[12px] leading-snug text-[#86868b]">{x.d}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 export default function HomePage() {
   const { deal, findings } = useDeal();
   const F = PACK.flow;
@@ -192,6 +214,8 @@ export default function HomePage() {
           </div>
           <p className="text-[13px] text-[#6e6e73]">{PACK.asOf}</p>
         </div>
+
+        <Impact data={F.impact} />
 
         <section aria-labelledby="deal-t" className="rounded-2xl bg-white px-5 sm:px-8">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-[var(--line)] py-5">
