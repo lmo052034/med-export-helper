@@ -125,6 +125,12 @@ export const PACK = {
     src: "발표자료 12쪽·부록 A8~A9 기준. 수납액과 시술량은 상담용 가정",
     next: "병원에 최근 3개월 실제 회당 수납액과 월별 유료 시술 건수를 요청하세요.",
   },
+  start: {
+    eyebrow: "영인바이오텍 해외영업팀, PT FISIO MEDIKA INDONESIA 공용",
+    title: "IN-5300 인도네시아 병원 견적 요청부터 선적 서류까지, 한 화면에서",
+    sub: "받은 메일 확인, 병원 수익성 검토, 답장, 견적서와 상업송장까지 같은 거래로 연결",
+    sources: "인도네시아 보건부 e-Info Alkes(AKL 등록), INSW(인도네시아 세번과 세율), 관세청 FTA 포털(원산지 기준), 사업계획서 부록 A8, A9(병원 손익)",
+  },
   flow: {
     lead: "IN-5300 인도네시아 수출 1건, 세번부터 상업송장까지 한 화면 확인",
     hs: {
@@ -154,7 +160,7 @@ export const PACK = {
     },
     cases: [
       {
-        id: "hs", from: "PT FISIO MEDIKA INDONESIA 수입 담당",
+        id: "hs", subject: "[수정 요청] 상업송장 HS 코드 8단위 기재", from: "PT FISIO MEDIKA INDONESIA 수입 담당",
         ask: "INSW 사전 신고에서 HS 9018.90은 단위가 부족하다고 나옵니다. 인보이스를 8단위로 다시 보내 주세요.",
         steps: [
           { title: "한국 수출 신고 세번 확인", value: "9018.90-8900", detail: "한국 10단위, 앞 6단위 9018.90 공통", src: "영인바이오텍 수출 신고 세번" },
@@ -165,7 +171,7 @@ export const PACK = {
         reply: "HS를 인도네시아 8단위 9018.90.31로 고친 상업송장 수정본 송부. 한국 수출 신고 세번 9018.90-8900과 앞 6단위 동일.",
       },
       {
-        id: "fta", from: "PT FISIO MEDIKA INDONESIA 재무 담당",
+        id: "fta", subject: "[문의] FTA 관세 0% 적용 조건과 필요 서류", from: "PT FISIO MEDIKA INDONESIA 재무 담당",
         ask: "수입 관세가 5%로 잡혀 있는데, FTA로 0% 받을 수 있나요? 필요한 서류도 알려 주세요.",
         steps: [
           { title: "세율 확인", value: "MFN 5%, 협정 0%", detail: "9018.90.31 기준, 한-아세안, 한-인도네시아, RCEP 모두 0%", src: "INSW 「90189031 상세, PMK 50/2026」" },
@@ -176,7 +182,7 @@ export const PACK = {
         reply: "원산지 기준(CTH 또는 RVC 40%) 충족 시 세 협정 모두 관세 0%. 영인바이오텍 BOM으로 판정 후 선적 전 원산지증명서 발급 예정. 수입 부가세 11%, PPh 22 2.5%는 별도.",
       },
       {
-        id: "akl", from: "검토 병원 A 구매팀 (파트너 영업 경유)",
+        id: "akl", subject: "[문의] 인도네시아 판매 허가 번호와 유효기간", from: "검토 병원 A 구매팀 (파트너 영업 경유)",
         ask: "이 장비, 인도네시아에서 판매 허가 받은 제품인가요? 등록 번호와 유효기간을 알려 주세요.",
         steps: [
           { title: "보건부 등록 DB 조회", value: "AKL 21403620119", detail: "Kelas C, 상태 Berlaku(유효)", src: "인도네시아 보건부 e-Info Alkes 2026.11.5 조회" },
@@ -186,7 +192,7 @@ export const PACK = {
         reply: "IN-5300은 인도네시아 보건부 등록 제품. AKL 21403620119 (Kelas C), 2030.10.1까지 유효, 등록사 PT FISIO MEDIKA INDONESIA가 수입과 공급 담당.",
       },
       {
-        id: "bep", from: "검토 병원 A 원장 (파트너 영업 경유)",
+        id: "bep", subject: "[문의] 월 손익분기 시술 횟수", from: "검토 병원 A 원장 (파트너 영업 경유)",
         ask: "한 달에 몇 번 시술해야 손해가 안 나나요? 우리 병원은 월 60회 정도 예상합니다.",
         steps: [
           { title: "병원 도입가 확인", value: "Rp528,090,000", detail: "부가세 11% 포함, 48개월 배분", src: "사업계획서 부록 A8" },
