@@ -125,11 +125,6 @@ export const PACK = {
     src: "발표자료 12쪽·부록 A8~A9 기준. 수납액과 시술량은 상담용 가정",
     next: "병원에 최근 3개월 실제 회당 수납액과 월별 유료 시술 건수를 요청하세요.",
   },
-  start: {
-    eyebrow: "영인바이오텍, PT FISIO MEDIKA INDONESIA",
-    title: "IN-5300 인도네시아 수출 업무",
-    sub: "견적, 수익성, 선적 서류",
-  },
   flow: {
     lead: "IN-5300 인도네시아 수출 1건, 세번부터 상업송장까지 한 화면 확인",
     hs: {
