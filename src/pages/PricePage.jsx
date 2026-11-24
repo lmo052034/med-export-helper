@@ -347,7 +347,8 @@ export default function PricePage() {
   const [params, setParams] = useSearchParams();
   const tab = TABS.some(([k]) => k === params.get("tab")) ? params.get("tab") : "hospital";
   const consult = params.get("consult") === "1" && PACK.consult;
-  useEffect(() => { if (consult && deal.preset !== PACK.consult.id) actions.openPreset(PACK.consult); }, [consult]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* 수익성 화면은 항상 홈 견적 요청과 같은 거래를 사용 (입력값이 홈 메일 답장 초안에 바로 반영) */
+  useEffect(() => { if (PACK.consult && deal.preset !== PACK.consult.id) actions.openPreset(PACK.consult); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [ev, setEv] = useState(null);
   const anyChanged = deal.baseline && JSON.stringify(withBaseline(deal).econ) !== JSON.stringify(deal.econ) || (deal.baseline && JSON.stringify(deal.baseline.local.lines) !== JSON.stringify(deal.local.lines)) || (deal.baseline && JSON.stringify(deal.baseline.exp.items) !== JSON.stringify(deal.exp.items));
   if (tab === "hospital" && consult && deal.preset === PACK.consult.id) return (
@@ -367,6 +368,12 @@ export default function PricePage() {
           <button type="button" onClick={() => actions.resetToBaseline()} disabled={!anyChanged} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--line-strong)] px-4 text-[14px] font-medium disabled:opacity-40"><RotateCcw className="size-4" />기준값으로 되돌리기</button>
         )}
       </div>
+      {PACK.consult && deal.preset === PACK.consult.id && (
+        <p className="mb-5 flex flex-wrap items-center gap-x-2 rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-[14px]" data-testid="sync-note">
+          <span>{PACK.consult.mail.hospital} 견적 요청 건. 여기서 바꾼 값은 홈 메일 아래 답장 초안에 바로 반영</span>
+          <Link to="/" className="font-medium text-primary hover:underline">홈 메일에서 보기</Link>
+        </p>
+      )}
       <div role="tablist" aria-label="수익성 보기" className="seg mb-8">
         {TABS.map(([k, l]) => <button key={k} role="tab" type="button" aria-selected={tab === k} onClick={() => setParams({ tab: k })} className="seg-btn">{l}</button>)}
       </div>

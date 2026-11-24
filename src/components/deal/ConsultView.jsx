@@ -11,8 +11,8 @@ import { parseNum } from "../../lib/deal/money.js";
 import { cn } from "@/lib/utils";
 
 const fmt = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : Math.round(v).toLocaleString("en-US"));
-const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${fmt(v)}`);
-const manwon = (v) => `약 ${fmt(Math.abs(v) / 1e4)}만 루피아 ${v < 0 ? "적자" : "흑자"}`;
+export const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${fmt(v)}`);
+export const manwon = (v) => `약 ${fmt(Math.abs(v) / 1e4)}만 루피아 ${v < 0 ? "적자" : "흑자"}`;
 
 export function consultCalc(deal, life) {
   const H = hospitalCalc(deal);
@@ -69,7 +69,7 @@ function LocalEditor({ onDone }) {
 function HospitalEditor({ C }) {
   const { deal, update } = useDeal();
   const h = deal.econ.hospital;
-  const pick = h.investPick || "baseline";
+  const pick = investKind(h, C);
   const L = calcLocal(deal);
   const choose = (k) => {
     update("econ.hospital.investPick", k);
@@ -110,10 +110,17 @@ function priceLabel(h, C) {
   return Number(h.price) === C.price ? "발표자료 가정" : "직접 입력한 가정";
 }
 
-function replyText({ C, deal, L, R, life }) {
+/* 장비값 기준: 수익성 화면에서 바꾼 경우도 같은 이름으로 (현지 견적 사용, 발표 기준, 직접 입력) */
+export function investKind(h, C) {
+  if (h.investMode !== "custom") return "local";
+  if (h.investPick === "custom") return "custom";
+  return Number(h.investCustom) === Number(C.invest) ? "baseline" : "custom";
+}
+
+export function replyText({ C, deal, L, R, life }) {
   const h = deal.econ.hospital;
-  const pick = h.investPick || "baseline";
-  const investName = pick === "local" ? "현지 견적 총액 적용" : pick === "custom" ? "이 병원과 협의한 도입비, 직접 입력" : "발표 기준 도입비 (부록 A8)";
+  const pick = investKind(h, C);
+  const investName = pick === "local" ? "현지 견적 총액 적용" : pick === "custom" ? "이 병원과 협의한 도입비, 직접 입력" : "발표 기준 도입비, 부록 A8";
   const same = L.total !== null && R.H.invest !== null && Math.round(L.total) === Math.round(R.H.invest);
   const m = C.mail;
   const lines = [
@@ -159,7 +166,7 @@ export function ConsultView({ children }) {
   };
   const text = replyText({ C, deal, L, R, life });
   const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { setCopied(false); } };
-  const pick = h.investPick || "baseline";
+  const pick = investKind(h, C);
   const investName = pick === "local" ? "현지 견적 총액 적용" : pick === "custom" ? "직접 입력" : "발표 기준 (부록 A8)";
 
   return (
