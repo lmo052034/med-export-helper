@@ -217,9 +217,24 @@ test('견적 요청 메일 → 견적 검토 → 현지 견적, 병원 도입비
   await expect(r).toContainText('최근 3개월 실제 회당 수납액');
   await page.getByRole('link', { name: '← 받은 견적 요청으로' }).click();
   await expect(page.getByTestId('mail')).toContainText('약 60회');
-  await page.getByRole('link', { name: '이 요청으로 견적 검토하기' }).click();
+  await expect(page.getByTestId('home-reply')).toContainText('Rp480,000,000');
+  await page.getByRole('link', { name: '견적 검토 이어서 하기' }).click();
   await expect(page.getByTestId('consult-invest')).toHaveText('Rp480,000,000');
   await page.getByRole('button', { name: '발표 기준으로 보기' }).click();
   await expect(page.getByTestId('local-total')).toHaveText('Rp555,000,000');
   await expect(page.getByTestId('consult-bep')).toHaveText('월 47회');
+});
+
+test('수익성 화면에서 바꾼 값이 홈 메일 아래 답장 초안에 바로 반영', async ({ page }) => {
+  await page.goto('/#/');
+  await expect(page.getByTestId('home-reply')).toHaveCount(0);
+  await page.getByRole('navigation').getByRole('link', { name: '수익성' }).first().click();
+  await expect(page.getByTestId('sync-note')).toBeVisible();
+  await page.getByLabel('월 유료 시술 건수', { exact: true }).fill('50');
+  await page.getByRole('link', { name: '홈 메일에서 보기' }).click();
+  const r = page.getByTestId('home-reply');
+  await expect(r).toContainText('50회');
+  await expect(page.getByTestId('mail')).toContainText('약 60회');
+  await page.getByRole('button', { name: '답장 전문 보기' }).click();
+  await expect(r).toContainText('50회 (요청 메일의 60회에서 조정)');
 });

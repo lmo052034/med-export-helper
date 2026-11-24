@@ -14,6 +14,7 @@ import { DocView } from "../components/deal/Docs.jsx";
 import { LineChart } from "../components/deal/LineChart.jsx";
 import { USER, greeting, today } from "../lib/user.js";
 import { cn } from "@/lib/utils";
+import { consultCalc, replyText, manwon, rp as rpc } from "../components/deal/ConsultView.jsx";
 
 const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : (Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d }));
 const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${fmt(v)}`);
@@ -230,7 +231,46 @@ function Cases({ list }) {
 }
 
 /* 받은 견적 요청 (시연용 메일, 콘텐츠 팩 PACK.consult.mail). 원본 메일 내용은 상담 입력과 무관하게 고정 */
+/* 견적 검토 결과를 메일 아래 답장 초안으로 표시: 수익성(견적 검토) 화면의 입력값을 그대로 사용 */
+function ReviewReply() {
+  const { deal } = useDeal();
+  const [full, setFull] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const C = PACK.consult;
+  if (deal.preset !== C.id) return null;
+  const life = Number(C.lifeMonths) || 48;
+  const L = calcLocal(deal), R = consultCalc(deal, life), h = deal.econ.hospital;
+  const text = replyText({ C, deal, L, R, life });
+  const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { setCopied(false); } };
+  const rows = [
+    ["병원 제시 견적 (현지 견적 총액)", rpc(L.total)],
+    ["손익 계산 도입비", rpc(R.H.invest)],
+    ["월 예상 유료 시술", `${h.sessions}회`],
+    ["회당 수납액", `${rpc(Number(h.price))}${h.dropPrev ? " (20% 하락 가정)" : ""}`],
+    ["본전에 필요한 월 시술", R.bep !== null ? `월 ${R.bep}회` : "산출 불가"],
+    ["한 달 예상 손익", R.profit !== null ? manwon(R.profit) : "산출 불가"],
+  ];
+  return (
+    <article className="mt-3 rounded-2xl border border-primary/40 bg-white p-5 sm:p-6" data-testid="home-reply">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-[15px] font-semibold">답장 초안, 견적 검토 결과 반영</h3>
+        <span className="text-[12px] text-[#86868b]">받는 사람 {C.mail.from}, 보내기 전</span>
+      </div>
+      <dl className="mt-3 grid gap-x-6 gap-y-1.5 text-[14px] sm:grid-cols-2">
+        {rows.map(([k, v]) => (<div key={k} className="flex justify-between gap-3 border-b border-[var(--line)] pb-1.5"><dt className="text-[#6e6e73]">{k}</dt><dd className="text-right font-medium tabular-nums">{v}</dd></div>))}
+      </dl>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <button type="button" aria-expanded={full} onClick={() => setFull(!full)} className="inline-flex h-9 items-center rounded-md border border-[var(--line-strong)] px-3.5 text-[14px] font-medium hover:bg-[var(--fill-soft)]">{full ? "답장 전문 접기" : "답장 전문 보기"}</button>
+        <button type="button" onClick={copy} className="inline-flex h-9 items-center rounded-md border border-[var(--line-strong)] px-3.5 text-[14px] font-medium hover:bg-[var(--fill-soft)]">복사</button>
+        <span className="text-[12px] text-[#6e6e73]" aria-live="polite">{copied ? "복사됨" : ""}</span>
+      </div>
+      {full && <pre className="mt-3 whitespace-pre-wrap rounded-xl bg-[var(--fill-soft)] p-4 font-sans text-[14px] leading-relaxed">{text}</pre>}
+    </article>
+  );
+}
+
 function MailCard() {
+  const { deal } = useDeal();
   const m = PACK.consult.mail;
   const row = (k, v) => (<div className="flex gap-3"><dt className="w-[68px] shrink-0 text-[#6e6e73]">{k}</dt><dd className="min-w-0">{v}</dd></div>);
   return (
@@ -249,7 +289,8 @@ function MailCard() {
           {m.body.map((t) => <p key={t}>{t}</p>)}
         </div>
       </article>
-      <Link to="/price?tab=hospital&consult=1" className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[16px] font-semibold text-white hover:opacity-90 sm:w-auto sm:inline-flex">이 요청으로 견적 검토하기<ArrowRight className="size-5" aria-hidden="true" /></Link>
+      <ReviewReply />
+      <Link to="/price?tab=hospital&consult=1" className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[16px] font-semibold text-white hover:opacity-90 sm:w-auto sm:inline-flex">{deal.preset === PACK.consult.id ? "견적 검토 이어서 하기" : "이 요청으로 견적 검토하기"}<ArrowRight className="size-5" aria-hidden="true" /></Link>
     </section>
   );
 }
