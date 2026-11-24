@@ -33,6 +33,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          PACK_DIR: src/pack-in5300 # 공개판 IN-5300 팩 (이메일, 서명 이름, 수출 단가, 현지 주소 제외)
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
