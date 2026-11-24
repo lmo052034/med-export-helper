@@ -4,7 +4,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useDeal } from "../lib/deal/DealContext.jsx";
 import { calcExport, calcLocal } from "../lib/deal/calc.js";
-import { hospitalCalc, partnerCalc, cashFlow, surplusCurve, changedFrom, withBaseline } from "../lib/deal/econ.js";
+import { hospitalCalc, partnerCalc, surplusCurve, changedFrom, withBaseline } from "../lib/deal/econ.js";
 import { fmtMoney, parseNum, CURRENCIES } from "../lib/deal/money.js";
 import { getPath, fieldId } from "../lib/deal/path.js";
 import { EvidenceButton } from "../components/deal/Field.jsx";
@@ -16,7 +16,6 @@ import { PACK } from "@pack";
 const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d });
 const rp = (v) => (v === null || v === undefined ? "—" : `Rp ${fmt(v)}`);
 const rpShort = (v) => { const a = Math.abs(v); const s = v < 0 ? "−" : ""; return a >= 1e9 ? `${s}${fmt(a / 1e9, 2)}B` : a >= 1e6 ? `${s}${fmt(a / 1e6, 1)}M` : `${s}${fmt(a)}`; };
-const VARIANT = import.meta.env.VITE_VARIANT || "c";
 const BASIS = [["company", "회사 자료"], ["official", "공개자료"], ["team", "팀 설정"], ["user", "사용자 입력"]];
 const WHEN = [["before-ship", "출하 전"], ["import", "수입 신고"], ["install", "설치, 운영"], ["finance", "금융"]];
 const CTRL = "w-full min-w-0 rounded-[10px] border border-[var(--line-strong)] bg-white px-3 text-[15px] outline-none transition-[box-shadow,border-color] focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20 aria-[invalid=true]:border-amber-500";
@@ -127,7 +126,6 @@ function Hospital({ onEv }) {
   const baseCurve = useMemo(() => { const b = withBaseline(deal); return b ? surplusCurve(b, 120, 2).map((p) => ({ x: p.n, y: p.v })) : null; }, [deal]);
   const L = calcLocal(deal);
   const h = deal.econ.hospital;
-  const scen = deal.econ.scenarios;
   const life = Number(PACK.review?.defaults?.device?.lifeMonths) || 48;
   const bepDep = H.contribution > 0 && H.invest !== null && H.fixed !== null ? Math.ceil((H.fixed + H.invest / life) / H.contribution) : null;
   const inputsEl = (
@@ -201,65 +199,19 @@ function Hospital({ onEv }) {
           {H.payback !== null && H.payback > H.horizon && <p className="text-[12px] text-amber-700">계산 기간 {H.horizon}개월 안에 회수되지 않아요.</p>}
         </div>
   );
-  const scenEl = (
-        <div className="mt-10">
-          <h3 className="text-[15px] font-semibold">시나리오 비교</h3>
-          <p className="text-[12px] text-[#6e6e73]">입력 전제를 직접 바꿀 수 있어요. 성공 확률이나 실제 수요 예측이 아니에요. 다른 비용은 현재 입력값을 그대로 써요.</p>
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[560px] text-[14px]">
-              <thead><tr className="border-b border-[var(--line-strong)] text-left text-[12px] text-[#6e6e73]"><th className="py-2 pr-2 font-medium">시나리오</th><th className="py-2 pr-2 text-right font-medium">회당 수납 (IDR)</th><th className="py-2 pr-2 text-right font-medium">월 시술</th><th className="py-2 pr-2 text-right font-medium">월 현금잉여</th><th className="py-2 pr-2 text-right font-medium">회수</th></tr></thead>
-              <tbody>
-                {scen.map((s) => {
-                  const r = hospitalCalc(deal, { price: s.price, sessions: s.sessions });
-                  return (
-                    <tr key={s.id} className="border-b border-[var(--line)]">
-                      <th scope="row" className="py-2 pr-2 text-left font-medium">{s.label}<span className="block text-[11px] font-normal text-[#86868b]">{s.note}</span></th>
-                      <td className="py-2 pr-2"><input aria-label={`${s.label} 회당 수납`} inputMode="decimal" value={s.price} onChange={(e) => update(`econ.scenarios.${s.id}.price`, e.target.value)} className={cn(CTRL, "h-8 w-28 text-right text-[13px] tabular-nums")} /></td>
-                      <td className="py-2 pr-2"><input aria-label={`${s.label} 월 시술`} inputMode="decimal" value={s.sessions} onChange={(e) => update(`econ.scenarios.${s.id}.sessions`, e.target.value)} className={cn(CTRL, "h-8 w-16 text-right text-[13px] tabular-nums")} /></td>
-                      <td className="py-2 pr-2 text-right tabular-nums">{rp(r.surplus)}</td>
-                      <td className="py-2 pr-2 text-right tabular-nums">{r.payback !== null ? `${fmt(r.payback, 1)}개월` : "산출 불가"}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-  );
   const noteEl = deal.sampleKey && PACK.notes?.hospital ? (
           <details className="mt-8 text-[13px] text-[#424245]">
             <summary className="cursor-pointer font-medium">{PACK.notes.hospital.title}</summary>
             <p className="mt-2 leading-relaxed">{PACK.notes.hospital.body}</p>
           </details>
   ) : null;
-  if (VARIANT === "b") return (
-    <div className="space-y-12">
-      {mobileEl}
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">{resultsEl}<div className="min-w-0 [&>div]:mt-0">{ch1El}</div></div>
-      <div className="grid gap-10 border-t border-[var(--line)] pt-10 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">{inputsEl}<div className="min-w-0 [&>div:first-child]:mt-0">{ch2El}{scenEl}{noteEl}</div></div>
-    </div>
-  );
-  if (VARIANT === "c") return (
+  return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
       <div className="min-w-0 rounded-2xl bg-[var(--surface-2)] p-6 [&_input]:bg-white [&_select]:bg-white">{inputsEl}</div>
       {mobileEl}
-      <div className="min-w-0 [&>div:first-child]:mt-0">{ch1El}<div className="mt-8">{resultsEl}</div>{ch2El}{scenEl}{noteEl}</div>
+      <div className="min-w-0 [&>div:first-child]:mt-0">{ch1El}<div className="mt-8">{resultsEl}</div>{ch2El}{noteEl}</div>
     </div>
-  );
-  return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
-      {inputsEl}
-      {mobileEl}
-      <div className="min-w-0 lg:sticky lg:top-16 lg:self-start">
-        {resultsEl}
-        {ch1El}
-        {ch2El}
-        {scenEl}
-        {noteEl}
-      </div>
-    </div>
-  );
-}
+  );}
 
 /* ---------- 거래 가격 ---------- */
 function DealPrice({ onEv }) {
@@ -378,7 +330,7 @@ function DealPrice({ onEv }) {
         <ul className="mt-3 space-y-1 text-[12px] leading-relaxed text-[#6e6e73]">
           {P.missing.length > 0 && <li className="text-amber-700">계산에 넣지 못한 항목: {P.missing.join(", ")}</li>}
           {P.excluded.length > 0 && <li>손익에서 뺀 항목: {P.excluded.join(", ")}</li>}
-          <li>수입 부가세와 PPh 22는 공제, 선납으로 보고 손익에서 빼고, 결제 흐름의 현금 지출에만 넣어요.</li>
+          <li>수입 부가세와 PPh 22는 공제, 선납 항목이라 손익에서 제외.</li>
           <li>제조원가 자료가 없어 제조사 이익은 계산하지 않아요. 제조사 매출은 수출 금액 {E.total !== null ? fmtMoney(E.total, ec) : "—"}이에요.</li>
           {deal.sampleKey && PACK.notes?.partner && <li>{PACK.notes.partner}</li>}
         </ul>
@@ -387,38 +339,7 @@ function DealPrice({ onEv }) {
   );
 }
 
-/* ---------- 결제 흐름 ---------- */
-function Cash() {
-  const { deal } = useDeal();
-  const C = cashFlow(deal);
-  const who = { "hospital→partner": "병원 → 파트너", "partner→maker": "파트너 → 제조사", "partner→carrier": "파트너 → 운송, 보험", "partner→customs": "파트너 → 세관", "partner→local": "파트너 → 현지 비용" };
-  return (
-    <div className="max-w-[860px]">
-      <p className="text-[14px] text-[#424245]">날짜가 정해지지 않아 단계 순서로만 보여 줘요. 파트너의 처음 현금은 0으로 가정했어요.</p>
-      <table className="mt-4 w-full text-[14px]" data-testid="cash-table">
-        <thead><tr className="border-b border-[var(--line-strong)] text-left text-[12px] text-[#6e6e73]"><th className="py-2 font-medium">단계</th><th className="py-2 font-medium">흐름</th><th className="py-2 text-right font-medium">파트너 현금 ({C.cur})</th><th className="py-2 text-right font-medium">누적</th></tr></thead>
-        <tbody>
-          {C.rows.map((r, i) => (
-            <tr key={i} className="border-b border-[var(--line)]">
-              <td className="py-2.5 pr-2 text-[13px] text-[#6e6e73]">{r.step}</td>
-              <td className="py-2.5 pr-2">{r.label}<span className="block text-[11px] text-[#86868b]">{who[r.who]}</span></td>
-              <td className={cn("py-2.5 text-right tabular-nums", r.amount < 0 && "text-[#424245]")}>{r.amount > 0 ? "+" : "−"}{fmt(Math.abs(r.amount))}</td>
-              <td className={cn("py-2.5 text-right tabular-nums", r.acc < 0 && "text-amber-700")}>{r.acc < 0 ? "−" : ""}{fmt(Math.abs(r.acc))}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {C.rows.length > 0 && <p className="mt-4 text-[17px]">이 순서에서 파트너에게 일시적으로 필요한 자금 <b className="tabular-nums" data-testid="cash-need">{rp(C.need)}</b></p>}
-      <ul className="mt-3 space-y-1 text-[12px] leading-relaxed text-[#6e6e73]">
-        <li>수입 부가세와 PPh 22는 나중에 공제되거나 법인세에서 빠지지만, 수입 신고 때는 현금으로 나가요.</li>
-        <li>제조사는 출하 전에 수출 대금을 받아요 (T/T 선지급). 병원은 계약금과 검수 후 잔금을 내요.</li>
-        <li>금융비 항목을 비용에 넣었다면, 이 부족 자금과 기간에 맞는지 함께 확인하세요.</li>
-      </ul>
-    </div>
-  );
-}
-
-const TABS = [["hospital", "병원 손익"], ["deal", "파트너 마진"], ["cash", "자금 흐름"]];
+const TABS = [["hospital", "병원 손익"], ["deal", "파트너 마진"]];
 
 export default function PricePage() {
   const { deal, actions } = useDeal();
@@ -431,7 +352,7 @@ export default function PricePage() {
       <div className="flex flex-wrap items-end justify-between gap-4 pt-10 pb-6">
         <div>
           <h1 className="text-[34px] font-bold tracking-[-0.03em] sm:text-[40px]">수익성</h1>
-          <p className="mt-1 max-w-[640px] text-[15px] text-[#424245]">병원 손익, 파트너 마진, 자금 흐름을 같은 거래 데이터로 계산합니다. 판매가를 바꾸면 현지 견적과 병원 도입비가 함께, 시술량을 바꾸면 병원 손익만 바뀝니다.</p>
+          <p className="mt-1 max-w-[640px] text-[15px] text-[#424245]">병원 손익과 파트너 마진, 같은 거래 데이터 기준 계산. 판매가 변경 시 현지 견적과 병원 도입가 동시 반영, 시술량 변경 시 병원 손익만 반영.</p>
         </div>
         {deal.baseline && (
           <button type="button" onClick={() => actions.resetToBaseline()} disabled={!anyChanged} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--line-strong)] px-4 text-[14px] font-medium disabled:opacity-40"><RotateCcw className="size-4" />기준값으로 되돌리기</button>
@@ -442,7 +363,6 @@ export default function PricePage() {
       </div>
       {tab === "hospital" && <Hospital onEv={setEv} />}
       {tab === "deal" && <DealPrice onEv={setEv} />}
-      {tab === "cash" && <Cash />}
       <EvidencePanel open={!!ev} path={ev} onOpenChange={(o) => !o && setEv(null)} />
     </div>
   );
