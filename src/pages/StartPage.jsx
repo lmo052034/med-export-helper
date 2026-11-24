@@ -101,7 +101,6 @@ const TILES = [
 ];
 
 export default function StartPage() {
-  const S = PACK.start || {};
   const count = inbox().length;
   const [show, setShow] = useState(false);
   const box = useRef(null);
@@ -109,15 +108,10 @@ export default function StartPage() {
   const tile = "flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--line)] bg-white text-[15px] font-semibold hover:border-primary hover:bg-[var(--fill-soft)]";
   return (
     <div className="flex min-h-svh flex-col bg-[var(--surface-2)] text-[#1d1d1f]" data-testid="start">
-      <header className="border-b border-[var(--line)] bg-white">
-        <div className="mx-auto flex h-14 max-w-[960px] items-center px-4 sm:px-6">
-          <span className="text-[16px] font-semibold tracking-tight">{PACK.brand}</span>
-        </div>
-      </header>
 
       <main id="main" className="flex-1 px-4 pb-16 sm:px-6">
         <div className="mx-auto max-w-[960px]">
-          <h1 className="pt-14 pb-8 text-center text-[28px] font-bold tracking-tight sm:pt-20 sm:text-[40px]">{S.title || "해외 병원 수출 업무"}</h1>
+          <h1 className="pt-20 pb-10 text-center text-[32px] font-bold tracking-tight sm:pt-32 sm:text-[48px]">{PACK.brand}</h1>
           <nav aria-label="바로 가기" className="mx-auto grid max-w-[720px] grid-cols-2 gap-3 sm:grid-cols-4">
             <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className={cn(tile, show && "border-primary")}>
               <span className="relative">
