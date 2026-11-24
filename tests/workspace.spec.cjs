@@ -191,6 +191,8 @@ test('견적 요청 메일 → 견적 검토 → 현지 견적, 병원 도입비
   await page.goto('/#/');
   await expect(page.getByTestId('mail')).toContainText('약 60회');
   await page.getByRole('link', { name: '이 요청으로 견적 검토하기' }).click();
+  await expect(page.getByTestId('sync-note')).toBeVisible();
+  await page.goto('/#/price?tab=hospital&consult=1');
   await expect(page.getByTestId('consult-request')).toContainText('월 60회');
   await expect(page.getByTestId('consult-bep')).toHaveText('월 47회');
   const drop = page.getByRole('button', { name: '한 번에 받는 돈이 20% 줄면?' });
