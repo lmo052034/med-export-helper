@@ -21,6 +21,13 @@ function Miss({ field, label }) {
     </button>
   );
 }
+/* 포장 후 실측 항목(포장 수량, 중량)이 비었을 때: 영문 송장과 인쇄본은 To be confirmed, 화면에는 한국어 안내 함께 */
+function Tbc({ field }) {
+  const go = useGoField();
+  return (
+    <span data-doc-field={field}>To be confirmed after packing<button type="button" onClick={() => go(field)} className="no-print ml-1.5 text-[12px] text-[#6e6e73] underline-offset-2 hover:underline">(포장 후 실측 예정)</button></span>
+  );
+}
 const V = ({ v, field, label }) => (String(v ?? "").trim() ? <span data-doc-field={field}>{v}</span> : <Miss field={field} label={label} />);
 
 function Stamp({ d }) {
@@ -123,9 +130,10 @@ export function InvoiceDoc({ d }) {
       <dl className="doc-terms">
         <dt>Terms of delivery</dt><dd data-doc-field="exp.incoterm" className={cn(t.overridden && "doc-diff")}>{t.incoterm && t.place ? `${t.incoterm} ${t.place} (Incoterms ${d.exp.incotermVersion})` : <Miss field="exp.incoterm" label="인도조건" />}{t.overridden && <span className="no-print">, 견적서와 다름{d.exp.invoiceOverride.reason ? `: ${d.exp.invoiceOverride.reason}` : ""}</span>}</dd>
         <dt>Terms of payment</dt><dd>{pt || <Miss field="exp.payment" label="결제조건" />}</dd>
-        <dt>Packages</dt><dd data-doc-field="exp.packages">{W.pk.state === "ok" ? `${fmtNum(W.pk.value)} ${d.exp.packageUnit}` : <Miss field="exp.packages" label="포장 수량" />}{d.exp.packing ? `, ${d.exp.packing}` : ""}</dd>
+        <dt>Packages</dt><dd data-doc-field="exp.packages">{W.pk.state === "ok" && W.pk.value > 0 ? `${fmtNum(W.pk.value)} ${d.exp.packageUnit}` : W.pk.state === "blank" ? <Tbc field="exp.packages" /> : <Miss field="exp.packages" label="포장 수량" />}{d.exp.packing ? `, ${d.exp.packing}` : ""}</dd>
         <dt>N.W. / G.W.</dt><dd data-doc-field="exp.gw">
-          {W.nw.state === "ok" ? `${fmtNum(W.nwTotal)} ${d.exp.nwUnit}` : <Miss field="exp.nw" label="순중량" />} / {W.gw.state === "ok" ? `${fmtNum(W.gwTotal)} ${d.exp.gwUnit}` : <Miss field="exp.gw" label="총중량" />}
+          {W.nw.state === "blank" && W.gw.state === "blank" ? <Tbc field="exp.nw" /> : <>
+          {W.nw.state === "ok" && W.nwTotal > 0 ? `${fmtNum(W.nwTotal)} ${d.exp.nwUnit}` : W.nw.state === "blank" ? <Tbc field="exp.nw" /> : <Miss field="exp.nw" label="순중량" />} / {W.gw.state === "ok" && W.gwTotal > 0 ? `${fmtNum(W.gwTotal)} ${d.exp.gwUnit}` : W.gw.state === "blank" ? <Tbc field="exp.gw" /> : <Miss field="exp.gw" label="총중량" />}</>}
           {W.per && W.nw.state === "ok" && <span className="text-[#6e6e73]"> (per package {d.exp.nw} / {d.exp.gw || "—"} × {d.exp.packages || "?"})</span>}
         </dd>
         <dt>Country of origin</dt><dd>{d.exp.origin || "—"}</dd>

@@ -144,6 +144,7 @@ function Consult() {
         ))}
         <span className="text-[13px] text-[#6e6e73]">월 유료 시술 {deal.econ.hospital.sessions}회, 나머지 조건 동일</span>
       </div>
+      <p className="mt-3 text-[13px] text-[#424245]" data-testid="consult-invest">발표 기준 도입가 <b className="tabular-nums">{rp(R.H.invest)}</b> <span className="text-[#6e6e73]">({C.investNote || "직접 입력"}). 홈의 병원 도입가는 현지 견적 총액(판매가 + 부가세)으로 계산한 값이라 다를 수 있음</span></p>
       <dl className="mt-5 grid gap-4 sm:grid-cols-2">
         <div className="border-l-2 border-primary pl-4">
           <dt className="text-[13px] text-[#6e6e73]">장비비 포함 월 손익분기</dt>

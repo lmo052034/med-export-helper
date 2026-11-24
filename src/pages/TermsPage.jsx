@@ -185,7 +185,7 @@ export default function TermsPage() {
     parties: PARTY.map(([k]) => deal.parties[k].name).filter(Boolean).join(" → "),
     items: `${deal.exp.items.map((i) => i.model || i.desc).filter(Boolean).join(", ") || "품목 없음"}, ${E.total !== null ? fmtMoney(E.total, cur) : "총액 미계산"}`,
     terms: [deal.exp.incoterm && `${deal.exp.incoterm} ${deal.exp.place}`, deal.exp.payment.map((p) => p.label || (p.pct && p.pct + "%")).filter(Boolean).join(" / ")].filter(Boolean).join(", "),
-    packing: `${deal.exp.packages || "?"} ${deal.exp.packageUnit}, N.W. ${deal.exp.nw || "—"}, G.W. ${deal.exp.gw || "—"} ${deal.exp.gwUnit}`,
+    packing: !deal.exp.packages && !deal.exp.nw && !deal.exp.gw ? "포장 후 실측 예정" : `${deal.exp.packages || "포장 후 실측 예정"} ${deal.exp.packages ? deal.exp.packageUnit : ""}, N.W. ${deal.exp.nw || "실측 예정"}, G.W. ${deal.exp.gw || "실측 예정"} ${deal.exp.gwUnit}`,
     service: [deal.service.installBy && `설치 ${deal.service.installBy}`, deal.service.asBy && `A/S ${deal.service.asBy}`].filter(Boolean).join(", ") || "합의 내용 없음",
     local: deal.local.enabled ? `${L.total !== null ? fmtMoney(L.total, deal.local.currency) : "총액 미계산"}, ${deal.local.priceBasis === "partner" ? "파트너 제공 가격" : deal.local.priceBasis === "mock" ? "팀 모의 가격" : "가격 출처 미선택"}` : "사용 안 함",
     docs: [deal.exp.quoteNo, deal.exp.invoiceNo, deal.email.senderName ? `서명 ${deal.email.senderName}` : "서명 없음"].filter(Boolean).join(", "),

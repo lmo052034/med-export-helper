@@ -111,7 +111,7 @@ export const PACK = {
     id: "in5300", name: "IN-5300 발표 기준안", link: "IN-5300 병원 도입 상담",
     title: "영인바이오텍 SuperStar+ IN-5300 | 인도네시아 병원 도입 상담",
     sub: "현지 등록사 PT Fisio Medika Indonesia를 통한 재판매 · 발표용 모의 거래",
-    invest: 528086060, lifeMonths: 48, sessions: 60, price: 509000, variable: 39659, fixed: 11272667,
+    invest: 528086060, investNote: "부록 A8 값, 직접 입력", lifeMonths: 48, sessions: 60, price: 509000, variable: 39659, fixed: 11272667,
     src: "발표자료 12쪽·부록 A8~A9 기준. 수납액과 시술량은 상담용 가정",
     next: "병원에 최근 3개월 실제 회당 수납액과 월별 유료 시술 건수를 요청하세요.",
   },
@@ -220,8 +220,8 @@ export function sampleDeal() {
     leadTime: "", validityDays: "30",
     quoteNo: "SAMPLE-Q-001", quoteDate: "2026-11-02", invoiceNo: "SAMPLE-CI-001", invoiceDate: "2026-11-30",
     origin: "Republic of Korea", destination: "Jakarta, Indonesia",
-    packages: "1", packageUnit: "CTN", packing: "Export carton with foam, ISPM-15 pallet",
-    nw: "23", nwUnit: "kg", gw: "30", gwUnit: "kg", weightBasis: "total", remarks: "Trolley not included. HS 9018.90.31 in Indonesia, AKL No. 21403620119.",
+    packages: "", packageUnit: "CTN", packing: "Export carton with foam, ISPM-15 pallet",
+    nw: "", nwUnit: "kg", gw: "", gwUnit: "kg", weightBasis: "total", /* 포장 수량, N.W., G.W.는 포장 후 실측 (발표자료 19쪽). 23 kg는 카탈로그 본체 무게라 포장 중량 근거 아님 */ remarks: "Trolley not included. HS 9018.90.31 in Indonesia, AKL No. 21403620119.",
   };
   d.local = {
     ...d.local, enabled: true, currency: "IDR", priceBasis: "mock",
