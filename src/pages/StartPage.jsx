@@ -3,10 +3,9 @@
    Azuro 의료기기 사이트 사례(제품과 인허가 근거를 앞에). 받은 메일함에서 견적 요청 메일을 바로 열어 봄 */
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Mail, MailOpen } from "lucide-react";
+import { ArrowRight, Calculator, FileText, LayoutGrid, Mail, MailOpen } from "lucide-react";
 import { PACK } from "@pack";
 import { cn } from "@/lib/utils";
-import { USER, today } from "../lib/user.js";
 
 const TIMES = ["오늘 09:12", "오늘 08:40", "어제 17:25", "어제 10:03", "11월 21일", "11월 20일"];
 
@@ -95,61 +94,50 @@ function Inbox() {
   );
 }
 
+const TILES = [
+  { to: "/", label: "업무 홈", Icon: LayoutGrid },
+  { to: "/price", label: "수익성", Icon: Calculator },
+  { to: "/deal", label: "거래와 서류", Icon: FileText },
+];
+
 export default function StartPage() {
   const S = PACK.start || {};
-  const steps = S.steps || [
-    ["받은 메일 확인", "견적 요청과 문의 메일 확인"],
-    ["수익성 검토", "병원 손익분기와 월 손익, 비용 구조 조정"],
-    ["답장 작성", "바꾼 조건이 반영된 답장 전문"],
-    ["거래와 서류", "견적서, 상업송장 초안과 검토 결과"],
-  ];
+  const count = inbox().length;
+  const [show, setShow] = useState(false);
+  const box = useRef(null);
+  const toggle = () => { setShow((v) => !v); setTimeout(() => box.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0); };
+  const tile = "flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--line)] bg-white text-[15px] font-semibold hover:border-primary hover:bg-[var(--fill-soft)]";
   return (
-    <div className="min-h-svh bg-[var(--surface-2)] text-[#1d1d1f]" data-testid="start">
-      <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
+    <div className="flex min-h-svh flex-col bg-[var(--surface-2)] text-[#1d1d1f]" data-testid="start">
+      <header className="border-b border-[var(--line)] bg-white">
+        <div className="mx-auto flex h-14 max-w-[960px] items-center px-4 sm:px-6">
           <span className="text-[16px] font-semibold tracking-tight">{PACK.brand}</span>
-          <nav aria-label="입장 페이지 메뉴" className="hidden items-center gap-5 text-[14px] text-[#424245] md:flex">
-            <a href="#inbox-t" onClick={(e) => { e.preventDefault(); document.getElementById("inbox-t")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:text-[#1d1d1f]">받은 메일</a>
-            <a href="#flow-t" onClick={(e) => { e.preventDefault(); document.getElementById("flow-t")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:text-[#1d1d1f]">업무 흐름</a>
-          </nav>
-          <Link to="/" className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 text-[14px] font-semibold text-white hover:opacity-90">업무 화면 열기<ArrowRight className="size-4" aria-hidden="true" /></Link>
         </div>
       </header>
 
-      <main id="main" className="px-4 pb-16 sm:px-6">
-        <section className="mx-auto max-w-[1200px] pt-10 pb-8 sm:pt-14">
-          <p className="text-[13px] font-medium text-primary">{S.eyebrow || PACK.footer?.project}</p>
-          <h1 className="mt-2 max-w-[820px] text-[30px] font-bold leading-[1.2] tracking-tight sm:text-[42px]">{S.title || "해외 병원 견적 요청부터 선적 서류까지, 한 화면에서"}</h1>
-          <p className="mt-3 max-w-[720px] text-[16px] leading-relaxed text-[#424245] sm:text-[17px]">{S.sub || "받은 메일 확인, 병원 수익성 검토, 답장, 견적서와 상업송장까지 같은 거래로 연결"}</p>
-          <p className="mt-4 text-[13px] text-[#6e6e73]">{today()}, {USER.name} ({USER.team})</p>
-        </section>
-
-        <section aria-labelledby="inbox-t" className="mx-auto max-w-[1200px] scroll-mt-20">
-          <h2 id="inbox-t" className="mb-3 flex items-center gap-2 text-[15px] font-semibold"><Mail className="size-4 text-primary" aria-hidden="true" />받은 메일</h2>
-          <Inbox />
-        </section>
-
-        <section aria-labelledby="flow-t" className="mx-auto mt-12 max-w-[1200px] scroll-mt-20">
-          <h2 id="flow-t" className="text-[15px] font-semibold">업무 흐름</h2>
-          <ol className="mt-3 grid gap-px overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map(([t, d], i) => (
-              <li key={t} className="bg-white px-5 py-4">
-                <span className="text-[12px] font-semibold text-primary tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                <p className="mt-1 text-[15px] font-semibold">{t}</p>
-                <p className="mt-0.5 text-[13px] leading-relaxed text-[#6e6e73]">{d}</p>
-              </li>
+      <main id="main" className="flex-1 px-4 pb-16 sm:px-6">
+        <div className="mx-auto max-w-[960px]">
+          <h1 className="pt-14 pb-8 text-center text-[28px] font-bold tracking-tight sm:pt-20 sm:text-[40px]">{S.title || "해외 병원 수출 업무"}</h1>
+          <nav aria-label="바로 가기" className="mx-auto grid max-w-[720px] grid-cols-2 gap-3 sm:grid-cols-4">
+            <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className={cn(tile, show && "border-primary")}>
+              <span className="relative">
+                <Mail className="size-10 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                <span className="absolute -top-1.5 -right-2.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#ff3b30] px-1 text-[11px] font-bold text-white tabular-nums">{count}</span>
+              </span>
+              받은 메일
+            </button>
+            {TILES.map(({ to, label, Icon }) => (
+              <Link key={to} to={to} className={tile}><Icon className="size-10 text-primary" strokeWidth={1.6} aria-hidden="true" />{label}</Link>
             ))}
-          </ol>
-          {S.sources && <p className="mt-4 text-[13px] leading-relaxed text-[#6e6e73]">확인 근거 자료: {S.sources}</p>}
-        </section>
-      </main>
-
-      <footer className="border-t border-[var(--line)] bg-white py-6 text-[12px] leading-relaxed text-[#6e6e73]">
-        <div className="mx-auto max-w-[1200px] space-y-1 px-4 sm:px-6">
-          <p className="font-medium text-[#424245]">{PACK.footer?.project}</p>
-          {(PACK.footer?.lines || []).map((l) => <p key={l}>{l}</p>)}
+          </nav>
         </div>
-      </footer>
+
+        {show && (
+          <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-8 max-w-[1200px] scroll-mt-4">
+            <Inbox />
+          </section>
+        )}
+      </main>
     </div>
   );
 }
