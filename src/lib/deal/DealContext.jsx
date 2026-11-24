@@ -50,7 +50,7 @@ export function DealProvider({ children }) {
       const row = (label, amount) => ({ id: Math.random().toString(36).slice(2, 10), label, amount: String(amount), basis: "team", note: c.src });
       const n = {
         ...d, id: `preset-${c.id}`, preset: c.id, meta: { ...d.meta, name: c.name },
-        econ: { ...d.econ, hospital: { ...d.econ.hospital, investMode: "custom", investCustom: String(c.invest), price: String(c.price), priceSource: c.src, sessions: String(c.sessions), variable: [row("회당 변동비", c.variable)], fixed: [row("월 운영 고정비", c.fixed)] } },
+        econ: { ...d.econ, hospital: { ...d.econ.hospital, investPick: "baseline", investManual: "", dropPrev: "", investMode: "custom", investCustom: String(c.invest), price: String(c.price), priceSource: c.src, sessions: String(c.sessions), variable: [row("회당 변동비", c.variable)], fixed: [row("월 운영 고정비", c.fixed)] } },
       };
       n.baseline = snapshot(n);
       return { active: n.id, list: { ...s.list, [n.id]: n } };

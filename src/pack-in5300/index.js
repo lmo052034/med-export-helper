@@ -108,6 +108,16 @@ export const PACK = {
   },
   user: { name: "김민영", team: "영인바이오텍 해외영업팀" },
   consult: {
+    product: "IN-5300", chain: ["영인바이오텍", "현지 파트너", "재활병원 A"],
+    mail: {
+      from: "PT Fisio Medika Indonesia", fromTeam: "현지 영업팀", to: "영인바이오텍", toTeam: "해외영업팀",
+      subject: "[견적 검토 요청] IN-5300 1세트 · 인도네시아 재활병원 A", hospital: "재활병원 A", sessions: 60,
+      body: [
+        "안녕하세요. 재활병원 A에서 IN-5300 한 세트의 견적을 요청했습니다.",
+        "병원은 월 유료 시술을 약 60회로 예상하고 있습니다. 저희가 병원에 제시할 세금 포함 견적과, 이 조건에서 병원이 한 달에 몇 회 시술해야 비용을 충당할 수 있는지 검토 부탁드립니다.",
+        "검토 결과를 보내주시면 저희가 병원에 안내하겠습니다.",
+      ],
+    },
     id: "in5300", name: "IN-5300 발표 기준안", link: "IN-5300 병원 도입 상담",
     title: "영인바이오텍 SuperStar+ IN-5300 | 인도네시아 병원 도입 상담",
     sub: "현지 등록사 PT Fisio Medika Indonesia를 통한 재판매 · 발표용 모의 거래",

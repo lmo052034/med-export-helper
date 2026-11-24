@@ -187,20 +187,39 @@ test('병원 운영: 0과 음수, 잉여 0 이하에서는 산출 불가로 표�
 });
 
 
-test('병원 도입 상담: 홈 링크로 바로 열고 발표 기준과 수납액 20% 하락 전환, 기존 거래 유지', async ({ page }) => {
+test('견적 요청 메일 → 견적 검토 → 현지 견적, 병원 도입비, 시술 횟수 → 답장 초안', async ({ page }) => {
   await page.goto('/#/');
-  const homeBep = await page.locator('main').getByText(/^월 \d+회$/).first().innerText();
-  await page.getByRole('link', { name: '병원 도입 상담' }).click();
-  const c = page.getByTestId('consult');
-  await expect(c).toBeVisible();
-  await expect(page.getByLabel('회당 실제 수납액', { exact: true })).toHaveValue('500000');
+  await expect(page.getByTestId('mail')).toContainText('약 60회');
+  await page.getByRole('link', { name: '이 요청으로 견적 검토하기' }).click();
+  await expect(page.getByTestId('consult-request')).toContainText('월 60회');
   await expect(page.getByTestId('consult-bep')).toHaveText('월 47회');
-  await page.getByRole('button', { name: /수납액 20% 하락/ }).click();
+  const drop = page.getByRole('button', { name: '한 번에 받는 돈이 20% 줄면?' });
+  await drop.click();
+  await expect(page.getByTestId('consult-price')).toHaveText('Rp400,000');
   await expect(page.getByTestId('consult-bep')).toHaveText('월 60회');
-  await expect(page.getByTestId('consult-profit')).toContainText('+Rp');
-  await page.getByRole('button', { name: /^발표 기준/ }).click();
+  await drop.click();
+  await expect(page.getByTestId('consult-price')).toHaveText('Rp500,000');
+  await page.getByRole('button', { name: '현지 견적 바꾸기' }).click();
+  await page.fill('#local-net', '500000000');
+  await page.getByRole('button', { name: '견적 적용' }).click();
+  await expect(page.getByTestId('local-total')).toHaveText('Rp555,000,000');
+  await page.getByRole('button', { name: '병원 조건 바꾸기' }).click();
+  await page.getByRole('radio', { name: /직접 입력/ }).click();
+  await page.fill('#invest-custom', '480000000');
+  await expect(page.getByTestId('local-total')).toHaveText('Rp555,000,000');
+  await expect(page.getByTestId('consult-invest')).toHaveText('Rp480,000,000');
+  await page.fill('#consult-sessions', '50');
+  await page.getByRole('button', { name: '파트너에게 보낼 답장 초안 보기' }).click();
+  const r = page.getByTestId('reply');
+  await expect(r).toContainText('Rp555,000,000');
+  await expect(r).toContainText('Rp480,000,000');
+  await expect(r).toContainText('50회 (요청 메일의 60회에서 조정)');
+  await expect(r).toContainText('최근 3개월 실제 회당 수납액');
+  await page.getByRole('link', { name: '← 받은 견적 요청으로' }).click();
+  await expect(page.getByTestId('mail')).toContainText('약 60회');
+  await page.getByRole('link', { name: '이 요청으로 견적 검토하기' }).click();
+  await expect(page.getByTestId('consult-invest')).toHaveText('Rp480,000,000');
+  await page.getByRole('button', { name: '발표 기준으로 보기' }).click();
+  await expect(page.getByTestId('local-total')).toHaveText('Rp555,000,000');
   await expect(page.getByTestId('consult-bep')).toHaveText('월 47회');
-  await expect(c).toContainText('최근 3개월 실제 회당 수납액');
-  // 기존 거래는 목록에 그대로
-  expect(homeBep).toMatch(/월 \d+회/);
 });
