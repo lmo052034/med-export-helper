@@ -236,12 +236,15 @@ test('수익성 화면에서 바꾼 값이 홈 메일 아래 답장 초안에 �
   await page.getByRole('navigation').getByRole('link', { name: '수익성' }).first().click();
   await expect(page.getByTestId('sync-note')).toBeVisible();
   await page.getByLabel('월 유료 시술 건수', { exact: true }).fill('50');
-  await page.getByRole('link', { name: '홈 메일에서 보기' }).click();
+  await page.getByRole('link', { name: '홈 메일에서 답장 전문 보기' }).click();
   const r = page.getByTestId('home-reply');
   await expect(r).toContainText('50회');
   await expect(page.getByTestId('mail')).toContainText('약 60회');
-  await page.getByRole('button', { name: '답장 전문 보기' }).click();
+  await expect(r.locator('pre')).toBeVisible();
   await expect(r).toContainText('50회 (요청 메일의 60회에서 조정)');
+  await expect(r).toContainText('병원 비용 구조');
+  await expect(r).toContainText('처음 기준안 대비 바꾼 조건');
+  await expect(r).toContainText('60회 → 50회');
 });
 
 test('어느 화면에서든 새로고침하면 홈', async ({ page }) => {
