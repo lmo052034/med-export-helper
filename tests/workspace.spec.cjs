@@ -258,6 +258,8 @@ test('어느 화면에서든 새로고침하면 입장 페이지', async ({ page
 test('입장 페이지 받은 메일함에서 견적 요청 메일을 열고 업무 화면으로', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('start')).toBeVisible();
+  await expect(page.getByTestId('inbox')).toHaveCount(0);
+  await page.getByTestId('mail-button').click();
   const reader = page.getByTestId('inbox-reader');
   await expect(reader).toContainText('[견적 검토 요청]');
   await expect(reader).toContainText('받는 사람');

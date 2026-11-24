@@ -126,10 +126,9 @@ export const PACK = {
     next: "병원에 최근 3개월 실제 회당 수납액과 월별 유료 시술 건수를 요청하세요.",
   },
   start: {
-    eyebrow: "영인바이오텍 해외영업팀, PT FISIO MEDIKA INDONESIA 공용",
-    title: "IN-5300 인도네시아 병원 견적 요청부터 선적 서류까지, 한 화면에서",
-    sub: "받은 메일 확인, 병원 수익성 검토, 답장, 견적서와 상업송장까지 같은 거래로 연결",
-    sources: "인도네시아 보건부 e-Info Alkes(AKL 등록), INSW(인도네시아 세번과 세율), 관세청 FTA 포털(원산지 기준), 사업계획서 부록 A8, A9(병원 손익)",
+    eyebrow: "영인바이오텍, PT FISIO MEDIKA INDONESIA",
+    title: "IN-5300 인도네시아 수출 업무",
+    sub: "견적, 수익성, 선적 서류",
   },
   flow: {
     lead: "IN-5300 인도네시아 수출 1건, 세번부터 상업송장까지 한 화면 확인",
