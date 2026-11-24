@@ -280,7 +280,7 @@ export default function HomePage() {
             <Step no={4} title="거래 구조" task={F.structure.task} result={F.structure.result} sub={F.structure.sub} to="/price?tab=deal" more="파트너 마진" src={F.structure.src}>
               <Structure nodes={F.structure.nodes} links={links} />
             </Step>
-            <Step no={5} title="병원 수익성" task="병원 원장의 도입 판단 근거" result={bep !== null ? `월 ${bep}회` : "산출 불가"} sub="손익분기 유료 시술 수" to="/price" more="수익성 계산" src={F.profit?.src}>
+            <Step no={5} title="병원 수익성" task="병원 원장의 도입 판단 근거" result={bep !== null ? `월 ${bep}회` : "산출 불가"} sub="손익분기 유료 시술 수" to={PACK.consult ? "/price?tab=hospital&consult=1" : "/price"} more={PACK.consult?.link || "수익성 계산"} src={F.profit?.src}>
               <Profit />
             </Step>
             <Step no={6} title="견적과 선적 서류" task="같은 거래 데이터로 서류 자동 작성" result={s.fix > 0 ? `수정 필요 ${s.fix}건` : "빈칸 없음"} sub={`견적서, 상업송장, 자동 점검 ${findings.length}항목`} to="/docs?doc=invoice" more="상업송장 열기">

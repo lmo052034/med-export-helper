@@ -1,6 +1,6 @@
 /* 거래 상태: 변경 기록, 검토 표시를 한곳에서 관리합니다 (시연용, 브라우저 저장 없음) */
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { keyTerms, hashOf } from "./model.js";
+import { keyTerms, hashOf, snapshot } from "./model.js";
 import { sampleDeal } from "@pack";
 import { getPath, setPath } from "./path.js";
 import { runChecks } from "./checks.js";
@@ -42,6 +42,19 @@ export function DealProvider({ children }) {
   const remove = useCallback((listPath, id) => mutate((d) => setPath(d, listPath, getPath(d, listPath).filter((r) => r.id !== id))), [mutate]);
 
   const actions = useMemo(() => ({
+    /* 상담 기준안 열기: 진행 중 거래를 복제해 새 거래로 추가 (기존 거래는 그대로). 이미 열었으면 그 거래로 전환 */
+    openPreset: (c) => setStore((s) => {
+      const hit = Object.values(s.list).find((d) => d.preset === c.id);
+      if (hit) return { ...s, active: hit.id };
+      const d = sampleDeal();
+      const row = (label, amount) => ({ id: Math.random().toString(36).slice(2, 10), label, amount: String(amount), basis: "team", note: c.src });
+      const n = {
+        ...d, id: `preset-${c.id}`, preset: c.id, meta: { ...d.meta, name: c.name },
+        econ: { ...d.econ, hospital: { ...d.econ.hospital, investMode: "custom", investCustom: String(c.invest), price: String(c.price), priceSource: c.src, sessions: String(c.sessions), variable: [row("회당 변동비", c.variable)], fixed: [row("월 운영 고정비", c.fixed)] } },
+      };
+      n.baseline = snapshot(n);
+      return { active: n.id, list: { ...s.list, [n.id]: n } };
+    }),
     /* 기준값으로 되돌리기: 이 거래의 가격, 구성, 결제, 병원 운영 입력만 기준안으로 */
     resetToBaseline: (path) => mutate((d) => {
       if (!d.baseline) return d;
