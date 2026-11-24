@@ -1,5 +1,5 @@
 /* 가격과 수익성: 거래 가격 / 병원 운영 / 결제 흐름. 모두 같은 거래 데이터와 econ.js 계산 함수를 씁니다 */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useDeal } from "../lib/deal/DealContext.jsx";
@@ -118,6 +118,50 @@ function ResRow({ k, sub, v, delta, warn, testid }) {
 const diff = (a, b, f = rp) => (a === null || b === null || a === undefined || b === undefined || Math.abs(a - b) < 1e-6 ? null : `기준안 대비 ${a > b ? "+" : "−"}${f(Math.abs(a - b)).replace(/^Rp /, "Rp ")}`);
 
 /* ---------- 병원 운영 ---------- */
+/* ---------- 병원 도입 상담 (PACK.consult): 발표 기준 / 수납액 20% 하락 전환, 장비비 포함 손익 ---------- */
+const manwon = (v) => `${v < 0 ? "−" : "+"}Rp${fmt(Math.abs(v) / 1e4)}만`;
+export function consultCalc(deal, life) {
+  const H = hospitalCalc(deal);
+  if (!(H.contribution > 0) || H.invest === null || H.fixed === null || H.sessions === null) return { H, bep: null, profit: null, fixedAll: null };
+  const fixedAll = H.fixed + H.invest / life;
+  return { H, fixedAll, bep: Math.ceil(fixedAll / H.contribution - 1e-9), profit: H.sessions * H.contribution - fixedAll };
+}
+
+function Consult() {
+  const { deal, update } = useDeal();
+  const C = PACK.consult;
+  const life = Number(C.lifeMonths) || 48;
+  const R = consultCalc(deal, life);
+  const opts = [["발표 기준", C.price], ["수납액 20% 하락", Math.round(C.price * 0.8)]];
+  const cur = Number(deal.econ.hospital.price);
+  return (
+    <section aria-labelledby="consult-t" className="mb-10 rounded-2xl border border-[var(--line)] p-5 sm:p-6" data-testid="consult">
+      <h2 id="consult-t" className="text-[20px] font-semibold tracking-tight">{C.title}</h2>
+      <p className="mt-0.5 text-[14px] text-[#424245]">{C.sub}</p>
+      <div className="mt-5 flex flex-wrap items-center gap-2" role="group" aria-label="수납액 시나리오">
+        {opts.map(([l, v]) => (
+          <button key={l} type="button" aria-pressed={cur === v} onClick={() => update("econ.hospital.price", String(v))} className={cn("inline-flex h-9 items-center rounded-md border px-3.5 text-[14px] font-medium", cur === v ? "border-primary bg-primary text-white" : "border-[var(--line-strong)] hover:bg-[var(--fill-soft)]")}>{l} <span className="ml-1.5 tabular-nums opacity-80">Rp{fmt(v)}</span></button>
+        ))}
+        <span className="text-[13px] text-[#6e6e73]">월 유료 시술 {deal.econ.hospital.sessions}회, 나머지 조건 동일</span>
+      </div>
+      <dl className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="border-l-2 border-primary pl-4">
+          <dt className="text-[13px] text-[#6e6e73]">장비비 포함 월 손익분기</dt>
+          <dd className="mt-0.5 text-[30px] font-semibold tabular-nums tracking-tight" data-testid="consult-bep">{R.bep !== null ? `월 ${R.bep}회` : "산출 불가"}</dd>
+          <dd className="text-[12px] text-[#86868b]">(월 운영 고정비 + 도입가 ÷ {life}) ÷ (수납액 − 변동비), 올림</dd>
+        </div>
+        <div className="border-l-2 border-primary pl-4">
+          <dt className="text-[13px] text-[#6e6e73]">장비비 배분 후 월 손익 (월 {deal.econ.hospital.sessions}회)</dt>
+          <dd className={cn("mt-0.5 text-[30px] font-semibold tabular-nums tracking-tight")} data-testid="consult-profit">{R.profit !== null ? `약 ${manwon(R.profit)}` : "산출 불가"}</dd>
+          <dd className="text-[12px] text-[#86868b]">{R.profit !== null ? `${R.profit < 0 ? "−" : "+"}${rp(Math.abs(R.profit))}, 월 운영 현금잉여(장비비 제외)와 다른 값` : ""}</dd>
+        </div>
+      </dl>
+      <p className="mt-5 border-t border-[var(--line)] pt-3 text-[14px]"><span className="font-semibold text-primary">다음 행동</span> {C.next}</p>
+      <p className="mt-1 text-[12px] text-[#86868b]">근거: {C.src}</p>
+    </section>
+  );
+}
+
 function Hospital({ onEv }) {
   const { deal, update } = useDeal();
   const H = hospitalCalc(deal);
@@ -345,6 +389,8 @@ export default function PricePage() {
   const { deal, actions } = useDeal();
   const [params, setParams] = useSearchParams();
   const tab = TABS.some(([k]) => k === params.get("tab")) ? params.get("tab") : "hospital";
+  const consult = params.get("consult") === "1" && PACK.consult;
+  useEffect(() => { if (consult && deal.preset !== PACK.consult.id) actions.openPreset(PACK.consult); }, [consult]); // eslint-disable-line react-hooks/exhaustive-deps
   const [ev, setEv] = useState(null);
   const anyChanged = deal.baseline && JSON.stringify(withBaseline(deal).econ) !== JSON.stringify(deal.econ) || (deal.baseline && JSON.stringify(deal.baseline.local.lines) !== JSON.stringify(deal.local.lines)) || (deal.baseline && JSON.stringify(deal.baseline.exp.items) !== JSON.stringify(deal.exp.items));
   return (
@@ -361,6 +407,7 @@ export default function PricePage() {
       <div role="tablist" aria-label="수익성 보기" className="seg mb-8">
         {TABS.map(([k, l]) => <button key={k} role="tab" type="button" aria-selected={tab === k} onClick={() => setParams({ tab: k })} className="seg-btn">{l}</button>)}
       </div>
+      {tab === "hospital" && consult && deal.preset === PACK.consult.id && <Consult />}
       {tab === "hospital" && <Hospital onEv={setEv} />}
       {tab === "deal" && <DealPrice onEv={setEv} />}
       <EvidencePanel open={!!ev} path={ev} onOpenChange={(o) => !o && setEv(null)} />

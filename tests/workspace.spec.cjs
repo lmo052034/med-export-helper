@@ -186,3 +186,21 @@ test('병원 운영: 0과 음수, 잉여 0 이하에서는 산출 불가로 표�
   await expect(page.getByTestId('h-bep')).toContainText('산출 불가');
 });
 
+
+test('병원 도입 상담: 홈 링크로 바로 열고 발표 기준과 수납액 20% 하락 전환, 기존 거래 유지', async ({ page }) => {
+  await page.goto('/#/');
+  const homeBep = await page.locator('main').getByText(/^월 \d+회$/).first().innerText();
+  await page.getByRole('link', { name: '병원 도입 상담' }).click();
+  const c = page.getByTestId('consult');
+  await expect(c).toBeVisible();
+  await expect(page.getByLabel('회당 실제 수납액', { exact: true })).toHaveValue('500000');
+  await expect(page.getByTestId('consult-bep')).toHaveText('월 47회');
+  await page.getByRole('button', { name: /수납액 20% 하락/ }).click();
+  await expect(page.getByTestId('consult-bep')).toHaveText('월 60회');
+  await expect(page.getByTestId('consult-profit')).toContainText('+Rp');
+  await page.getByRole('button', { name: /^발표 기준/ }).click();
+  await expect(page.getByTestId('consult-bep')).toHaveText('월 47회');
+  await expect(c).toContainText('최근 3개월 실제 회당 수납액');
+  // 기존 거래는 목록에 그대로
+  expect(homeBep).toMatch(/월 \d+회/);
+});
