@@ -290,7 +290,7 @@ function MailCard() {
         </div>
       </article>
       <ReviewReply />
-      <Link to={deal.preset === PACK.consult.id ? "/price" : "/price?tab=hospital&consult=1"} className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[16px] font-semibold text-white hover:opacity-90 sm:w-auto sm:inline-flex">{deal.preset === PACK.consult.id ? "견적 검토 이어서 하기" : "이 요청으로 견적 검토하기"}<ArrowRight className="size-5" aria-hidden="true" /></Link>
+      <Link to="/price" className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[16px] font-semibold text-white hover:opacity-90 sm:w-auto sm:inline-flex">{deal.preset === PACK.consult.id ? "견적 검토 이어서 하기" : "이 요청으로 견적 검토하기"}<ArrowRight className="size-5" aria-hidden="true" /></Link>
     </section>
   );
 }
