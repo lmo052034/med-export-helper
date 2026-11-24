@@ -124,7 +124,7 @@ function Profit() {
           {[
             ["월 손익 (장비비 배분 후)", monthly !== null ? `${monthly < 0 ? "−" : "+"}${rp(Math.abs(monthly))}` : "—", monthly !== null && monthly < 0],
             ["회당 실수납", rp(Number(h.price))],
-            ["병원 도입가", rp(H.invest)],
+            [deal.econ.hospital.investMode === "custom" ? "병원 도입가 (직접 입력)" : "병원 도입가 (현지 견적 총액)", rp(H.invest)],
           ].map(([k, v, neg]) => (
             <div key={k} className="flex items-baseline justify-between gap-3 border-b border-[var(--line)] py-2">
               <dt className="text-[#6e6e73]">{k}</dt>
