@@ -1,9 +1,9 @@
 /* 홈: 고정 사용자 인사 → 진행 중 수출 1건을 사업계획서 순서(세번 → 관세와 FTA → 판매 허가 → 거래 구조 → 병원 수익성 → 서류)로 한 화면에.
    발표 1분 시연 흐름: 위에서 아래로 훑고, 5단계 슬라이더 조작, 6단계 상업송장 열기.
    단계별 문구와 출처는 콘텐츠 팩의 PACK.flow, 금액과 손익분기는 지금 거래(useDeal)와 같은 계산 함수 */
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ArrowRight, Check, RefreshCw } from "lucide-react";
 import { PACK } from "@pack";
 import { useDeal } from "../lib/deal/DealContext.jsx";
 import { calcExport, calcLocal } from "../lib/deal/calc.js";
@@ -168,29 +168,69 @@ function DocThumbs() {
   );
 }
 
-/* 도구 적용 효과: 콘텐츠 팩 PACK.flow.impact. 실제 운영 실적이 아닌 기능과 시연 기준 수치만, 근거 함께 */
-function Impact({ data }) {
-  if (!data?.items?.length) return null;
+/* 확인 요청: 콘텐츠 팩 PACK.flow.cases 중 하나를 무작위로 제시. 처리 주체는 담당자,
+   화면은 단계별 확인 자료와 입력 반영만 보조. 주소에 ?case=id 를 붙이면 해당 요청 고정 (리허설용) */
+function pickCase(list, avoid) {
+  const fixed = new URLSearchParams(window.location.hash.split("?")[1] || "").get("case");
+  const hit = fixed && list.find((c) => c.id === fixed);
+  if (hit && !avoid) return hit;
+  const pool = list.filter((c) => c.id !== avoid);
+  return pool[Math.floor(Math.random() * pool.length)] || list[0];
+}
+
+function Cases({ list }) {
+  const { deal, update } = useDeal();
+  const [cur, setCur] = useState(() => (list?.length ? pickCase(list) : null));
+  const [done, setDone] = useState([]);
+  if (!cur) return null;
+  const steps = cur.steps;
+  const next = steps.findIndex((_, i) => !done.includes(i));
+  const all = next === -1;
+  const resolve = (path) => path.replace(/\$(\d+)/g, (_, n) => deal.exp.items[Number(n)]?.id ?? n);
+  const apply = (st) => { if (st.action) update(resolve(st.action.path), st.action.value); };
+  const check = (i) => { apply(steps[i]); setDone((d) => [...d, i]); };
+  const other = () => { setCur(pickCase(list, cur.id)); setDone([]); };
   return (
-    <section aria-labelledby="impact-t" className="mb-5 rounded-2xl bg-white px-5 py-5 sm:px-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h2 id="impact-t" className="text-[13px] font-semibold text-[#6e6e73]">{data.title}</h2>
-        {data.note && <p className="text-[12px] text-[#86868b]">{data.note}</p>}
+    <section aria-labelledby="case-t" className="mb-5 rounded-2xl bg-white px-5 py-5 sm:px-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <div className="min-w-0">
+          <h2 id="case-t" className="text-[13px] font-semibold text-[#6e6e73]">확인 요청 1건, {cur.from}</h2>
+          <p className="mt-1 text-[19px] font-semibold leading-snug tracking-tight">“{cur.ask}”</p>
+        </div>
+        {list.length > 1 && <button type="button" onClick={other} className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border border-[var(--line-strong)] px-3 text-[13px] font-medium hover:bg-[var(--fill-soft)]"><RefreshCw className="size-3.5" aria-hidden="true" />다른 요청</button>}
       </div>
-      <dl className="mt-3 grid gap-y-4 sm:grid-cols-3">
-        {data.items.map((x, i) => (
-          <div key={x.k} className={cn("min-w-0 sm:px-6", i === 0 ? "sm:pl-0" : "sm:border-l sm:border-[var(--line)]")}>
-            <dt className="text-[14px] text-[#424245]">{x.k}</dt>
-            <dd className="mt-0.5 text-[28px] font-semibold tracking-tight tabular-nums">{x.v}</dd>
-            <dd className="text-[12px] leading-snug text-[#86868b]">{x.d}</dd>
-          </div>
-        ))}
-      </dl>
+      <ol className="mt-4 border-t border-[var(--line)]">
+        {steps.map((st, i) => {
+          const ok = done.includes(i), now = i === next;
+          return (
+            <li key={st.title} className={cn("grid grid-cols-[28px_minmax(0,1fr)_auto] items-start gap-3 border-b border-[var(--line)] py-3", !ok && !now && "opacity-50")}>
+              <span className={cn("mt-0.5 grid size-6 place-items-center rounded-full border text-[12px] font-semibold tabular-nums", ok ? "border-primary bg-primary text-white" : now ? "border-primary text-primary" : "border-[var(--line-strong)] text-[#6e6e73]")}>{ok ? <Check className="size-3.5" aria-hidden="true" /> : i + 1}</span>
+              <div className="min-w-0">
+                <p className="text-[15px] font-medium">{st.title}</p>
+                {(ok || now) && <p className="mt-0.5 text-[14px] text-[#424245]"><span className="font-semibold tabular-nums text-[#1d1d1f]">{st.value}</span>{st.detail && <span>, {st.detail}</span>}</p>}
+                {(ok || now) && st.src && <p className="mt-0.5 text-[12px] text-[#86868b]">출처: {st.src}</p>}
+                {ok && st.action && <p className="mt-1 text-[12px] font-medium text-primary">반영: {st.action.done}</p>}
+              </div>
+              <div className="flex items-center gap-2">
+                {(ok || now) && st.link && <Link to={st.link.to} className="text-[13px] font-medium text-primary hover:underline">{st.link.label}</Link>}
+                {now && <button type="button" onClick={() => check(i)} className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-[13px] font-medium text-white hover:brightness-110">{st.action ? st.action.label : "확인"}</button>}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      {all && (
+        <div className="mt-4 rounded-lg bg-[var(--surface-2)] px-4 py-3">
+          <p className="text-[13px] font-semibold text-primary">처리 완료, 회신 내용</p>
+          <p className="mt-1 text-[14px] leading-relaxed text-[#1d1d1f]">{cur.reply}</p>
+        </div>
+      )}
     </section>
   );
 }
 
 export default function HomePage() {
+  const { search } = useLocation();
   const { deal, findings } = useDeal();
   const F = PACK.flow;
   const E = calcExport(deal), L = calcLocal(deal), H = hospitalCalc(deal);
@@ -215,7 +255,7 @@ export default function HomePage() {
           <p className="text-[13px] text-[#6e6e73]">{PACK.asOf}</p>
         </div>
 
-        <Impact data={F.impact} />
+        <Cases key={search} list={F.cases} />
 
         <section aria-labelledby="deal-t" className="rounded-2xl bg-white px-5 sm:px-8">
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-[var(--line)] py-5">

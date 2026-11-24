@@ -18,6 +18,17 @@ test('로그인 없이 바로 홈: 김민영 인사, 수출 업무 6단계, 슬�
   expect(errors).toEqual([]);
 });
 
+test('확인 요청: 단계별 확인과 입력 반영, 다른 요청으로 바꾸기', async ({ page }) => {
+  await page.goto('/#/?case=bep');
+  const box = page.locator('section', { has: page.locator('#case-t') });
+  await expect(box.locator('#case-t')).toContainText('확인 요청 1건');
+  for (let i = 0; i < 3; i++) await box.getByRole('button', { name: /확인|60회 입력/ }).first().click();
+  await expect(box.getByText('처리 완료, 회신 내용')).toBeVisible();
+  await expect(page.getByLabel('월 유료 시술', { exact: true })).toHaveValue('60');
+  await box.getByRole('button', { name: '다른 요청' }).click();
+  await expect(box.getByText('처리 완료, 회신 내용')).toHaveCount(0);
+});
+
 test('예전 주소와 모르는 주소는 모두 홈으로, 메뉴는 세 개', async ({ page }) => {
   for (const p of ['/#/start', '/#/setup', '/#/settings', '/#/desk', '/#/hospital', '/#/evidence', '/#/overview', '/#/unknown']) {
     await page.goto(p);
