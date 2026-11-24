@@ -157,7 +157,7 @@ function Hospital({ onEv }) {
   const mobileEl = (
       <div className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-[var(--line)] bg-white px-4 pt-2 pb-[max(8px,env(safe-area-inset-bottom))] text-center lg:hidden no-print" aria-hidden="true">
         <p className="text-[11px] text-[#6e6e73]">월 현금잉여<b className="block text-[14px] text-foreground tabular-nums">{H.surplus !== null ? rpShort(H.surplus) : "—"}</b></p>
-        <p className="text-[11px] text-[#6e6e73]">손익분기<b className="block text-[14px] text-foreground tabular-nums">{H.bep !== null ? `월 ${H.bep}회` : "산출 불가"}</b></p>
+        <p className="text-[11px] text-[#6e6e73]">손익분기<b className="block text-[14px] text-foreground tabular-nums">{bepDep !== null ? `월 ${bepDep}회` : "산출 불가"}</b></p>
         <p className="text-[11px] text-[#6e6e73]">단순 회수<b className="block text-[14px] text-foreground tabular-nums">{H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"}</b></p>
       </div>
   );
@@ -179,8 +179,7 @@ function Hospital({ onEv }) {
           </div>
           <dl>
             <ResRow testid="h-contribution" k="회당 공헌액" sub="수납액 − 회당 변동비" v={rp(H.contribution)} delta={B && diff(H.contribution, B.contribution)} />
-            <ResRow k={`손익분기 (장비비 ${life}개월 배분)`} sub="고정비 + 도입비 ÷ 배분 개월, 공헌액으로 나눠 올림" v={bepDep !== null ? `월 ${bepDep}회` : "산출 불가"} />
-            <ResRow testid="h-bep" k="손익분기 (운영비만)" sub={H.bep !== null ? "고정비 ÷ 회당 공헌액, 올림" : H.bepNote} v={H.bep !== null ? `월 ${H.bep}회` : "산출 불가"} warn={H.bep === null && H.bepNote} delta={B && H.bep !== null && B.bep !== null && H.bep !== B.bep ? `기준안 월 ${B.bep}회` : null} />
+            <ResRow testid="h-bep" k={`손익분기 (장비비 ${life}개월 배분)`} sub="고정비 + 도입비 ÷ 배분 개월, 공헌액으로 나눠 올림" v={bepDep !== null ? `월 ${bepDep}회` : "산출 불가"} />
             <ResRow testid="h-payback" k="투자 회수" sub={H.payback !== null ? `도입비 ${rp(H.invest)} ÷ 월 현금잉여` : H.paybackNote} v={H.payback !== null ? `${fmt(H.payback, 1)}개월` : "산출 불가"} warn={H.payback === null && H.paybackNote} delta={B && H.payback !== null && B.payback !== null && Math.abs(H.payback - B.payback) > 0.05 ? `기준안 ${fmt(B.payback, 1)}개월` : null} />
           </dl>
         </div>
@@ -190,7 +189,7 @@ function Hospital({ onEv }) {
   const ch1El = (
         <div className="mt-8">
           <h3 className="text-[15px] font-semibold">월 시술 건수별 월 운영 현금잉여</h3>
-          <LineChart data={curve} base={baseCurve} label="월 시술 건수에 따른 월 운영 현금잉여 그래프" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={rpShort} markers={[...(H.sessions !== null && H.surplus !== null ? [{ x: H.sessions, y: H.surplus, label: `현재 ${H.sessions}회: ${rpShort(H.surplus)}` }] : []), ...(bepDep !== null ? [{ x: bepDep, label: `장비비 포함 손익분기 ${bepDep}회`, color: "var(--primary)" }] : []), ...(H.bep !== null ? [{ x: H.bep, y: 0, label: `운영비만 ${H.bep}회`, color: "#86868b" }] : [])]} />
+          <LineChart data={curve} base={baseCurve} label="월 시술 건수에 따른 월 운영 현금잉여 그래프" xLabel="월 유료 시술 (회)" yLabel="IDR / 월" fmtY={rpShort} markers={[...(H.sessions !== null && H.surplus !== null ? [{ x: H.sessions, y: H.surplus, label: `현재 ${H.sessions}회: ${rpShort(H.surplus)}` }] : []), ...(bepDep !== null ? [{ x: bepDep, label: `장비비 포함 손익분기 ${bepDep}회`, color: "var(--primary)" }] : [])]} />
         </div>
   );
   const ch2El = (
