@@ -37,7 +37,6 @@ test('예전 주소와 모르는 주소는 모두 홈으로, 메뉴는 세 개',
   const top = page.getByRole('navigation', { name: '주요 메뉴' });
   await expect(top.getByRole('link')).toHaveText(['홈', '수익성', '거래와 서류']);
   await page.goto('/#/price?tab=deal');
-  await page.reload();
   await expect(page.getByRole('tab', { name: '파트너 마진' })).toHaveAttribute('aria-selected', 'true');
   await page.goto('/#/review');
   await expect(top.getByRole('link', { name: '거래와 서류' })).toHaveAttribute('aria-current', 'page');
@@ -139,7 +138,8 @@ test('모든 입력칸에 이름표가 있고 키보드로 이동 가능', async
   await expect(p2.getByRole('heading', { name: '검토 결과' })).toBeVisible();
   await p2.keyboard.press('Tab');
   await expect(p2.locator('.skip-link')).toBeFocused();
-  await page.reload();
+  await page.goto('/#/');
+  await page.goto('/#/deal');
   await page.getByRole('button', { name: /당사자/ }).focus();
   await page.keyboard.press('Enter');
   await expect(page.locator('#f-parties-maker-name')).toBeVisible();
@@ -240,4 +240,12 @@ test('수익성 화면에서 바꾼 값이 홈 메일 아래 답장 초안에 �
   await expect(page.getByTestId('mail')).toContainText('약 60회');
   await page.getByRole('button', { name: '답장 전문 보기' }).click();
   await expect(r).toContainText('50회 (요청 메일의 60회에서 조정)');
+});
+
+test('어느 화면에서든 새로고침하면 홈', async ({ page }) => {
+  await page.goto('/#/price');
+  await expect(page.getByTestId('sync-note')).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId('mail')).toBeVisible();
+  expect(new URL(page.url()).hash).toBe('#/');
 });
