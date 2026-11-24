@@ -219,6 +219,9 @@ test('견적 요청 메일 → 견적 검토 → 현지 견적, 병원 도입비
   await expect(page.getByTestId('mail')).toContainText('약 60회');
   await expect(page.getByTestId('home-reply')).toContainText('Rp480,000,000');
   await page.getByRole('link', { name: '견적 검토 이어서 하기' }).click();
+  await expect(page.getByTestId('sync-note')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '수익성', level: 1 })).toBeVisible();
+  await page.goto('/#/price?tab=hospital&consult=1');
   await expect(page.getByTestId('consult-invest')).toHaveText('Rp480,000,000');
   await page.getByRole('button', { name: '발표 기준으로 보기' }).click();
   await expect(page.getByTestId('local-total')).toHaveText('Rp555,000,000');
