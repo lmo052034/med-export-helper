@@ -1,0 +1,155 @@
+/* 입장 페이지: 업무 화면(홈) 전에 보이는 개괄 화면.
+   참고: SaaSFrame 2026 랜딩 트렌드(적은 메뉴, 실제 화면을 첫 화면에), Front 홈(메일함 중심 첫 화면),
+   Azuro 의료기기 사이트 사례(제품과 인허가 근거를 앞에). 받은 메일함에서 견적 요청 메일을 바로 열어 봄 */
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Mail, MailOpen } from "lucide-react";
+import { PACK } from "@pack";
+import { cn } from "@/lib/utils";
+import { USER, today } from "../lib/user.js";
+
+const TIMES = ["오늘 09:12", "오늘 08:40", "어제 17:25", "어제 10:03", "11월 21일", "11월 20일"];
+
+function inbox() {
+  const C = PACK.consult;
+  const list = [];
+  if (C?.mail) {
+    const m = C.mail;
+    list.push({
+      id: "consult", main: true, from: m.from, fromTeam: m.fromTeam, to: m.to, toTeam: m.toTeam,
+      subject: m.subject, body: m.body,
+      actions: [{ to: "/price", label: "이 요청으로 견적 검토하기", primary: true }, { to: "/", label: "업무 화면 홈에서 보기" }],
+    });
+  }
+  (PACK.flow?.cases || []).forEach((c) => list.push({
+    id: c.id, from: c.from, fromTeam: "", to: C?.mail?.to || "", toTeam: C?.mail?.toTeam || "",
+    subject: c.subject || c.ask, body: [c.ask],
+    actions: [{ to: `/?case=${c.id}`, label: "업무 화면에서 처리하기", primary: true }],
+  }));
+  return list.map((x, i) => ({ ...x, time: TIMES[i] || "" }));
+}
+
+function Inbox() {
+  const mails = inbox();
+  const [sel, setSel] = useState(mails[0]?.id);
+  const [read, setRead] = useState(() => new Set());
+  const reader = useRef(null);
+  const cur = mails.find((x) => x.id === sel) || mails[0];
+  useEffect(() => { if (cur) setRead((r) => new Set(r).add(cur.id)); }, [cur?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!cur) return null;
+  const open = (id) => {
+    setSel(id);
+    if (window.matchMedia?.("(max-width: 1023px)").matches) setTimeout(() => reader.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+  };
+  const unread = mails.filter((x) => !read.has(x.id)).length;
+  const row = (k, v) => (<div className="flex gap-3"><dt className="w-[68px] shrink-0 text-[#6e6e73]">{k}</dt><dd className="min-w-0">{v}</dd></div>);
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.04)]" data-testid="inbox">
+      <div className="flex items-center justify-between gap-3 border-b border-[var(--line)] px-4 py-3 sm:px-5">
+        <p className="text-[14px] font-semibold">받은 메일함 <span className="ml-1 font-normal text-[#6e6e73] tabular-nums">{mails.length}통{unread ? `, 안 읽음 ${unread}` : ""}</span></p>
+        <span className="text-[12px] text-[#86868b]">시연용 메일</span>
+      </div>
+      <div className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        <ul className="divide-y divide-[var(--line)] border-b border-[var(--line)] lg:border-r lg:border-b-0" aria-label="메일 목록">
+          {mails.map((x) => {
+            const active = x.id === cur.id, isNew = !read.has(x.id);
+            return (
+              <li key={x.id}>
+                <button type="button" onClick={() => open(x.id)} aria-current={active ? "true" : undefined} data-testid={`inbox-${x.id}`}
+                  className={cn("flex w-full gap-3 px-4 py-3.5 text-left sm:px-5", active ? "bg-[var(--fill-soft)]" : "hover:bg-[var(--fill-soft)]")}>
+                  <span className={cn("mt-1.5 size-2 shrink-0 rounded-full", isNew ? "bg-primary" : "bg-transparent")} aria-label={isNew ? "안 읽음" : undefined} />
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-baseline justify-between gap-3">
+                      <span className={cn("truncate text-[14px]", isNew ? "font-semibold" : "text-[#424245]")}>{x.from}</span>
+                      <span className="shrink-0 text-[12px] text-[#86868b] tabular-nums">{x.time}</span>
+                    </span>
+                    <span className={cn("mt-0.5 block truncate text-[14px]", isNew || active ? "text-[#1d1d1f]" : "text-[#424245]", x.main && "font-semibold")}>{x.subject}</span>
+                    <span className="mt-0.5 block truncate text-[13px] text-[#86868b]">{x.body[0]}</span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <article ref={reader} aria-label="메일 내용" className="scroll-mt-4 p-5 sm:p-6" data-testid="inbox-reader">
+          <div className="mb-3 flex items-center gap-2 text-[12px] text-[#86868b]"><MailOpen className="size-4" aria-hidden="true" />{cur.time}</div>
+          <h3 className="text-[19px] font-semibold leading-snug tracking-tight">{cur.subject}</h3>
+          <dl className="mt-3 space-y-1 border-b border-[var(--line)] pb-3 text-[14px]">
+            {row("보낸 사람", [cur.from, cur.fromTeam].filter(Boolean).join(", "))}
+            {cur.to && row("받는 사람", [cur.to, cur.toTeam].filter(Boolean).join(", "))}
+            {row("제목", cur.subject)}
+          </dl>
+          <div className="mt-3 space-y-2 text-[15px] leading-relaxed text-[#1d1d1f]">
+            {cur.body.map((t) => <p key={t}>{t}</p>)}
+          </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {cur.actions.map((a) => (
+              <Link key={a.to} to={a.to} className={cn("inline-flex h-11 items-center gap-2 rounded-xl px-4 text-[15px] font-semibold", a.primary ? "bg-primary text-white hover:opacity-90" : "border border-[var(--line-strong)] text-[#1d1d1f] hover:bg-[var(--fill-soft)]")}>
+                {a.label}{a.primary && <ArrowRight className="size-4" aria-hidden="true" />}
+              </Link>
+            ))}
+          </div>
+        </article>
+      </div>
+    </div>
+  );
+}
+
+export default function StartPage() {
+  const S = PACK.start || {};
+  const steps = S.steps || [
+    ["받은 메일 확인", "견적 요청과 문의 메일 확인"],
+    ["수익성 검토", "병원 손익분기와 월 손익, 비용 구조 조정"],
+    ["답장 작성", "바꾼 조건이 반영된 답장 전문"],
+    ["거래와 서류", "견적서, 상업송장 초안과 검토 결과"],
+  ];
+  return (
+    <div className="min-h-svh bg-[var(--surface-2)] text-[#1d1d1f]" data-testid="start">
+      <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-white/90 backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
+          <span className="text-[16px] font-semibold tracking-tight">{PACK.brand}</span>
+          <nav aria-label="입장 페이지 메뉴" className="hidden items-center gap-5 text-[14px] text-[#424245] md:flex">
+            <a href="#inbox-t" onClick={(e) => { e.preventDefault(); document.getElementById("inbox-t")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:text-[#1d1d1f]">받은 메일</a>
+            <a href="#flow-t" onClick={(e) => { e.preventDefault(); document.getElementById("flow-t")?.scrollIntoView({ behavior: "smooth" }); }} className="hover:text-[#1d1d1f]">업무 흐름</a>
+          </nav>
+          <Link to="/" className="ml-auto inline-flex h-9 items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 text-[14px] font-semibold text-white hover:opacity-90">업무 화면 열기<ArrowRight className="size-4" aria-hidden="true" /></Link>
+        </div>
+      </header>
+
+      <main id="main" className="px-4 pb-16 sm:px-6">
+        <section className="mx-auto max-w-[1200px] pt-10 pb-8 sm:pt-14">
+          <p className="text-[13px] font-medium text-primary">{S.eyebrow || PACK.footer?.project}</p>
+          <h1 className="mt-2 max-w-[820px] text-[30px] font-bold leading-[1.2] tracking-tight sm:text-[42px]">{S.title || "해외 병원 견적 요청부터 선적 서류까지, 한 화면에서"}</h1>
+          <p className="mt-3 max-w-[720px] text-[16px] leading-relaxed text-[#424245] sm:text-[17px]">{S.sub || "받은 메일 확인, 병원 수익성 검토, 답장, 견적서와 상업송장까지 같은 거래로 연결"}</p>
+          <p className="mt-4 text-[13px] text-[#6e6e73]">{today()}, {USER.name} ({USER.team})</p>
+        </section>
+
+        <section aria-labelledby="inbox-t" className="mx-auto max-w-[1200px] scroll-mt-20">
+          <h2 id="inbox-t" className="mb-3 flex items-center gap-2 text-[15px] font-semibold"><Mail className="size-4 text-primary" aria-hidden="true" />받은 메일</h2>
+          <Inbox />
+        </section>
+
+        <section aria-labelledby="flow-t" className="mx-auto mt-12 max-w-[1200px] scroll-mt-20">
+          <h2 id="flow-t" className="text-[15px] font-semibold">업무 흐름</h2>
+          <ol className="mt-3 grid gap-px overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map(([t, d], i) => (
+              <li key={t} className="bg-white px-5 py-4">
+                <span className="text-[12px] font-semibold text-primary tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                <p className="mt-1 text-[15px] font-semibold">{t}</p>
+                <p className="mt-0.5 text-[13px] leading-relaxed text-[#6e6e73]">{d}</p>
+              </li>
+            ))}
+          </ol>
+          {S.sources && <p className="mt-4 text-[13px] leading-relaxed text-[#6e6e73]">확인 근거 자료: {S.sources}</p>}
+        </section>
+      </main>
+
+      <footer className="border-t border-[var(--line)] bg-white py-6 text-[12px] leading-relaxed text-[#6e6e73]">
+        <div className="mx-auto max-w-[1200px] space-y-1 px-4 sm:px-6">
+          <p className="font-medium text-[#424245]">{PACK.footer?.project}</p>
+          {(PACK.footer?.lines || []).map((l) => <p key={l}>{l}</p>)}
+        </div>
+      </footer>
+    </div>
+  );
+}

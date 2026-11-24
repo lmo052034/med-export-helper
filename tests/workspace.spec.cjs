@@ -6,7 +6,7 @@ const reviewTab = (page) => page.getByRole('navigation', { name: '거래서류 �
 
 test('로그인 없이 바로 홈: 김민영 인사, 수출 업무 6단계, 슬라이더, 상업송장', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
+  await page.goto('/#/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('김민영님');
   for (const t of ['HS 세번', '관세와 FTA', '판매 허가', '거래 구조', '병원 수익성', '견적과 선적 서류']) await expect(page.getByRole('heading', { level: 2, name: t })).toBeVisible();
   await expect(page.getByRole('link', { name: '로그아웃' })).toHaveCount(0);
@@ -29,8 +29,8 @@ test('확인 요청: 단계별 확인과 입력 반영, 다른 요청으로 바�
   await expect(box.getByText('처리 완료, 회신 내용')).toHaveCount(0);
 });
 
-test('예전 주소와 모르는 주소는 모두 홈으로, 메뉴는 세 개', async ({ page }) => {
-  for (const p of ['/#/start', '/#/setup', '/#/settings', '/#/desk', '/#/hospital', '/#/evidence', '/#/overview', '/#/unknown']) {
+test('예전 주소와 모르는 주소는 모두 홈으로 (입장 페이지 #/start 제외), 메뉴는 세 개', async ({ page }) => {
+  for (const p of ['/#/setup', '/#/settings', '/#/desk', '/#/hospital', '/#/evidence', '/#/overview', '/#/unknown']) {
     await page.goto(p);
     await expect(page).toHaveURL(/#\/$/);
   }
@@ -44,7 +44,7 @@ test('예전 주소와 모르는 주소는 모두 홈으로, 메뉴는 세 개',
 
 test('시연 흐름: 구성 변경 → 금액 갱신 → 중량, 서명 누락 이동 → 입력 후 해소 → 인쇄', async ({ page }) => {
   const errors = []; page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('/');
+  await page.goto('/#/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.getByRole('navigation', { name: '주요 메뉴' }).getByRole('link', { name: '거래와 서류' }).click();
   await expect(page).toHaveURL(/#\/deal$/);
@@ -247,10 +247,23 @@ test('수익성 화면에서 바꾼 값이 홈 메일 아래 답장 초안에 �
   await expect(r).toContainText('60회 → 50회');
 });
 
-test('어느 화면에서든 새로고침하면 홈', async ({ page }) => {
+test('어느 화면에서든 새로고침하면 입장 페이지', async ({ page }) => {
   await page.goto('/#/price');
   await expect(page.getByTestId('sync-note')).toBeVisible();
   await page.reload();
-  await expect(page.getByTestId('mail')).toBeVisible();
-  expect(new URL(page.url()).hash).toBe('#/');
+  await expect(page.getByTestId('start')).toBeVisible();
+  expect(new URL(page.url()).hash).toBe('#/start');
+});
+
+test('입장 페이지 받은 메일함에서 견적 요청 메일을 열고 업무 화면으로', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('start')).toBeVisible();
+  const reader = page.getByTestId('inbox-reader');
+  await expect(reader).toContainText('[견적 검토 요청]');
+  await expect(reader).toContainText('받는 사람');
+  await page.getByTestId('inbox-bep').click();
+  await expect(reader).toContainText('손해가 안 나나요');
+  await page.getByTestId('inbox-consult').click();
+  await reader.getByRole('link', { name: '이 요청으로 견적 검토하기' }).click();
+  await expect(page.getByTestId('sync-note')).toBeVisible();
 });

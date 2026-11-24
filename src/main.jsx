@@ -9,13 +9,16 @@ import ReviewPage from "./pages/ReviewPage.jsx";
 import DocsPage from "./pages/DocsPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import PricePage from "./pages/PricePage.jsx";
+import StartPage from "./pages/StartPage.jsx";
 
 /* 발표 시연용 구성: 홈(수출 업무 흐름) → 수익성 → 거래와 서류. 로그인, 사용자 설정 없이 바로 홈.
    예전 주소(업무 현황, 병원 제안, 자료실, 설정 등)는 모두 홈으로 보냄 */
-/* 새로고침하면 어느 화면이든 홈으로 (시연용, 거래도 처음 상태로 다시 시작). 처음 여는 직접 링크는 그대로 */
+/* 입장 페이지(#/start): 주소에 화면 표시(#)가 없이 처음 열거나 새로고침하면 입장 페이지부터 (시연용, 거래도 처음 상태로).
+   #/ 같은 직접 링크로 처음 열면 그 화면 그대로 */
 try {
   const nav = performance.getEntriesByType?.("navigation")?.[0];
-  if (nav?.type === "reload" && window.location.hash && window.location.hash !== "#/") history.replaceState(null, "", `${window.location.pathname}${window.location.search}#/`);
+  const h = window.location.hash;
+  if (nav?.type === "reload" || !h || h === "#") history.replaceState(null, "", `${window.location.pathname}${window.location.search}#/start`);
 } catch { /* 무시 */ }
 
 createRoot(document.getElementById("root")).render(
@@ -24,6 +27,7 @@ createRoot(document.getElementById("root")).render(
       <DealProvider>
         <AppShell>
           <Routes>
+            <Route path="/start" element={<StartPage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/price" element={<PricePage />} />
             <Route path="/deal" element={<TermsPage />} />

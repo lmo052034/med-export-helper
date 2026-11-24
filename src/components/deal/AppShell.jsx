@@ -48,12 +48,13 @@ export function AppShell({ children }) {
   const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  if (pathname === "/start") return <>{children}<Toaster /></>;
   return (
     <div className="min-h-svh bg-white">
       <a href="#main" className="skip-link">본문으로 건너뛰기</a>
       <header className="app-header no-print sticky top-0 z-40 border-b border-[var(--line)] bg-white">
         <div className="mx-auto flex h-12 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
-          <Link to="/" className="shrink-0 text-[15px] font-semibold tracking-tight">{PACK.brand}</Link>
+          <Link to="/start" className="shrink-0 text-[15px] font-semibold tracking-tight">{PACK.brand}</Link>
           <nav aria-label="주요 메뉴" className="ml-auto hidden h-full items-stretch gap-0.5 md:flex">
             {MENU.map(([p, l]) => (
               <Link key={p} to={p} aria-current={isActive(p, pathname) ? "page" : undefined} className={cn("top-link", isActive(p, pathname) && "is-active")}>{l}</Link>
