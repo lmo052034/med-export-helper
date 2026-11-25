@@ -12,6 +12,7 @@ import { EvidencePanel, EV_STATUS } from "../components/deal/EvidencePanel.jsx";
 import { LineChart } from "../components/deal/LineChart.jsx";
 import { cn } from "@/lib/utils";
 import { ConsultView } from "../components/deal/ConsultView.jsx";
+import { FxBar, FxEq } from "../components/deal/FxBar.jsx";
 import { PACK } from "@pack";
 
 const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d });
@@ -174,6 +175,7 @@ function Hospital({ onEv }) {
             <div>
               <p className="text-[13px] text-[#6e6e73]">월 운영 현금잉여 (시술 {H.sessions ?? "—"}회)</p>
               <p className="mt-0.5 text-[36px] leading-tight font-semibold tracking-tight tabular-nums">{rp(H.surplus)}</p>
+              {H.surplus !== null && <FxEq idr={H.surplus} />}
             </div>
             <p className="text-right text-[12px] text-[#6e6e73]">{B && diff(H.surplus, B.surplus) && <span className="block font-medium text-[#424245] tabular-nums">{diff(H.surplus, B.surplus)}</span>}시술 × 공헌액 − 고정비 {rp(H.fixed)}</p>
           </div>
@@ -373,6 +375,7 @@ export default function PricePage() {
           <Link to="/?reply=open" className="font-medium text-primary hover:underline">홈 메일에서 답장 전문 보기</Link>
         </p>
       )}
+      <FxBar className="mb-5" />
       <div role="tablist" aria-label="수익성 보기" className="seg mb-8">
         {TABS.map(([k, l]) => <button key={k} role="tab" type="button" aria-selected={tab === k} onClick={() => setParams({ tab: k })} className="seg-btn">{l}</button>)}
       </div>

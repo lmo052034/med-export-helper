@@ -269,3 +269,29 @@ test('입장 페이지 받은 메일함에서 견적 요청 메일을 열고 업
   await reader.getByRole('link', { name: '이 요청으로 견적 검토하기' }).click();
   await expect(page.getByTestId('sync-note')).toBeVisible();
 });
+
+test('오늘 환율: 처음엔 PPT 기준, 버튼 눌러야 적용, 실패하면 PPT 값 유지', async ({ page }) => {
+  let ok = false;
+  await page.route('https://api.frankfurter.dev/**', (r) => ok
+    ? r.fulfill({ json: { amount: 1, base: 'USD', date: '2026-11-25', rates: { IDR: 16650.5, KRW: 1395.2 } } })
+    : r.abort());
+  await page.route('https://open.er-api.com/**', (r) => r.abort());
+  await page.goto('/#/price?tab=hospital&consult=1');
+  const bar = page.getByTestId('fx-bar');
+  await expect(bar).toContainText('환율 PPT 기준');
+  const bep = await page.getByTestId('consult-bep').innerText();
+  await expect(page.getByTestId('fx-eq')).toHaveCount(0);
+  await bar.getByRole('button', { name: '오늘 환율로 다시 계산' }).click();
+  await expect(bar).toContainText('환율을 불러오지 못해 PPT 기준 환율 유지');
+  await expect(bar).toContainText('환율 PPT 기준');
+  ok = true;
+  await bar.getByRole('button', { name: '오늘 환율로 다시 계산' }).click();
+  await expect(bar).toContainText('오늘 환율 적용 중');
+  await expect(bar).toContainText('Rp16,651');
+  await expect(bar).toContainText('2026-11-25');
+  await expect(page.getByTestId('fx-eq').first()).toContainText('₩');
+  await expect(page.getByTestId('consult-bep')).toHaveText(bep);
+  await bar.getByRole('button', { name: 'PPT 환율로 되돌리기' }).click();
+  await expect(bar).toContainText('환율 PPT 기준');
+  await expect(page.getByTestId('fx-eq')).toHaveCount(0);
+});
