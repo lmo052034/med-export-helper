@@ -50,7 +50,7 @@ export function AppShell({ children }) {
   useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   if (pathname === "/start") return <>{children}<Toaster /></>;
   return (
-    <div className="min-h-svh bg-white">
+    <div className="app-zoom min-h-svh bg-white">
       <a href="#main" className="skip-link">본문으로 건너뛰기</a>
       <header className="app-header no-print sticky top-0 z-40 border-b border-[var(--line)] bg-white">
         <div className="mx-auto flex h-12 max-w-[1200px] items-center gap-6 px-4 sm:px-6">
