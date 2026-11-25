@@ -3,7 +3,9 @@
    Azuro 의료기기 사이트 사례(제품과 인허가 근거를 앞에). 받은 메일함에서 견적 요청 메일을 바로 열어 봄 */
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calculator, FileSearch, FileText, HandCoins, LayoutGrid, ListChecks, Mail, MailOpen, Plus, Receipt, Send, Ship } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Calculator, ChevronRight, FileSearch, FileText, HandCoins, LayoutGrid, ListChecks, Mail, MailOpen, Plus, Receipt, Send, Ship } from "lucide-react";
+import "@fontsource/geist-mono/latin-400.css";
+import "@fontsource/geist-mono/latin-500.css";
 import { PACK } from "@pack";
 import { cn } from "@/lib/utils";
 
@@ -94,16 +96,11 @@ function Inbox() {
   );
 }
 
-const TILES = [
+const MENU = [
   { to: "/", label: "업무 홈", Icon: LayoutGrid },
   { to: "/price", label: "수익성", Icon: Calculator },
   { to: "/deal", label: "거래와 서류", Icon: FileText },
 ];
-
-/* 첫 화면 구성 참고(2026-11-25 사용자 제공 캡처): land-book 수록 Bricx, Apex 첫 화면
-   = 화면 높이 둥근 큰 구역 + 구역 안 위쪽 메뉴 + 왼쪽 아래 큰 제목과 짧은 선 라벨 + 오른쪽 아래 카드.
-   색은 기존(흰색, 회색, 청록 그라데이션) 유지, 사진 대신 로고 모양을 크게 흐리게 */
-const brandLines = () => { const [a, ...b] = String(PACK.brand).split(" "); return b.length ? <>{a}<br />{b.join(" ")}</> : a; };
 
 /* 구역 아래 업무 도구 줄 (참고 캡처의 로고 줄 자리): 아이콘과 단어만 */
 const TOOLS = [
@@ -115,67 +112,104 @@ const TOOLS = [
   { to: "/review", label: "서류 점검", Icon: ListChecks },
 ];
 
+const CLOCKS = [["SEOUL", "Asia/Seoul"], ["JAKARTA", "Asia/Jakarta"]];
+const MONO = { fontFamily: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace' };
+/* 사진 같은 질감: 아주 옅은 노이즈 */
+const GRAIN = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")";
+
+function useClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
+  return (tz) => { try { return now.toLocaleTimeString("en-GB", { timeZone: tz, hour12: false }); } catch { return ""; } };
+}
+
+const brandLines = () => { const [a, ...b] = String(PACK.brand).split(" "); return b.length ? <>{a}<br />{b.join(" ")}</> : a; };
+
+/* 첫 화면 구성 참고(2026-11-25 사용자 제공 캡처, land-book): Bricx, Apex.
+   어두운 사진형 큰 구역 + 구역 안 알약 메뉴 + 왼쪽 아래 큰 흰 제목 + 오른쪽 아래 반투명 어두운 카드
+   + 맨 아래 도시와 시각(고정폭 글꼴) + 구역 아래 회색 칸 줄. 강조색은 기존 청록 */
 export default function StartPage() {
   const img = PACK.hero?.image;
   const count = inbox().length;
   const [show, setShow] = useState(false);
   const box = useRef(null);
+  const clock = useClock();
   const toggle = () => { setShow((v) => !v); setTimeout(() => box.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0); };
-  const tile = "flex aspect-[4/3] w-full flex-col items-center justify-center gap-2.5 rounded-xl border border-[var(--line)] bg-white text-[14px] font-semibold transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_8px_24px_rgba(13,122,108,0.10)]";
   return (
-    <div className="flex min-h-svh flex-col bg-white text-[#1d1d1f]" data-testid="start">
+    <div className="flex min-h-svh flex-col bg-[#f4f4f1] text-[#1d1d1f]" data-testid="start">
       <main id="main" className="flex-1 p-3 sm:p-4">
-        <section className="relative isolate mx-auto flex max-w-[1400px] flex-col min-h-[calc(100svh-1.5rem)] overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#f7f8f9_0%,#eef5f3_55%,#e3efec_100%)] sm:min-h-[calc(100svh-2rem-104px)]">
-          {img ? (
-            /* 제품 사진: 반투명, 아래쪽으로 흐려짐 */
-            <img src={img} alt="" aria-hidden="true" className="pointer-events-none absolute top-[6%] right-[4%] -z-10 h-[64%] w-auto object-contain opacity-[0.28] [mask-image:linear-gradient(to_bottom,black_55%,transparent)] sm:top-[4%] sm:right-[22%] sm:h-[96%] sm:opacity-[0.32] lg:right-[30%]" data-testid="start-photo" />
-          ) : (
-            <Plus aria-hidden="true" strokeWidth={2.2} className="pointer-events-none absolute -top-[12%] -right-[8%] -z-10 size-[520px] text-[#dce9e6] sm:size-[760px]" />
+        <section className="relative isolate mx-auto flex min-h-[calc(100svh-1.5rem)] max-w-[1440px] flex-col overflow-hidden rounded-[22px] bg-[#111816] text-white sm:min-h-[calc(100svh-2rem-112px)]">
+          {/* 배경: 조명, 바닥면, 질감 */}
+          <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_55%_70%_at_62%_38%,#3a4a45_0%,#1f2a27_45%,#111816_80%)]" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-20 hidden h-[24%] sm:block bg-[linear-gradient(180deg,#1c2522_0%,#151d1a_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.07] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+          {img && (
+            <div aria-hidden="true" className="pointer-events-none absolute top-[11%] left-1/2 -z-10 h-[40%] -translate-x-1/2 sm:top-auto sm:bottom-[13%] sm:left-[60%] sm:h-[84%]">
+              <div className="absolute -bottom-[2%] left-1/2 h-[6%] w-[90%] -translate-x-1/2 rounded-[50%] bg-black/70 blur-xl" />
+              <img src={img} alt="" className="relative h-full w-auto object-contain opacity-[0.92] [filter:saturate(0.55)_brightness(0.9)_contrast(1.05)] drop-shadow-[0_30px_40px_rgba(0,0,0,0.45)]" data-testid="start-photo" />
+            </div>
           )}
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(17,24,22,0.85)_0%,rgba(17,24,22,0.35)_38%,rgba(17,24,22,0)_60%),linear-gradient(0deg,rgba(17,24,22,0.7)_0%,rgba(17,24,22,0)_30%)]" />
 
-          <header className="flex items-center gap-3 px-5 pt-5 sm:px-8 sm:pt-7">
-            <span className="grid size-8 place-items-center rounded-lg bg-primary text-white" aria-hidden="true"><Plus className="size-5" strokeWidth={3} /></span>
-            <span className="hidden text-[15px] font-semibold tracking-tight sm:inline">{PACK.brand}</span>
-            <button type="button" onClick={toggle} className="relative ml-auto grid size-10 place-items-center rounded-full bg-white/70 ring-1 ring-[var(--line)] backdrop-blur hover:bg-white" aria-label={`받은 메일 ${count}통`}>
-              <Mail className="size-[18px]" aria-hidden="true" />
-              <span className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff3b30] px-1 text-[10px] font-bold text-white tabular-nums">{count}</span>
+          <header className="flex items-center gap-3 px-5 pt-5 sm:px-7 sm:pt-6">
+            <span className="flex items-center gap-2.5">
+              <span className="grid size-7 place-items-center rounded-md bg-white text-[#111816]" aria-hidden="true"><Plus className="size-4" strokeWidth={3.2} /></span>
+              <span className="hidden text-[15px] font-semibold tracking-[-0.01em] sm:inline">{PACK.brand}</span>
+            </span>
+            <nav aria-label="주요 화면" className="mx-auto hidden items-center gap-1 rounded-full bg-white/[0.08] p-1 ring-1 ring-white/10 backdrop-blur-md md:flex">
+              {MENU.map(({ to, label }) => (
+                <Link key={to} to={to} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/75 transition hover:bg-white/10 hover:text-white">{label}</Link>
+              ))}
+            </nav>
+            <button type="button" onClick={toggle} className="relative ml-auto grid size-9 place-items-center rounded-full bg-white/[0.08] ring-1 ring-white/10 backdrop-blur-md transition hover:bg-white/15 md:ml-0" aria-label={`받은 메일 ${count}통`}>
+              <Mail className="size-4" aria-hidden="true" />
+              <span className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff453a] px-1 text-[10px] font-bold tabular-nums">{count}</span>
             </button>
-            <Link to="/" className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#1d1d1f] whitespace-nowrap px-4 text-[14px] font-semibold text-white hover:opacity-90">업무 화면<ArrowRight className="size-4" aria-hidden="true" /></Link>
+            <Link to="/" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-4 text-[13px] font-semibold text-[#111816] transition hover:bg-white/90">업무 화면<ArrowUpRight className="size-3.5" aria-hidden="true" /></Link>
           </header>
 
-          <div className="mt-auto grid gap-8 px-5 pt-20 pb-6 sm:px-8 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
+          <div className="mt-auto grid gap-8 px-5 pt-[48svh] pb-5 sm:px-7 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
             <div>
-              <h1 className="text-[40px] font-semibold leading-[1.08] tracking-[-0.03em] sm:text-[56px] lg:text-[64px]">{brandLines()}</h1>
-              <p className="mt-6 flex items-center gap-3 text-[12px] font-medium tracking-[0.22em] text-[#6e6e73] uppercase"><span className="h-px w-10 bg-primary" aria-hidden="true" />Partner Desk</p>
+              <p className="flex items-center gap-2 text-[11px] tracking-[0.14em] text-white/60 uppercase" style={MONO}><span className="size-1.5 rounded-full bg-[#5fd0bd]" aria-hidden="true" />Partner Desk</p>
+              <h1 className="mt-4 text-[44px] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[60px] lg:text-[68px]">{brandLines()}</h1>
             </div>
 
-            <nav aria-label="바로 가기" className="rounded-2xl bg-white/75 p-3 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_40px_rgba(13,122,108,0.08)] ring-1 ring-[var(--line)] backdrop-blur-md sm:p-4">
-              <div className="grid grid-cols-2 gap-2.5">
-                <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className={cn(tile, show && "border-primary")}>
-                  <span className="relative">
-                    <Mail className="size-8 text-primary" strokeWidth={1.6} aria-hidden="true" />
-                    <span className="absolute -top-1.5 -right-2.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#ff3b30] px-1 text-[11px] font-bold text-white tabular-nums">{count}</span>
-                  </span>
-                  받은 메일
-                </button>
-                {TILES.map(({ to, label, Icon }) => (
-                  <Link key={to} to={to} className={tile}><Icon className="size-8 text-primary" strokeWidth={1.6} aria-hidden="true" />{label}</Link>
-                ))}
+            <div className="rounded-[18px] bg-[#1a2421]/70 p-4 ring-1 ring-white/10 backdrop-blur-xl sm:p-5">
+              <div className="flex items-baseline justify-between">
+                <p className="text-[17px] font-medium tracking-[-0.01em]">바로 가기</p>
+                <p className="text-[11px] tracking-[0.1em] text-white/45" style={MONO}>MENU</p>
               </div>
-            </nav>
+              <ul className="mt-4 grid grid-cols-1 gap-2">
+                {MENU.map(({ to, label, Icon }) => (
+                  <li key={to}>
+                    <Link to={to} className="flex h-11 items-center gap-2.5 rounded-[10px] bg-white/[0.06] px-3 text-[13px] text-white/85 ring-1 ring-white/[0.06] transition hover:bg-white/[0.12] hover:text-white">
+                      <Icon className="size-4 text-[#5fd0bd]" strokeWidth={1.8} aria-hidden="true" />{label}<ChevronRight className="ml-auto size-4 text-white/40" aria-hidden="true" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white text-[14px] font-semibold text-[#111816] transition hover:bg-white/90">
+                <Mail className="size-4" aria-hidden="true" />받은 메일 열기<span className="rounded-full bg-[#ff453a] px-1.5 text-[11px] font-bold text-white tabular-nums">{count}</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-3 text-[11px] tracking-[0.08em] text-white/45 sm:px-7" style={MONO}>
+            {CLOCKS.map(([city, tz]) => (<span key={city}>{city}<span className="ml-2 text-white/30">[ {clock(tz)} ]</span></span>))}
           </div>
         </section>
 
-        <nav aria-label="업무 도구" className="mx-auto mt-3 grid max-w-[1400px] grid-cols-3 gap-2 sm:mt-4 sm:grid-cols-6 sm:gap-3" data-testid="start-tools">
+        <nav aria-label="업무 도구" className="mx-auto mt-3 grid max-w-[1440px] grid-cols-3 gap-2 sm:mt-4 sm:grid-cols-7" data-testid="start-tools">
+          <p className="col-span-3 flex items-center px-1 text-[12px] leading-snug text-[#86868b] sm:col-span-1 sm:px-4">업무 도구</p>
           {TOOLS.map(({ to, label, Icon }) => (
-            <Link key={to} to={to} className="group flex h-[88px] flex-col items-center justify-center gap-2 rounded-2xl bg-[#f5f5f7] text-[13px] font-medium text-[#6e6e73] transition hover:bg-[#eef5f3] hover:text-[#1d1d1f]">
-              <Icon className="size-6 text-[#86868b] transition group-hover:text-primary" strokeWidth={1.6} aria-hidden="true" />{label}
+            <Link key={to} to={to} className="group flex h-[64px] items-center justify-center gap-2 rounded-[14px] bg-[#eaeae6] text-[13px] font-medium text-[#6e6e73] transition hover:bg-white hover:text-[#1d1d1f] sm:h-[88px]">
+              <Icon className="size-[18px] text-[#8e8e93] transition group-hover:text-primary" strokeWidth={1.7} aria-hidden="true" />{label}
             </Link>
           ))}
         </nav>
 
         {show && (
-          <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-4 max-w-[1400px] scroll-mt-4">
+          <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-4 max-w-[1440px] scroll-mt-4">
             <Inbox />
           </section>
         )}
