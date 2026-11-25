@@ -100,45 +100,59 @@ const TILES = [
   { to: "/deal", label: "거래와 서류", Icon: FileText },
 ];
 
+/* 첫 화면 구성 참고(2026-11-25 사용자 제공 캡처): land-book 수록 Bricx, Apex 첫 화면
+   = 화면 높이 둥근 큰 구역 + 구역 안 위쪽 메뉴 + 왼쪽 아래 큰 제목과 짧은 선 라벨 + 오른쪽 아래 카드.
+   색은 기존(흰색, 회색, 청록 그라데이션) 유지, 사진 대신 로고 모양을 크게 흐리게 */
+const brandLines = () => { const [a, ...b] = String(PACK.brand).split(" "); return b.length ? <>{a}<br />{b.join(" ")}</> : a; };
+
 export default function StartPage() {
   const count = inbox().length;
   const [show, setShow] = useState(false);
   const box = useRef(null);
   const toggle = () => { setShow((v) => !v); setTimeout(() => box.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0); };
-  const tile = "flex aspect-square w-full flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--line)] bg-white text-[15px] font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.03)] transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_8px_24px_rgba(13,122,108,0.10)]";
+  const tile = "flex aspect-[4/3] w-full flex-col items-center justify-center gap-2.5 rounded-xl border border-[var(--line)] bg-white text-[14px] font-semibold transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_8px_24px_rgba(13,122,108,0.10)]";
   return (
     <div className="flex min-h-svh flex-col bg-white text-[#1d1d1f]" data-testid="start">
-      <header className="border-b border-[var(--line)]">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-3 px-4 sm:px-6">
-          <span className="grid size-8 place-items-center rounded-lg bg-primary text-white" aria-hidden="true"><Plus className="size-5" strokeWidth={3} /></span>
-          <span className="text-[16px] font-semibold tracking-tight">{PACK.brand}</span>
-          <button type="button" onClick={toggle} className="relative ml-auto grid size-10 place-items-center rounded-full hover:bg-[var(--fill)]" aria-label={`받은 메일 ${count}통`}>
-            <Mail className="size-5" aria-hidden="true" />
-            <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff3b30] px-1 text-[10px] font-bold text-white tabular-nums">{count}</span>
-          </button>
-          <Link to="/" className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#1d1d1f] px-4 text-[14px] font-semibold text-white hover:opacity-90">업무 화면<ArrowRight className="size-4" aria-hidden="true" /></Link>
-        </div>
-      </header>
+      <main id="main" className="flex-1 p-3 sm:p-4">
+        <section className="relative isolate mx-auto flex max-w-[1400px] flex-col min-h-[calc(100svh-1.5rem)] overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#f7f8f9_0%,#eef5f3_55%,#e3efec_100%)] sm:min-h-[calc(100svh-2rem)]">
+          {/* 큰 로고 모양 (사진 자리) */}
+          <Plus aria-hidden="true" strokeWidth={2.2} className="pointer-events-none absolute -top-[12%] -right-[8%] -z-10 size-[520px] text-[#dce9e6] sm:size-[760px]" />
 
-      <main id="main" className="flex-1 px-4 pt-4 pb-6 sm:px-6 sm:pt-6">
-        <section className="mx-auto flex max-w-[1200px] flex-col justify-center sm:min-h-[calc(100svh-7rem)] rounded-[28px] bg-[linear-gradient(135deg,#f7f8f9_0%,#eef5f3_55%,#e3efec_100%)] px-6 py-16 sm:px-12 sm:py-24">
-          <h1 className="text-center text-[32px] font-bold tracking-tight sm:text-[48px]">{PACK.brand}</h1>
-          <nav aria-label="바로 가기" className="mx-auto mt-10 grid w-full max-w-[760px] grid-cols-2 gap-3 sm:grid-cols-4">
-            <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className={cn(tile, show && "border-primary")}>
-              <span className="relative">
-                <Mail className="size-10 text-primary" strokeWidth={1.6} aria-hidden="true" />
-                <span className="absolute -top-1.5 -right-2.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#ff3b30] px-1 text-[11px] font-bold text-white tabular-nums">{count}</span>
-              </span>
-              받은 메일
+          <header className="flex items-center gap-3 px-5 pt-5 sm:px-8 sm:pt-7">
+            <span className="grid size-8 place-items-center rounded-lg bg-primary text-white" aria-hidden="true"><Plus className="size-5" strokeWidth={3} /></span>
+            <span className="hidden text-[15px] font-semibold tracking-tight sm:inline">{PACK.brand}</span>
+            <button type="button" onClick={toggle} className="relative ml-auto grid size-10 place-items-center rounded-full bg-white/70 ring-1 ring-[var(--line)] backdrop-blur hover:bg-white" aria-label={`받은 메일 ${count}통`}>
+              <Mail className="size-[18px]" aria-hidden="true" />
+              <span className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff3b30] px-1 text-[10px] font-bold text-white tabular-nums">{count}</span>
             </button>
-            {TILES.map(({ to, label, Icon }) => (
-              <Link key={to} to={to} className={tile}><Icon className="size-10 text-primary" strokeWidth={1.6} aria-hidden="true" />{label}</Link>
-            ))}
-          </nav>
+            <Link to="/" className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#1d1d1f] whitespace-nowrap px-4 text-[14px] font-semibold text-white hover:opacity-90">업무 화면<ArrowRight className="size-4" aria-hidden="true" /></Link>
+          </header>
+
+          <div className="mt-auto grid gap-8 px-5 pt-20 pb-6 sm:px-8 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
+            <div>
+              <h1 className="text-[52px] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[88px] lg:text-[104px]">{brandLines()}</h1>
+              <p className="mt-6 flex items-center gap-3 text-[12px] font-medium tracking-[0.22em] text-[#6e6e73] uppercase"><span className="h-px w-10 bg-primary" aria-hidden="true" />Partner Desk</p>
+            </div>
+
+            <nav aria-label="바로 가기" className="rounded-2xl bg-white/75 p-3 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_16px_40px_rgba(13,122,108,0.08)] ring-1 ring-[var(--line)] backdrop-blur-md sm:p-4">
+              <div className="grid grid-cols-2 gap-2.5">
+                <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className={cn(tile, show && "border-primary")}>
+                  <span className="relative">
+                    <Mail className="size-8 text-primary" strokeWidth={1.6} aria-hidden="true" />
+                    <span className="absolute -top-1.5 -right-2.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#ff3b30] px-1 text-[11px] font-bold text-white tabular-nums">{count}</span>
+                  </span>
+                  받은 메일
+                </button>
+                {TILES.map(({ to, label, Icon }) => (
+                  <Link key={to} to={to} className={tile}><Icon className="size-8 text-primary" strokeWidth={1.6} aria-hidden="true" />{label}</Link>
+                ))}
+              </div>
+            </nav>
+          </div>
         </section>
 
         {show && (
-          <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-6 max-w-[1200px] scroll-mt-4">
+          <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-4 max-w-[1400px] scroll-mt-4">
             <Inbox />
           </section>
         )}
