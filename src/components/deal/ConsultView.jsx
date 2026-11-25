@@ -9,6 +9,7 @@ import { calcLocal } from "../../lib/deal/calc.js";
 import { hospitalCalc } from "../../lib/deal/econ.js";
 import { parseNum } from "../../lib/deal/money.js";
 import { cn } from "@/lib/utils";
+import { FxBar, FxEq } from "./FxBar.jsx";
 
 const fmt = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : Math.round(v).toLocaleString("en-US"));
 export const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${fmt(v)}`);
@@ -218,10 +219,13 @@ export function ConsultView({ children }) {
         ))}
       </ol>
 
+      <FxBar className="mt-5" />
+
       <section aria-label="두 가지 금액" className="mt-6 grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl border border-[var(--line)] bg-white p-5">
           <p className="text-[13px] text-[#6e6e73]">현지 견적 총액</p>
           <p className="mt-0.5 text-[26px] font-semibold tabular-nums tracking-tight" data-testid="local-total">{rp(L.total)}</p>
+          <FxEq idr={L.total} />
           <p className="text-[13px] text-[#424245]">파트너가 병원에 제시할 세금 포함 가격</p>
           <button type="button" aria-expanded={open === "local"} onClick={() => setOpen(open === "local" ? null : "local")} className={cn(btn, "mt-3")}>현지 견적 바꾸기</button>
           {open === "local" && <LocalEditor onDone={() => setOpen(null)} />}
@@ -229,6 +233,7 @@ export function ConsultView({ children }) {
         <div className="rounded-2xl border border-[var(--line)] bg-white p-5">
           <p className="text-[13px] text-[#6e6e73]">병원 손익 계산에 쓰는 도입비</p>
           <p className="mt-0.5 text-[26px] font-semibold tabular-nums tracking-tight" data-testid="consult-invest">{rp(R.H.invest)}</p>
+          <FxEq idr={R.H.invest} />
           <p className="text-[13px] text-[#424245]">이번 상담에서 장비값으로 적용할 금액, {investName}</p>
           <button type="button" aria-expanded={open === "hospital"} onClick={() => setOpen(open === "hospital" ? null : "hospital")} className={cn(btn, "mt-3")}>병원 조건 바꾸기</button>
           {open === "hospital" && <HospitalEditor C={C} />}
@@ -246,6 +251,7 @@ export function ConsultView({ children }) {
           <div className="border-l-2 border-primary pl-4">
             <dt className="text-[14px] text-[#424245]">한 달 예상 손익</dt>
             <dd className="mt-0.5 text-[34px] font-semibold tabular-nums tracking-tight" data-testid="consult-profit">{R.profit !== null ? manwon(R.profit) : "산출 불가"}</dd>
+            {R.profit !== null && <FxEq idr={R.profit} />}
           </div>
         </dl>
         <p className="mt-3 text-[13px] text-[#6e6e73]">장비값을 {life}개월로 나눈 비용까지 포함했어요</p>
