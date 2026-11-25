@@ -3,7 +3,7 @@
    Azuro 의료기기 사이트 사례(제품과 인허가 근거를 앞에). 받은 메일함에서 견적 요청 메일을 바로 열어 봄 */
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, Calculator, ChevronRight, FileSearch, FileText, HandCoins, LayoutGrid, ListChecks, Mail, MailOpen, Plus, Receipt, Send, Ship } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Calculator, ChevronRight, FileText, LayoutGrid, Mail, MailOpen, Plus } from "lucide-react";
 import "@fontsource/geist-mono/latin-400.css";
 import "@fontsource/geist-mono/latin-500.css";
 import { PACK } from "@pack";
@@ -102,16 +102,6 @@ const MENU = [
   { to: "/deal", label: "거래와 서류", Icon: FileText },
 ];
 
-/* 구역 아래 업무 도구 줄 (참고 캡처의 로고 줄 자리): 아이콘과 단어만 */
-const TOOLS = [
-  { to: "/price?tab=hospital&consult=1", label: "견적 검토", Icon: FileSearch },
-  { to: "/price?tab=deal", label: "파트너 마진", Icon: HandCoins },
-  { to: "/docs?doc=quote", label: "견적서", Icon: Receipt },
-  { to: "/docs?doc=invoice", label: "상업송장", Icon: Ship },
-  { to: "/docs?doc=email", label: "메일 초안", Icon: Send },
-  { to: "/review", label: "서류 점검", Icon: ListChecks },
-];
-
 const CLOCKS = [["SEOUL", "Asia/Seoul"], ["JAKARTA", "Asia/Jakarta"]];
 const MONO = { fontFamily: '"Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace' };
 /* 사진 같은 질감: 아주 옅은 노이즈 */
@@ -138,7 +128,7 @@ export default function StartPage() {
   return (
     <div className="flex min-h-svh flex-col bg-[#f4f4f1] text-[#1d1d1f]" data-testid="start">
       <main id="main" className="flex-1 p-3 sm:p-4">
-        <section className="relative isolate mx-auto flex min-h-[calc(100svh-1.5rem)] max-w-[1440px] flex-col overflow-hidden rounded-[22px] bg-[#e8ebe7] text-[#1d1d1f] sm:min-h-[calc(100svh-2rem-112px)]">
+        <section className="relative isolate mx-auto flex min-h-[calc(100svh-1.5rem)] max-w-[1440px] flex-col overflow-hidden rounded-[22px] bg-[#e8ebe7] text-[#1d1d1f] sm:min-h-[calc(100svh-2rem)]">
           {/* 배경: 조명, 바닥면, 질감 */}
           <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_55%_70%_at_62%_38%,#ffffff_0%,#f1f4f1_40%,#e3e8e4_80%)]" />
           <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-20 hidden h-[24%] sm:block bg-[linear-gradient(180deg,#dde3df_0%,#d3dad5_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]" />
@@ -158,37 +148,37 @@ export default function StartPage() {
             </span>
             <nav aria-label="주요 화면" className="mx-auto hidden items-center gap-1 rounded-full bg-white/60 p-1 ring-1 ring-black/[0.06] backdrop-blur-md md:flex">
               {MENU.map(({ to, label }) => (
-                <Link key={to} to={to} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-[#424245] transition hover:bg-white hover:text-[#1d1d1f]">{label}</Link>
+                <Link key={to} to={to} className="rounded-full px-3.5 py-1.5 text-[14px] font-medium text-[#424245] transition hover:bg-white hover:text-[#1d1d1f]">{label}</Link>
               ))}
             </nav>
             <button type="button" onClick={toggle} className="relative ml-auto grid size-9 place-items-center rounded-full bg-white/60 ring-1 ring-black/[0.06] backdrop-blur-md transition hover:bg-white md:ml-0" aria-label={`받은 메일 ${count}통`}>
               <Mail className="size-4" aria-hidden="true" />
               <span className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff3b30] px-1 text-[10px] font-bold text-white tabular-nums">{count}</span>
             </button>
-            <Link to="/" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#1d1d1f] px-4 text-[13px] font-semibold text-white transition hover:opacity-90">업무 화면<ArrowUpRight className="size-3.5" aria-hidden="true" /></Link>
+            <Link to="/" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#1d1d1f] px-4 text-[14px] font-semibold text-white transition hover:opacity-90">업무 화면<ArrowUpRight className="size-3.5" aria-hidden="true" /></Link>
           </header>
 
-          <div className="mt-auto grid gap-8 px-5 pt-[48svh] pb-5 sm:px-7 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
+          <div className="mt-auto grid gap-8 px-5 pt-[48svh] pb-5 sm:px-7 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
             <div>
-              <p className="flex items-center gap-2 text-[11px] tracking-[0.14em] text-[#6e6e73] uppercase" style={MONO}><span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />Partner Desk</p>
-              <h1 className="mt-4 text-[44px] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[60px] lg:text-[68px]">{brandLines()}</h1>
+              <p className="flex items-center gap-2 text-[12px] tracking-[0.14em] text-[#6e6e73] uppercase" style={MONO}><span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />Partner Desk</p>
+              <h1 className="mt-4 text-[44px] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[60px] lg:text-[70px]">{brandLines()}</h1>
             </div>
 
             <div className="rounded-[18px] bg-white/65 p-4 shadow-[0_20px_50px_rgba(30,50,45,0.10)] ring-1 ring-black/[0.06] backdrop-blur-xl sm:p-5">
               <div className="flex items-baseline justify-between">
-                <p className="text-[17px] font-medium tracking-[-0.01em]">바로 가기</p>
+                <p className="text-[19px] font-medium tracking-[-0.01em]">바로 가기</p>
                 <p className="text-[11px] tracking-[0.1em] text-[#86868b]" style={MONO}>MENU</p>
               </div>
               <ul className="mt-4 grid grid-cols-1 gap-2">
                 {MENU.map(({ to, label, Icon }) => (
                   <li key={to}>
-                    <Link to={to} className="flex h-11 items-center gap-2.5 rounded-[10px] bg-white/80 px-3 text-[13px] text-[#1d1d1f] ring-1 ring-black/[0.05] transition hover:bg-white">
+                    <Link to={to} className="flex h-12 items-center gap-2.5 rounded-[10px] bg-white/80 px-3 text-[15px] text-[#1d1d1f] ring-1 ring-black/[0.05] transition hover:bg-white">
                       <Icon className="size-4 text-primary" strokeWidth={1.8} aria-hidden="true" />{label}<ChevronRight className="ml-auto size-4 text-[#aeaeb2]" aria-hidden="true" />
                     </Link>
                   </li>
                 ))}
               </ul>
-              <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1d1d1f] text-[14px] font-semibold text-white transition hover:opacity-90">
+              <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1d1d1f] text-[15px] font-semibold text-white transition hover:opacity-90">
                 <Mail className="size-4" aria-hidden="true" />받은 메일 열기<span className="rounded-full bg-[#ff3b30] px-1.5 text-[11px] font-bold text-white tabular-nums">{count}</span>
               </button>
             </div>
@@ -198,15 +188,6 @@ export default function StartPage() {
             {CLOCKS.map(([city, tz]) => (<span key={city}>{city}<span className="ml-2 text-[#aeaeb2]">[ {clock(tz)} ]</span></span>))}
           </div>
         </section>
-
-        <nav aria-label="업무 도구" className="mx-auto mt-3 grid max-w-[1440px] grid-cols-3 gap-2 sm:mt-4 sm:grid-cols-7" data-testid="start-tools">
-          <p className="col-span-3 flex items-center px-1 text-[12px] leading-snug text-[#86868b] sm:col-span-1 sm:px-4">업무 도구</p>
-          {TOOLS.map(({ to, label, Icon }) => (
-            <Link key={to} to={to} className="group flex h-[64px] items-center justify-center gap-2 rounded-[14px] bg-[#eaeae6] text-[13px] font-medium text-[#6e6e73] transition hover:bg-white hover:text-[#1d1d1f] sm:h-[88px]">
-              <Icon className="size-[18px] text-[#8e8e93] transition group-hover:text-primary" strokeWidth={1.7} aria-hidden="true" />{label}
-            </Link>
-          ))}
-        </nav>
 
         {show && (
           <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-4 max-w-[1440px] scroll-mt-4">

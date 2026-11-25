@@ -230,3 +230,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 56px; }
 .rv-step { transition: box-shadow .2s ease; }
 .rv-step:focus-within { box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 35%, transparent), 0 8px 24px -12px rgb(0 0 0 / 0.12); }
 @media (prefers-reduced-motion: reduce) { .rv * { transition: none !important; } }
+
+/* 업무 화면 글자 크기 약 10% 키움 (2026-11-25 사용자 요청 "10pt면 11pt 정도"). 입장 화면과 인쇄는 제외 */
+@media (min-width: 640px) { .app-zoom { zoom: 1.06; } }
+@media (min-width: 1024px) { .app-zoom { zoom: 1.1; } }
+@media print { .app-zoom { zoom: 1; } }
