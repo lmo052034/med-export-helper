@@ -3,7 +3,7 @@
    Azuro 의료기기 사이트 사례(제품과 인허가 근거를 앞에). 받은 메일함에서 견적 요청 메일을 바로 열어 봄 */
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Calculator, FileText, LayoutGrid, Mail, MailOpen, Plus } from "lucide-react";
+import { ArrowRight, Calculator, FileSearch, FileText, HandCoins, LayoutGrid, ListChecks, Mail, MailOpen, Plus, Receipt, Send, Ship } from "lucide-react";
 import { PACK } from "@pack";
 import { cn } from "@/lib/utils";
 
@@ -105,7 +105,18 @@ const TILES = [
    색은 기존(흰색, 회색, 청록 그라데이션) 유지, 사진 대신 로고 모양을 크게 흐리게 */
 const brandLines = () => { const [a, ...b] = String(PACK.brand).split(" "); return b.length ? <>{a}<br />{b.join(" ")}</> : a; };
 
+/* 구역 아래 업무 도구 줄 (참고 캡처의 로고 줄 자리): 아이콘과 단어만 */
+const TOOLS = [
+  { to: "/price?tab=hospital&consult=1", label: "견적 검토", Icon: FileSearch },
+  { to: "/price?tab=deal", label: "파트너 마진", Icon: HandCoins },
+  { to: "/docs?doc=quote", label: "견적서", Icon: Receipt },
+  { to: "/docs?doc=invoice", label: "상업송장", Icon: Ship },
+  { to: "/docs?doc=email", label: "메일 초안", Icon: Send },
+  { to: "/review", label: "서류 점검", Icon: ListChecks },
+];
+
 export default function StartPage() {
+  const img = PACK.hero?.image;
   const count = inbox().length;
   const [show, setShow] = useState(false);
   const box = useRef(null);
@@ -114,9 +125,13 @@ export default function StartPage() {
   return (
     <div className="flex min-h-svh flex-col bg-white text-[#1d1d1f]" data-testid="start">
       <main id="main" className="flex-1 p-3 sm:p-4">
-        <section className="relative isolate mx-auto flex max-w-[1400px] flex-col min-h-[calc(100svh-1.5rem)] overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#f7f8f9_0%,#eef5f3_55%,#e3efec_100%)] sm:min-h-[calc(100svh-2rem)]">
-          {/* 큰 로고 모양 (사진 자리) */}
-          <Plus aria-hidden="true" strokeWidth={2.2} className="pointer-events-none absolute -top-[12%] -right-[8%] -z-10 size-[520px] text-[#dce9e6] sm:size-[760px]" />
+        <section className="relative isolate mx-auto flex max-w-[1400px] flex-col min-h-[calc(100svh-1.5rem)] overflow-hidden rounded-[28px] bg-[linear-gradient(135deg,#f7f8f9_0%,#eef5f3_55%,#e3efec_100%)] sm:min-h-[calc(100svh-2rem-104px)]">
+          {img ? (
+            /* 제품 사진: 반투명, 아래쪽으로 흐려짐 */
+            <img src={img} alt="" aria-hidden="true" className="pointer-events-none absolute top-[6%] right-[4%] -z-10 h-[64%] w-auto object-contain opacity-[0.28] [mask-image:linear-gradient(to_bottom,black_55%,transparent)] sm:top-[4%] sm:right-[22%] sm:h-[96%] sm:opacity-[0.32] lg:right-[30%]" data-testid="start-photo" />
+          ) : (
+            <Plus aria-hidden="true" strokeWidth={2.2} className="pointer-events-none absolute -top-[12%] -right-[8%] -z-10 size-[520px] text-[#dce9e6] sm:size-[760px]" />
+          )}
 
           <header className="flex items-center gap-3 px-5 pt-5 sm:px-8 sm:pt-7">
             <span className="grid size-8 place-items-center rounded-lg bg-primary text-white" aria-hidden="true"><Plus className="size-5" strokeWidth={3} /></span>
@@ -130,7 +145,7 @@ export default function StartPage() {
 
           <div className="mt-auto grid gap-8 px-5 pt-20 pb-6 sm:px-8 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-end">
             <div>
-              <h1 className="text-[52px] font-semibold leading-[1.02] tracking-[-0.035em] sm:text-[88px] lg:text-[104px]">{brandLines()}</h1>
+              <h1 className="text-[40px] font-semibold leading-[1.08] tracking-[-0.03em] sm:text-[56px] lg:text-[64px]">{brandLines()}</h1>
               <p className="mt-6 flex items-center gap-3 text-[12px] font-medium tracking-[0.22em] text-[#6e6e73] uppercase"><span className="h-px w-10 bg-primary" aria-hidden="true" />Partner Desk</p>
             </div>
 
@@ -150,6 +165,14 @@ export default function StartPage() {
             </nav>
           </div>
         </section>
+
+        <nav aria-label="업무 도구" className="mx-auto mt-3 grid max-w-[1400px] grid-cols-3 gap-2 sm:mt-4 sm:grid-cols-6 sm:gap-3" data-testid="start-tools">
+          {TOOLS.map(({ to, label, Icon }) => (
+            <Link key={to} to={to} className="group flex h-[88px] flex-col items-center justify-center gap-2 rounded-2xl bg-[#f5f5f7] text-[13px] font-medium text-[#6e6e73] transition hover:bg-[#eef5f3] hover:text-[#1d1d1f]">
+              <Icon className="size-6 text-[#86868b] transition group-hover:text-primary" strokeWidth={1.6} aria-hidden="true" />{label}
+            </Link>
+          ))}
+        </nav>
 
         {show && (
           <section id="inbox-box" ref={box} aria-label="받은 메일함" className="mx-auto mt-4 max-w-[1400px] scroll-mt-4">
