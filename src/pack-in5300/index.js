@@ -125,6 +125,17 @@ export const PACK = {
     src: "발표자료 12쪽·부록 A8~A9 기준. 수납액과 시술량은 상담용 가정",
     next: "병원에 최근 3개월 실제 회당 수납액과 월별 유료 시술 건수를 요청하세요.",
   },
+  start: {
+    image: mainUnit, imageAlt: "SuperStar+ IN-5300 본체 (카탈로그 이미지)",
+    product: "SuperStar+ IN-5300",
+    route: ["대한민국", "인도네시아"],
+    partners: ["영인바이오텍", "PT FISIO MEDIKA INDONESIA"],
+    facts: [
+      { k: "판매 허가", v: "AKL 21403620119" },
+      { k: "수입 세번", v: "HS 9018.90.31" },
+      { k: "병원 손익분기", v: "월 48회" },
+    ],
+  },
   flow: {
     lead: "IN-5300 인도네시아 수출 1건, 세번부터 상업송장까지 한 화면 확인",
     hs: {
