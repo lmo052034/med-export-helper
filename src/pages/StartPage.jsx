@@ -138,64 +138,64 @@ export default function StartPage() {
   return (
     <div className="flex min-h-svh flex-col bg-[#f4f4f1] text-[#1d1d1f]" data-testid="start">
       <main id="main" className="flex-1 p-3 sm:p-4">
-        <section className="relative isolate mx-auto flex min-h-[calc(100svh-1.5rem)] max-w-[1440px] flex-col overflow-hidden rounded-[22px] bg-[#111816] text-white sm:min-h-[calc(100svh-2rem-112px)]">
+        <section className="relative isolate mx-auto flex min-h-[calc(100svh-1.5rem)] max-w-[1440px] flex-col overflow-hidden rounded-[22px] bg-[#e8ebe7] text-[#1d1d1f] sm:min-h-[calc(100svh-2rem-112px)]">
           {/* 배경: 조명, 바닥면, 질감 */}
-          <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_55%_70%_at_62%_38%,#3a4a45_0%,#1f2a27_45%,#111816_80%)]" />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-20 hidden h-[24%] sm:block bg-[linear-gradient(180deg,#1c2522_0%,#151d1a_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]" />
-          <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.07] mix-blend-overlay" style={{ backgroundImage: GRAIN }} />
+          <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_55%_70%_at_62%_38%,#ffffff_0%,#f1f4f1_40%,#e3e8e4_80%)]" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-20 hidden h-[24%] sm:block bg-[linear-gradient(180deg,#dde3df_0%,#d3dad5_100%)] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.05] mix-blend-multiply" style={{ backgroundImage: GRAIN }} />
           {img && (
             <div aria-hidden="true" className="pointer-events-none absolute top-[11%] left-1/2 -z-10 h-[40%] -translate-x-1/2 sm:top-auto sm:bottom-[13%] sm:left-[60%] sm:h-[84%]">
-              <div className="absolute -bottom-[2%] left-1/2 h-[6%] w-[90%] -translate-x-1/2 rounded-[50%] bg-black/70 blur-xl" />
-              <img src={img} alt="" className="relative h-full w-auto object-contain opacity-[0.92] [filter:saturate(0.55)_brightness(0.9)_contrast(1.05)] drop-shadow-[0_30px_40px_rgba(0,0,0,0.45)]" data-testid="start-photo" />
+              <div className="absolute -bottom-[2%] left-1/2 h-[6%] w-[90%] -translate-x-1/2 rounded-[50%] bg-black/25 blur-xl" />
+              <img src={img} alt="" className="relative h-full w-auto object-contain [filter:saturate(0.8)] drop-shadow-[0_30px_40px_rgba(0,0,0,0.15)]" data-testid="start-photo" />
             </div>
           )}
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(17,24,22,0.85)_0%,rgba(17,24,22,0.35)_38%,rgba(17,24,22,0)_60%),linear-gradient(0deg,rgba(17,24,22,0.7)_0%,rgba(17,24,22,0)_30%)]" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(232,235,231,0.9)_0%,rgba(232,235,231,0.4)_38%,rgba(232,235,231,0)_60%)]" />
 
           <header className="flex items-center gap-3 px-5 pt-5 sm:px-7 sm:pt-6">
             <span className="flex items-center gap-2.5">
-              <span className="grid size-7 place-items-center rounded-md bg-white text-[#111816]" aria-hidden="true"><Plus className="size-4" strokeWidth={3.2} /></span>
+              <span className="grid size-7 place-items-center rounded-md bg-primary text-white" aria-hidden="true"><Plus className="size-4" strokeWidth={3.2} /></span>
               <span className="hidden text-[15px] font-semibold tracking-[-0.01em] sm:inline">{PACK.brand}</span>
             </span>
-            <nav aria-label="주요 화면" className="mx-auto hidden items-center gap-1 rounded-full bg-white/[0.08] p-1 ring-1 ring-white/10 backdrop-blur-md md:flex">
+            <nav aria-label="주요 화면" className="mx-auto hidden items-center gap-1 rounded-full bg-white/60 p-1 ring-1 ring-black/[0.06] backdrop-blur-md md:flex">
               {MENU.map(({ to, label }) => (
-                <Link key={to} to={to} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-white/75 transition hover:bg-white/10 hover:text-white">{label}</Link>
+                <Link key={to} to={to} className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-[#424245] transition hover:bg-white hover:text-[#1d1d1f]">{label}</Link>
               ))}
             </nav>
-            <button type="button" onClick={toggle} className="relative ml-auto grid size-9 place-items-center rounded-full bg-white/[0.08] ring-1 ring-white/10 backdrop-blur-md transition hover:bg-white/15 md:ml-0" aria-label={`받은 메일 ${count}통`}>
+            <button type="button" onClick={toggle} className="relative ml-auto grid size-9 place-items-center rounded-full bg-white/60 ring-1 ring-black/[0.06] backdrop-blur-md transition hover:bg-white md:ml-0" aria-label={`받은 메일 ${count}통`}>
               <Mail className="size-4" aria-hidden="true" />
-              <span className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff453a] px-1 text-[10px] font-bold tabular-nums">{count}</span>
+              <span className="absolute -top-0.5 -right-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-[#ff3b30] px-1 text-[10px] font-bold text-white tabular-nums">{count}</span>
             </button>
-            <Link to="/" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-white px-4 text-[13px] font-semibold text-[#111816] transition hover:bg-white/90">업무 화면<ArrowUpRight className="size-3.5" aria-hidden="true" /></Link>
+            <Link to="/" className="inline-flex h-9 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#1d1d1f] px-4 text-[13px] font-semibold text-white transition hover:opacity-90">업무 화면<ArrowUpRight className="size-3.5" aria-hidden="true" /></Link>
           </header>
 
           <div className="mt-auto grid gap-8 px-5 pt-[48svh] pb-5 sm:px-7 sm:pt-24 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
             <div>
-              <p className="flex items-center gap-2 text-[11px] tracking-[0.14em] text-white/60 uppercase" style={MONO}><span className="size-1.5 rounded-full bg-[#5fd0bd]" aria-hidden="true" />Partner Desk</p>
+              <p className="flex items-center gap-2 text-[11px] tracking-[0.14em] text-[#6e6e73] uppercase" style={MONO}><span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />Partner Desk</p>
               <h1 className="mt-4 text-[44px] font-semibold leading-[1.04] tracking-[-0.035em] sm:text-[60px] lg:text-[68px]">{brandLines()}</h1>
             </div>
 
-            <div className="rounded-[18px] bg-[#1a2421]/70 p-4 ring-1 ring-white/10 backdrop-blur-xl sm:p-5">
+            <div className="rounded-[18px] bg-white/65 p-4 shadow-[0_20px_50px_rgba(30,50,45,0.10)] ring-1 ring-black/[0.06] backdrop-blur-xl sm:p-5">
               <div className="flex items-baseline justify-between">
                 <p className="text-[17px] font-medium tracking-[-0.01em]">바로 가기</p>
-                <p className="text-[11px] tracking-[0.1em] text-white/45" style={MONO}>MENU</p>
+                <p className="text-[11px] tracking-[0.1em] text-[#86868b]" style={MONO}>MENU</p>
               </div>
               <ul className="mt-4 grid grid-cols-1 gap-2">
                 {MENU.map(({ to, label, Icon }) => (
                   <li key={to}>
-                    <Link to={to} className="flex h-11 items-center gap-2.5 rounded-[10px] bg-white/[0.06] px-3 text-[13px] text-white/85 ring-1 ring-white/[0.06] transition hover:bg-white/[0.12] hover:text-white">
-                      <Icon className="size-4 text-[#5fd0bd]" strokeWidth={1.8} aria-hidden="true" />{label}<ChevronRight className="ml-auto size-4 text-white/40" aria-hidden="true" />
+                    <Link to={to} className="flex h-11 items-center gap-2.5 rounded-[10px] bg-white/80 px-3 text-[13px] text-[#1d1d1f] ring-1 ring-black/[0.05] transition hover:bg-white">
+                      <Icon className="size-4 text-primary" strokeWidth={1.8} aria-hidden="true" />{label}<ChevronRight className="ml-auto size-4 text-[#aeaeb2]" aria-hidden="true" />
                     </Link>
                   </li>
                 ))}
               </ul>
-              <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white text-[14px] font-semibold text-[#111816] transition hover:bg-white/90">
-                <Mail className="size-4" aria-hidden="true" />받은 메일 열기<span className="rounded-full bg-[#ff453a] px-1.5 text-[11px] font-bold text-white tabular-nums">{count}</span>
+              <button type="button" onClick={toggle} aria-expanded={show} aria-controls="inbox-box" data-testid="mail-button" className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1d1d1f] text-[14px] font-semibold text-white transition hover:opacity-90">
+                <Mail className="size-4" aria-hidden="true" />받은 메일 열기<span className="rounded-full bg-[#ff3b30] px-1.5 text-[11px] font-bold text-white tabular-nums">{count}</span>
               </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-3 text-[11px] tracking-[0.08em] text-white/45 sm:px-7" style={MONO}>
-            {CLOCKS.map(([city, tz]) => (<span key={city}>{city}<span className="ml-2 text-white/30">[ {clock(tz)} ]</span></span>))}
+          <div className="flex items-center justify-between border-t border-black/[0.06] px-5 py-3 text-[11px] tracking-[0.08em] text-[#86868b] sm:px-7" style={MONO}>
+            {CLOCKS.map(([city, tz]) => (<span key={city}>{city}<span className="ml-2 text-[#aeaeb2]">[ {clock(tz)} ]</span></span>))}
           </div>
         </section>
 
