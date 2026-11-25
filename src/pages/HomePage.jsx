@@ -14,7 +14,7 @@ import { DocView } from "../components/deal/Docs.jsx";
 import { LineChart } from "../components/deal/LineChart.jsx";
 import { USER, greeting, today } from "../lib/user.js";
 import { cn } from "@/lib/utils";
-import { consultCalc, replyText, manwon, rp as rpc } from "../components/deal/ConsultView.jsx";
+import { consultCalc, replyText, manwon, rp as rpc, LangSwitch } from "../components/deal/ConsultView.jsx";
 
 const fmt = (v, d = 0) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : (Math.round(v * 10 ** d) / 10 ** d).toLocaleString("en-US", { maximumFractionDigits: d }));
 const rp = (v) => (v === null || v === undefined || !Number.isFinite(v) ? "—" : `Rp${fmt(v)}`);
@@ -240,11 +240,12 @@ function ReviewReply() {
   const ref = useRef(null);
   useEffect(() => { if (openFull) ref.current?.scrollIntoView({ block: "start" }); }, [openFull]);
   const [copied, setCopied] = useState(false);
+  const [lang, setLang] = useState("ko");
   const C = PACK.consult;
   if (deal.preset !== C.id) return null;
   const life = Number(C.lifeMonths) || 48;
   const L = calcLocal(deal), R = consultCalc(deal, life), h = deal.econ.hospital;
-  const text = replyText({ C, deal, L, R, life });
+  const text = replyText({ C, deal, L, R, life, lang });
   const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { setCopied(false); } };
   const rows = [
     ["병원 제시 견적 (현지 견적 총액)", rpc(L.total)],
@@ -267,6 +268,7 @@ function ReviewReply() {
         <button type="button" aria-expanded={full} onClick={() => setFull(!full)} className="inline-flex h-9 items-center rounded-md border border-[var(--line-strong)] px-3.5 text-[14px] font-medium hover:bg-[var(--fill-soft)]">{full ? "답장 전문 접기" : "답장 전문 보기"}</button>
         <button type="button" onClick={copy} className="inline-flex h-9 items-center rounded-md border border-[var(--line-strong)] px-3.5 text-[14px] font-medium hover:bg-[var(--fill-soft)]">복사</button>
         <span className="text-[12px] text-[#6e6e73]" aria-live="polite">{copied ? "복사됨" : ""}</span>
+        <span className="ml-auto"><LangSwitch lang={lang} setLang={setLang} /></span>
       </div>
       {full && <pre className="mt-3 whitespace-pre-wrap rounded-xl bg-[var(--fill-soft)] p-4 font-sans text-[14px] leading-relaxed">{text}</pre>}
     </article>
