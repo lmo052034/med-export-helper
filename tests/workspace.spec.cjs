@@ -295,3 +295,20 @@ test('오늘 환율: 처음엔 PPT 기준, 버튼 눌러야 적용, 실패하면
   await expect(bar).toContainText('환율 PPT 기준');
   await expect(page.getByTestId('fx-eq')).toHaveCount(0);
 });
+
+test('답장 전문: 한국어와 인도네시아어 전환', async ({ page }) => {
+  await page.goto('/#/');
+  await page.getByRole('navigation').getByRole('link', { name: '수익성' }).first().click();
+  await page.getByLabel('월 유료 시술 건수', { exact: true }).fill('50');
+  await page.getByRole('link', { name: '홈 메일에서 답장 전문 보기' }).click();
+  const r = page.getByTestId('home-reply');
+  await expect(r.locator('pre')).toContainText('처음 기준안 대비 바꾼 조건');
+  await r.getByRole('button', { name: 'Bahasa Indonesia' }).click();
+  const pre = r.locator('pre');
+  await expect(pre).toContainText('Perihal: Re: Permintaan tinjauan penawaran');
+  await expect(pre).toContainText('Perubahan dibandingkan rencana awal');
+  await expect(pre).toContainText('50 kali');
+  await expect(pre).not.toContainText('회');
+  await r.getByRole('button', { name: '한국어' }).click();
+  await expect(pre).toContainText('60회 → 50회');
+});

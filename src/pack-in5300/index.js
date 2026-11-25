@@ -110,6 +110,7 @@ export const PACK = {
   consult: {
     product: "IN-5300", chain: ["영인바이오텍", "현지 파트너", "재활병원 A"],
     mail: {
+      id: { fromTeam: "Tim Penjualan Lokal", to: "YOUNG-IN Biotech", toTeam: "Tim Penjualan Luar Negeri", hospital: "Rumah Sakit Rehabilitasi A" },
       from: "PT Fisio Medika Indonesia", fromTeam: "현지 영업팀", to: "영인바이오텍", toTeam: "해외영업팀",
       subject: "[견적 검토 요청] IN-5300 1세트 · 인도네시아 재활병원 A", hospital: "재활병원 A", sessions: 60,
       body: [

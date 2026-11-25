@@ -35,6 +35,7 @@ export const PACK = {
   consult: {
     product: "치료 장비", chain: ["본사", "현지 파트너", "재활병원 A"],
     mail: {
+      id: { from: "Mitra Lokal", fromTeam: "Tim Penjualan Lokal", to: "Kantor Pusat", toTeam: "Tim Penjualan Luar Negeri", hospital: "Rumah Sakit Rehabilitasi A" },
       from: "현지 파트너사", fromTeam: "현지 영업팀", to: "본사", toTeam: "해외영업팀",
       subject: "[견적 검토 요청] 치료 장비 1세트, 재활병원 A", hospital: "재활병원 A", sessions: 60,
       body: [
