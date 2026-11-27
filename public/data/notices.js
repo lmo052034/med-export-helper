@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-26T03:17:07.631Z",
- "today": "2026-11-26",
+ "updated": "2026-11-27T03:21:27.983Z",
+ "today": "2026-11-27",
  "sources": [
   {
    "key": "bizinfo",
@@ -1408,6 +1408,202 @@ window.NOTICES = {
    "areas": [
     "유럽"
    ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "KHIDI x TMC STAMPED : Built Together 임상 현장의 목소리가 제품을 바꾼다",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4845&linkId=48953567&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-27",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "njxjmfl",
+   "types": [
+    "인증"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "KHIDI x TMC STAMPED : From Bench to First-in-Human (제약바이오)",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4844&linkId=48953566&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-27",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1yvdexb",
+   "types": [
+    "기타"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "[강남세브란스병원] 글로벌 의료기기 사용적합성평가 세미나: FDA 규제와 국제협력 사례",
+   "org": "기타",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4843&linkId=48953562&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-27",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1nj76z2",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [
+    "북미"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "2026년도 치료분야 의료기기 평가기술 개발 및 기술지원 2차 기업교육 홍보",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4842&linkId=48953556&refMenuId=MENU01496&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-27",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1efxucy",
+   "types": [
+    "마케팅",
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "2026 의료기기심사부 종합 업무설명회 개최 안내",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4841&linkId=48953554&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-27",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1hhoq5q",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "베트남·인도네시아·태국 의료기기 시장 진출 위한 인허가 전략 세미나",
+   "org": "한국의료기기협동조합",
+   "src": "kmdica",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4840&linkId=48953474&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-26",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nh2bqqv",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [
+    "동남아"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "[경기남부] 포장재 및 포장 폐기물 규정 (EU PPWR) 최신 동향 및 기업 대응전략 세미나",
+   "org": "한국보건산업진흥원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4839&linkId=48953472&refMenuId=MENU01493&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-26",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1wewuhc",
+   "types": [
+    "교육"
+   ],
+   "areas": [
+    "유럽"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "EU MDR 인증 준비와 디지털의료기기 사이버보안 교육 안내",
+   "org": "대구경북첨단의료산업진흥재단",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4838&linkId=48953106&refMenuId=MENU01492&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-20",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "nuyjc52",
+   "types": [
+    "인증",
+    "마케팅",
+    "교육"
+   ],
+   "areas": [
+    "유럽"
+   ],
+   "regions": [],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "2026년 12월 품목갱신 대구 지역 설명회 개최 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4837&linkId=48953089&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-20",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n7r0lwy",
+   "types": [
+    "교육"
+   ],
+   "areas": [],
+   "regions": [
+    "대구"
+   ],
+   "med": true
+  },
+  {
+   "first": "2026-11-27",
+   "title": "2026년 11월 인증본부 통합설명회 개최 안내",
+   "org": "한국의료기기안전정보원",
+   "src": "mohw",
+   "url": "https://www.khidi.or.kr/board/view?pageNum=1&rowCnt=20&no1=4836&linkId=48953088&refMenuId=MENU01495&menuId=MENU01491&maxIndex=&minIndex=&schType=0&schText=&schStartDate=&schEndDate=&boardStyle=&categoryId=&continent=&country=",
+   "posted": "2026-11-20",
+   "start": "",
+   "end": "",
+   "via": "보건산업진흥원 게시판",
+   "id": "n1moueeo",
+   "types": [
+    "인증",
+    "교육"
+   ],
+   "areas": [],
    "regions": [],
    "med": true
   }
