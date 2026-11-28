@@ -1,7 +1,7 @@
 /* 자동 생성: scripts/collect-notices.mjs */
 window.NOTICES = {
- "updated": "2026-11-27T03:21:27.983Z",
- "today": "2026-11-27",
+ "updated": "2026-11-28T02:59:26.996Z",
+ "today": "2026-11-28",
  "sources": [
   {
    "key": "bizinfo",
